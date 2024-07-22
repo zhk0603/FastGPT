@@ -1,7 +1,17 @@
 import React, { useMemo, useState } from 'react';
 import { type ChatHistoryItemResType } from '@fastgpt/global/core/chat/type.d';
 import { DispatchNodeResponseType } from '@fastgpt/global/core/workflow/runtime/type.d';
-import { Flex, useDisclosure, useTheme, Box } from '@chakra-ui/react';
+import {
+  Flex,
+  useDisclosure,
+  useTheme,
+  Box,
+  Accordion,
+  AccordionItem,
+  AccordionPanel,
+  AccordionButton,
+  AccordionIcon
+} from '@chakra-ui/react';
 import { useTranslation } from 'next-i18next';
 import type { SearchDataResponseItemType } from '@fastgpt/global/core/dataset/type';
 import dynamic from 'next/dynamic';
@@ -13,6 +23,8 @@ import ChatBoxDivider from '@/components/core/chat/Divider';
 import { strIsLink } from '@fastgpt/global/common/string/tools';
 import MyIcon from '@fastgpt/web/components/common/Icon';
 import { useSystem } from '@fastgpt/web/hooks/useSystem';
+import { useUserStore } from '@/web/support/user/useUserStore';
+import QuoteAccordion from './QuoteAccordion';
 
 const QuoteModal = dynamic(() => import('./QuoteModal'));
 const ContextModal = dynamic(() => import('./ContextModal'));
@@ -28,6 +40,7 @@ const ResponseTags = ({
   flowResponses?: ChatHistoryItemResType[];
   showDetail: boolean;
 }) => {
+  const { userInfo } = useUserStore();
   const theme = useTheme();
   const { isPc } = useSystem();
   const { t } = useTranslation();
@@ -102,45 +115,46 @@ const ResponseTags = ({
     <>
       {sourceList.length > 0 && (
         <>
-          <ChatBoxDivider icon="core/chat/quoteFill" text={t('common:core.chat.Quote')} />
-          <Flex alignItems={'center'} flexWrap={'wrap'} gap={2}>
-            {sourceList.map((item) => (
-              <MyTooltip key={item.collectionId} label={t('common:core.chat.quote.Read Quote')}>
-                <Flex
-                  alignItems={'center'}
-                  fontSize={'xs'}
-                  border={theme.borders.sm}
-                  py={1.5}
-                  px={2}
-                  borderRadius={'sm'}
-                  _hover={{
-                    '.controller': {
-                      display: 'flex'
-                    }
-                  }}
-                  overflow={'hidden'}
-                  position={'relative'}
-                  cursor={'pointer'}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setQuoteModalData({
-                      rawSearch: quoteList,
-                      metadata: {
-                        collectionId: item.collectionId,
-                        sourceId: item.sourceId,
-                        sourceName: item.sourceName
+          <QuoteAccordion title={t('common:core.chat.Quote') + '(' + sourceList.length + ')'}>
+            <Flex alignItems={'center'} flexWrap={'wrap'} gap={2}>
+              {sourceList.map((item) => (
+                <MyTooltip key={item.collectionId} label={t('common:core.chat.quote.Read Quote')}>
+                  <Flex
+                    alignItems={'center'}
+                    fontSize={'xs'}
+                    border={theme.borders.sm}
+                    py={1.5}
+                    px={2}
+                    borderRadius={'sm'}
+                    _hover={{
+                      '.controller': {
+                        display: 'flex'
                       }
-                    });
-                  }}
-                >
-                  <MyIcon name={item.icon as any} mr={1} flexShrink={0} w={'12px'} />
-                  <Box className="textEllipsis3" wordBreak={'break-all'} flex={'1 0 0'}>
-                    {item.sourceName}
-                  </Box>
-                </Flex>
-              </MyTooltip>
-            ))}
-          </Flex>
+                    }}
+                    overflow={'hidden'}
+                    position={'relative'}
+                    cursor={'pointer'}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setQuoteModalData({
+                        rawSearch: quoteList,
+                        metadata: {
+                          collectionId: item.collectionId,
+                          sourceId: item.sourceId,
+                          sourceName: item.sourceName
+                        }
+                      });
+                    }}
+                  >
+                    <MyIcon name={item.icon as any} mr={1} flexShrink={0} w={'12px'} />
+                    <Box className="textEllipsis3" wordBreak={'break-all'} flex={'1 0 0'}>
+                      {item.sourceName}
+                    </Box>
+                  </Flex>
+                </MyTooltip>
+              ))}
+            </Flex>
+          </QuoteAccordion>
         </>
       )}
       {showDetail && (
@@ -186,16 +200,18 @@ const ResponseTags = ({
               </MyTag>
             </MyTooltip>
           )}
-          <MyTooltip label={t('common:core.chat.response.Read complete response tips')}>
-            <MyTag
-              colorSchema="gray"
-              type="borderSolid"
-              cursor={'pointer'}
-              onClick={onOpenWholeModal}
-            >
-              {t('common:core.chat.response.Read complete response')}
-            </MyTag>
-          </MyTooltip>
+          {userInfo?.team.permission.hasManagePer && (
+            <MyTooltip label={t('common:core.chat.response.Read complete response tips')}>
+              <MyTag
+                colorSchema="gray"
+                type="borderSolid"
+                cursor={'pointer'}
+                onClick={onOpenWholeModal}
+              >
+                {t('common:core.chat.response.Read complete response')}
+              </MyTag>
+            </MyTooltip>
+          )}
         </Flex>
       )}
       {!!quoteModalData && (
