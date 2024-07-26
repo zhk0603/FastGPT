@@ -4,8 +4,6 @@ import { mongoSessionRun } from '../../common/mongo/sessionRun';
 import { ResourcePerWithTmbWithUser } from '@fastgpt/global/support/permission/type';
 import { DatasetPermission } from '@fastgpt/global/support/permission/dataset/controller';
 import { MongoDataset } from './schema';
-import { MongoTeamMember } from 'support/user/team/teamMemberSchema';
-import { Permission } from '@fastgpt/global/support/permission/controller';
 
 /**
  * 更新知识库协作者权限
