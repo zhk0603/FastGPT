@@ -31,6 +31,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     req.pipe(requestResult);
 
     requestResult.on('response', (response) => {
+      if (response.statusCode === 404) {
+        jsonRes(res, {
+          code: 500,
+          error: '接口暂未实现'
+        });
+        return;
+      }
       Object.keys(response.headers).forEach((key) => {
         // @ts-ignore
         res.setHeader(key, response.headers[key]);
