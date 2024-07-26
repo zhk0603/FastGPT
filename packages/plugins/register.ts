@@ -126,7 +126,9 @@ export const getSystemPluginCb = async () => {
 
   try {
     global.systemPluginCb = {};
-    global.systemPluginCb = FastGPTProUrl ? await getCommercialCb() : await getCommunityCb();
+    // todo 这里直接使用 社区
+    // global.systemPluginCb = FastGPTProUrl ? await getCommercialCb() : await getCommunityCb();
+    global.systemPluginCb = await getCommunityCb();
     return global.systemPluginCb;
   } catch (error) {
     //@ts-ignore
