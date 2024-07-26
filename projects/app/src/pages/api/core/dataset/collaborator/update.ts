@@ -1,30 +1,42 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from '@/service/mongo';
+import { authDataset } from '@fastgpt/service/support/permission/dataset/auth';
 import { ManagePermissionVal } from '@fastgpt/global/support/permission/constant';
-import { getAppCollaboratorList } from '@fastgpt/service/core/app/controllerPro';
+import { updateDatasetCollaboratorPer } from '@fastgpt/service/core/dataset/controllerPro';
 import { NextAPI } from '@/service/middleware/entry';
 import { CommonErrEnum } from '@fastgpt/global/common/error/code/common';
-import { authApp } from '@fastgpt/service/support/permission/app/auth';
 
 async function handler(req: NextApiRequest): Promise<any> {
   await connectToDatabase();
 
-  const { appId } = req.query as {
-    appId: string;
+  const {
+    datasetId,
+    permission,
+    tmbIds = []
+  } = req.body as {
+    datasetId: string;
+    permission: number;
+    tmbIds: string[];
   };
 
-  if (appId == null) {
+  if (datasetId == null || permission == null || tmbIds.length == 0) {
     return Promise.reject(CommonErrEnum.missingParams);
   }
 
-  const { teamId } = await authApp({
+  // auth owner
+  const { teamId } = await authDataset({
     req,
     authToken: true,
-    appId,
+    datasetId,
     per: ManagePermissionVal
   });
 
-  return await getAppCollaboratorList({ teamId, appId });
+  await updateDatasetCollaboratorPer({
+    teamId,
+    datasetId,
+    permission,
+    tmbIds
+  });
 }
 
 export default NextAPI(handler);
