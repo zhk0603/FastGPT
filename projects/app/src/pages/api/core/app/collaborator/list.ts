@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from '@/service/mongo';
-import { ManagePermissionVal } from '@fastgpt/global/support/permission/constant';
+import { ReadPermissionVal } from '@fastgpt/global/support/permission/constant';
 import { getAppCollaboratorList } from '@fastgpt/service/core/app/controllerPro';
 import { NextAPI } from '@/service/middleware/entry';
 import { CommonErrEnum } from '@fastgpt/global/common/error/code/common';
@@ -21,7 +21,7 @@ async function handler(req: NextApiRequest): Promise<any> {
     req,
     authToken: true,
     appId,
-    per: ManagePermissionVal
+    per: ReadPermissionVal
   });
 
   return await getAppCollaboratorList({ teamId, appId });
