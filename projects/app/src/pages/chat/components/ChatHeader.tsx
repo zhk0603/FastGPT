@@ -11,7 +11,7 @@ import { useContextSelector } from 'use-context-selector';
 import { ChatContext } from '@/web/core/chat/context/chatContext';
 import MyTooltip from '@fastgpt/web/components/common/MyTooltip';
 import { InitChatResponse } from '@/global/core/chat/api';
-import { AppTypeEnum } from '@fastgpt/global/core/app/constants';
+import { AppFolderTypeList, AppTypeEnum } from '@fastgpt/global/core/app/constants';
 import { useSystem } from '@fastgpt/web/hooks/useSystem';
 import LightRowTabs from '@fastgpt/web/components/common/Tabs/LightRowTabs';
 import { useRouter } from 'next/router';
@@ -92,7 +92,7 @@ const MobileDrawer = ({
         id: item._id,
         name: item.name,
         avatar: item.avatar,
-        isFolder: item.type === AppTypeEnum.folder
+        isFolder: AppFolderTypeList.includes(item.type)
       }))
     );
   }, []);
@@ -174,7 +174,7 @@ const MobileDrawer = ({
                           onClick: () => onclickApp(item._id)
                         })}
                   >
-                    <Avatar src={item.avatar} w={'24px'} />
+                    <Avatar src={item.avatar} w={'24px'} borderRadius={'sm'} />
                     <Box ml={2} className={'textEllipsis'}>
                       {item.name}
                     </Box>
@@ -223,7 +223,7 @@ const MobileHeader = ({
       )}
       <Flex px={3} alignItems={'center'} flex={'1 0 0'} w={0} justifyContent={'center'}>
         <Flex alignItems={'center'} onClick={toggleDrawer}>
-          <Avatar src={avatar} w={'1rem'} />
+          <Avatar borderRadius={'sm'} src={avatar} w={'1rem'} />
           <Box ml={1} className="textEllipsis">
             {name}
           </Box>
