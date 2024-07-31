@@ -29,7 +29,7 @@ type HttpResponse = DispatchNodeResultType<{
   [key: string]: any;
 }>;
 
-const UNDEFINED_SIGN = 'UNDEFINED_SIGN';
+const UNDEFINED_SIGN = 'null';
 
 export const dispatchHttp468Request = async (props: HttpRequestProps): Promise<HttpResponse> => {
   let {

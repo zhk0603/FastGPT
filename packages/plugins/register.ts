@@ -22,7 +22,12 @@ const packagePluginList = [
   'duckduckgo/search',
   'duckduckgo/searchImg',
   'duckduckgo/searchNews',
-  'duckduckgo/searchVideo'
+  'duckduckgo/searchVideo',
+  'firecrawl',
+  'firecrawl/scrape',
+  'firecrawl/search',
+  'firecrawl/crawl',
+  'firecrawl/crawlJob'
 ];
 
 const list = [...staticPluginList, ...packagePluginList];
@@ -58,7 +63,8 @@ export const getSystemPluginTemplates = async (refresh = false) => {
       global.systemPlugins = [];
     }
 
-    global.systemPlugins = FastGPTProUrl ? await getCommercialPlugins() : getCommunityPlugins();
+    // global.systemPlugins = FastGPTProUrl ? await getCommercialPlugins() : getCommunityPlugins();
+    global.systemPlugins = getCommunityPlugins();
 
     return cloneDeep(global.systemPlugins);
   } catch (error) {

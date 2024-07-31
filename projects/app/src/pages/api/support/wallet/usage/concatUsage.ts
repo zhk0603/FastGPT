@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { jsonRes } from '@fastgpt/service/common/response';
 import { connectToDatabase } from '@/service/mongo';
-import { addLog } from '@fastgpt/service/common/system/log';
 import { ConcatUsageProps } from '@fastgpt/global/support/wallet/usage/api';
 import { MongoUsage } from '@fastgpt/service/support/wallet/usage/schema';
 
@@ -10,7 +9,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     await connectToDatabase();
 
     const data = req.body as ConcatUsageProps;
-    addLog.warn('concatUsage', data);
 
     if (data.billId) {
       const usage = await MongoUsage.findById(data.billId);

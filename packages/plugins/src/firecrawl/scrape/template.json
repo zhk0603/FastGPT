@@ -1,0 +1,700 @@
+{
+  "author": "赵坤",
+  "version": "486",
+  "name": "Firecrawl 网页内容抓取",
+  "avatar": "core/workflow/template/firecrawl",
+  "intro": "抓取数据，并返回Markdown格式的网页内容。",
+  "showStatus": true,
+  "weight": 15,
+
+  "isTool": true,
+  "templateType": "search",
+
+  "workflow": {
+    "nodes": [
+      {
+        "nodeId": "pluginInput",
+        "name": "自定义插件输入",
+        "intro": "可以配置插件需要哪些输入，利用这些输入来运行插件",
+        "avatar": "core/workflow/template/workflowStart",
+        "flowNodeType": "pluginInput",
+        "showStatus": false,
+        "position": {
+          "x": 372.79129739379005,
+          "y": -135.9346454616807
+        },
+        "version": "481",
+        "inputs": [
+          {
+            "renderTypeList": ["reference"],
+            "selectedTypeIndex": 0,
+            "valueType": "string",
+            "canEdit": true,
+            "key": "url",
+            "label": "url",
+            "description": "The URL to scrape",
+            "required": true,
+            "toolDescription": "The URL to scrape"
+          },
+          {
+            "renderTypeList": ["reference"],
+            "selectedTypeIndex": 0,
+            "valueType": "boolean",
+            "canEdit": true,
+            "key": "includeHtml",
+            "label": "includeHtml",
+            "description": "Include the HTML version of the content on page. Will output a html key in the response.",
+            "required": false,
+            "toolDescription": "Include the HTML version of the content on page. Will output a html key in the response."
+          },
+          {
+            "renderTypeList": ["reference"],
+            "selectedTypeIndex": 0,
+            "valueType": "boolean",
+            "canEdit": true,
+            "key": "includeRawHtml",
+            "label": "includeRawHtml",
+            "description": "Include the raw HTML content of the page. Will output a rawHtml key in the response.",
+            "required": false,
+            "toolDescription": "Include the raw HTML content of the page. Will output a rawHtml key in the response."
+          },
+          {
+            "renderTypeList": ["reference"],
+            "selectedTypeIndex": 0,
+            "valueType": "string",
+            "canEdit": true,
+            "key": "onlyIncludeTags",
+            "label": "onlyIncludeTags",
+            "description": "Only include tags, classes and ids from the page in the final output. Use comma separated values. Example: 'script, .ad, #footer'",
+            "required": false,
+            "toolDescription": "Only include tags, classes and ids from the page in the final output. Use comma separated values. Example: 'script, .ad, #footer'"
+          },
+          {
+            "renderTypeList": ["reference"],
+            "selectedTypeIndex": 0,
+            "valueType": "boolean",
+            "canEdit": true,
+            "key": "onlyMainContent",
+            "label": "onlyMainContent",
+            "description": "Only return the main content of the page excluding headers, navs, footers, etc.",
+            "required": false,
+            "toolDescription": "Only return the main content of the page excluding headers, navs, footers, etc."
+          },
+          {
+            "renderTypeList": ["reference"],
+            "selectedTypeIndex": 0,
+            "valueType": "boolean",
+            "canEdit": true,
+            "key": "replaceAllPathsWithAbsolutePaths",
+            "label": "replaceAllPathsWithAbsolutePaths",
+            "description": "Replace all relative paths with absolute paths for images and links",
+            "required": false,
+            "toolDescription": "Replace all relative paths with absolute paths for images and links"
+          },
+          {
+            "renderTypeList": ["reference"],
+            "selectedTypeIndex": 0,
+            "valueType": "boolean",
+            "canEdit": true,
+            "key": "screenshot",
+            "label": "screenshot",
+            "description": "Include a screenshot of the top of the page that you are scraping.",
+            "required": false,
+            "toolDescription": "Include a screenshot of the top of the page that you are scraping."
+          },
+          {
+            "renderTypeList": ["reference"],
+            "selectedTypeIndex": 0,
+            "valueType": "number",
+            "canEdit": true,
+            "key": "waitFor",
+            "label": "waitFor",
+            "description": "Wait x amount of milliseconds for the page to load to fetch content",
+            "required": false,
+            "toolDescription": "Wait x amount of milliseconds for the page to load to fetch content"
+          },
+          {
+            "renderTypeList": ["reference"],
+            "selectedTypeIndex": 0,
+            "valueType": "string",
+            "canEdit": true,
+            "key": "removeTags",
+            "label": "removeTags",
+            "description": "Tags, classes and ids to remove from the page. Use comma separated values. Example: 'script, .ad, #footer'",
+            "required": false,
+            "toolDescription": "Tags, classes and ids to remove from the page. Use comma separated values. Example: 'script, .ad, #footer'"
+          },
+          {
+            "renderTypeList": ["reference"],
+            "selectedTypeIndex": 0,
+            "valueType": "string",
+            "canEdit": true,
+            "key": "headers",
+            "label": "headers",
+            "description": "Headers to send with the request. Can be used to send cookies, user-agent, etc.",
+            "required": false,
+            "defaultValue": "{}",
+            "toolDescription": "Headers to send with the request. Can be used to send cookies, user-agent, etc."
+          }
+        ],
+        "outputs": [
+          {
+            "id": "url",
+            "valueType": "string",
+            "key": "url",
+            "label": "url",
+            "type": "hidden"
+          },
+          {
+            "id": "includeHtml",
+            "valueType": "boolean",
+            "key": "includeHtml",
+            "label": "includeHtml",
+            "type": "hidden"
+          },
+          {
+            "id": "includeRawHtml",
+            "valueType": "boolean",
+            "key": "includeRawHtml",
+            "label": "includeRawHtml",
+            "type": "hidden"
+          },
+          {
+            "id": "onlyIncludeTags",
+            "valueType": "string",
+            "key": "onlyIncludeTags",
+            "label": "onlyIncludeTags",
+            "type": "hidden"
+          },
+          {
+            "id": "onlyMainContent",
+            "valueType": "boolean",
+            "key": "onlyMainContent",
+            "label": "onlyMainContent",
+            "type": "hidden"
+          },
+          {
+            "id": "replaceAllPathsWithAbsolutePaths",
+            "valueType": "boolean",
+            "key": "replaceAllPathsWithAbsolutePaths",
+            "label": "replaceAllPathsWithAbsolutePaths",
+            "type": "hidden"
+          },
+          {
+            "id": "screenshot",
+            "valueType": "boolean",
+            "key": "screenshot",
+            "label": "screenshot",
+            "type": "hidden"
+          },
+          {
+            "id": "waitFor",
+            "valueType": "number",
+            "key": "waitFor",
+            "label": "waitFor",
+            "type": "hidden"
+          },
+          {
+            "id": "removeTags",
+            "valueType": "string",
+            "key": "removeTags",
+            "label": "removeTags",
+            "type": "hidden"
+          },
+          {
+            "id": "headers",
+            "valueType": "string",
+            "key": "headers",
+            "label": "headers",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "nodeId": "pluginOutput",
+        "name": "自定义插件输出",
+        "intro": "自定义配置外部输出，使用插件时，仅暴露自定义配置的输出",
+        "avatar": "core/workflow/template/pluginOutput",
+        "flowNodeType": "pluginOutput",
+        "showStatus": false,
+        "position": {
+          "x": 1819.5930254553855,
+          "y": -54.02636218171298
+        },
+        "version": "481",
+        "inputs": [
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "string",
+            "canEdit": true,
+            "key": "result",
+            "label": "result",
+            "description": "网页内容，markdown格式",
+            "value": ["mPvC4slZiyoL", "eQpDcVK0hT2K"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "object",
+            "canEdit": true,
+            "key": "metadata",
+            "label": "metadata",
+            "description": "web page metadata",
+            "value": ["mPvC4slZiyoL", "rIvz3UGSlozl"]
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "nodeId": "mPvC4slZiyoL",
+        "name": "HTTP 请求",
+        "intro": "可以发出一个 HTTP 请求，实现更为复杂的操作（联网搜索、数据库查询等）",
+        "avatar": "core/workflow/template/httpRequest",
+        "flowNodeType": "httpRequest468",
+        "showStatus": true,
+        "position": {
+          "x": 1173.4579798129082,
+          "y": -362.19393154724355
+        },
+        "version": "481",
+        "inputs": [
+          {
+            "key": "system_addInputParam",
+            "renderTypeList": ["addInputParam"],
+            "valueType": "dynamic",
+            "label": "",
+            "required": false,
+            "description": "core.module.input.description.HTTP Dynamic Input",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            }
+          },
+          {
+            "key": "system_httpMethod",
+            "renderTypeList": ["custom"],
+            "valueType": "string",
+            "label": "",
+            "value": "POST",
+            "required": true
+          },
+          {
+            "key": "system_httpReqUrl",
+            "renderTypeList": ["hidden"],
+            "valueType": "string",
+            "label": "",
+            "description": "core.module.input.description.Http Request Url",
+            "placeholder": "https://api.ai.com/getInventory",
+            "required": false,
+            "value": "firecrawl/scrape"
+          },
+          {
+            "key": "system_httpHeader",
+            "renderTypeList": ["custom"],
+            "valueType": "any",
+            "value": [],
+            "label": "",
+            "description": "core.module.input.description.Http Request Header",
+            "placeholder": "core.module.input.description.Http Request Header",
+            "required": false
+          },
+          {
+            "key": "system_httpParams",
+            "renderTypeList": ["hidden"],
+            "valueType": "any",
+            "value": [],
+            "label": "",
+            "required": false
+          },
+          {
+            "key": "system_httpJsonBody",
+            "renderTypeList": ["hidden"],
+            "valueType": "any",
+            "value": "{\r\n  \"url\": \"{{url}}\",\r\n  \"pageOptions\": {\r\n    \"headers\": \"{{headers}}\",\r\n    \"includeHtml\": {{includeHtml}},\r\n    \"includeRawHtml\": {{includeRawHtml}},\r\n    \"onlyIncludeTags\": {{onlyIncludeTags}},\r\n    \"onlyMainContent\": {{onlyMainContent}},\r\n    \"removeTags\": {{removeTags}},\r\n    \"replaceAllPathsWithAbsolutePaths\": {{replaceAllPathsWithAbsolutePaths}},\r\n    \"screenshot\": {{screenshot}},\r\n    \"waitFor\": {{waitFor}}\r\n  }\r\n}",
+            "label": "",
+            "required": false
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "string",
+            "canEdit": true,
+            "key": "url",
+            "label": "url",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            },
+            "required": true,
+            "value": ["pluginInput", "url"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "string",
+            "canEdit": true,
+            "key": "headers",
+            "label": "headers",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            },
+            "required": true,
+            "value": ["pluginInput", "headers"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "boolean",
+            "canEdit": true,
+            "key": "includeHtml",
+            "label": "includeHtml",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            },
+            "required": true,
+            "value": ["pluginInput", "includeHtml"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "boolean",
+            "canEdit": true,
+            "key": "includeRawHtml",
+            "label": "includeRawHtml",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            },
+            "required": true,
+            "value": ["pluginInput", "includeRawHtml"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "string",
+            "canEdit": true,
+            "key": "onlyIncludeTags",
+            "label": "onlyIncludeTags",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            },
+            "required": true,
+            "value": ["pluginInput", "onlyIncludeTags"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "boolean",
+            "canEdit": true,
+            "key": "onlyMainContent",
+            "label": "onlyMainContent",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            },
+            "required": true,
+            "value": ["pluginInput", "onlyMainContent"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "string",
+            "canEdit": true,
+            "key": "removeTags",
+            "label": "removeTags",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            },
+            "required": true,
+            "value": ["pluginInput", "removeTags"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "boolean",
+            "canEdit": true,
+            "key": "replaceAllPathsWithAbsolutePaths",
+            "label": "replaceAllPathsWithAbsolutePaths",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            },
+            "required": true,
+            "value": ["pluginInput", "replaceAllPathsWithAbsolutePaths"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "boolean",
+            "canEdit": true,
+            "key": "screenshot",
+            "label": "screenshot",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            },
+            "required": true,
+            "value": ["pluginInput", "screenshot"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "number",
+            "canEdit": true,
+            "key": "waitFor",
+            "label": "waitFor",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            },
+            "required": true,
+            "value": ["pluginInput", "waitFor"]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "error",
+            "key": "error",
+            "label": "请求错误",
+            "description": "HTTP请求错误信息，成功时返回空",
+            "valueType": "object",
+            "type": "static"
+          },
+          {
+            "id": "httpRawResponse",
+            "key": "httpRawResponse",
+            "label": "原始响应",
+            "required": true,
+            "description": "HTTP请求的原始响应。只能接受字符串或JSON类型响应数据。",
+            "valueType": "any",
+            "type": "static"
+          },
+          {
+            "id": "system_addOutputParam",
+            "key": "system_addOutputParam",
+            "type": "dynamic",
+            "valueType": "dynamic",
+            "label": "",
+            "customFieldConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": false
+            }
+          },
+          {
+            "id": "eQpDcVK0hT2K",
+            "valueType": "string",
+            "type": "dynamic",
+            "key": "result",
+            "label": "result"
+          },
+          {
+            "id": "rIvz3UGSlozl",
+            "valueType": "object",
+            "type": "dynamic",
+            "key": "markdown",
+            "label": "markdown"
+          }
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "source": "pluginInput",
+        "target": "mPvC4slZiyoL",
+        "sourceHandle": "pluginInput-source-right",
+        "targetHandle": "mPvC4slZiyoL-target-left"
+      },
+      {
+        "source": "mPvC4slZiyoL",
+        "target": "pluginOutput",
+        "sourceHandle": "mPvC4slZiyoL-source-right",
+        "targetHandle": "pluginOutput-target-left"
+      }
+    ]
+  }
+}

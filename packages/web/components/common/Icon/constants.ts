@@ -210,6 +210,7 @@ export const iconPaths = {
   'core/workflow/template/workflowStart': () =>
     import('./icons/core/workflow/template/workflowStart.svg'),
   'core/workflow/versionHistories': () => import('./icons/core/workflow/versionHistories.svg'),
+  'core/workflow/template/firecrawl': () => import('./icons/core/workflow/template/firecrawl.svg'),
   date: () => import('./icons/date.svg'),
   delete: () => import('./icons/delete.svg'),
   edit: () => import('./icons/edit.svg'),

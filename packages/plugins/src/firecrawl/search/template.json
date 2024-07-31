@@ -1,0 +1,592 @@
+{
+  "author": "赵坤",
+  "version": "486",
+  "name": "Firecrawl 网页内容搜索",
+  "avatar": "core/workflow/template/firecrawl",
+  "intro": "使用搜索 API 和 Firecrawl 提供相关的网页搜索结果，以 Markdown 格式返回。抓取顶级结果网站的完整内容。",
+  "showStatus": true,
+  "weight": 15,
+
+  "isTool": true,
+  "templateType": "search",
+
+  "workflow": {
+    "nodes": [
+      {
+        "nodeId": "pluginInput",
+        "name": "自定义插件输入",
+        "intro": "可以配置插件需要哪些输入，利用这些输入来运行插件",
+        "avatar": "core/workflow/template/workflowStart",
+        "flowNodeType": "pluginInput",
+        "showStatus": false,
+        "position": {
+          "x": 360.2310434888334,
+          "y": -130.23823750338977
+        },
+        "version": "481",
+        "inputs": [
+          {
+            "renderTypeList": ["reference"],
+            "selectedTypeIndex": 0,
+            "valueType": "string",
+            "canEdit": true,
+            "key": "query",
+            "label": "query",
+            "description": "The query to search for",
+            "required": true,
+            "toolDescription": "The query to search for"
+          },
+          {
+            "renderTypeList": ["reference"],
+            "selectedTypeIndex": 0,
+            "valueType": "boolean",
+            "canEdit": true,
+            "key": "includeHtml",
+            "label": "includeHtml",
+            "description": "Include the HTML version of the content on page. Will output a html key in the response.",
+            "required": false,
+            "toolDescription": "Include the HTML version of the content on page. Will output a html key in the response."
+          },
+          {
+            "renderTypeList": ["reference"],
+            "selectedTypeIndex": 0,
+            "valueType": "boolean",
+            "canEdit": true,
+            "key": "includeRawHtml",
+            "label": "includeRawHtml",
+            "description": "Include the raw HTML content of the page. Will output a rawHtml key in the response.",
+            "required": false,
+            "toolDescription": "Include the raw HTML content of the page. Will output a rawHtml key in the response."
+          },
+          {
+            "renderTypeList": ["reference"],
+            "selectedTypeIndex": 0,
+            "valueType": "boolean",
+            "canEdit": true,
+            "key": "onlyMainContent",
+            "label": "onlyMainContent",
+            "description": "Only return the main content of the page excluding headers, navs, footers, etc.",
+            "required": false,
+            "toolDescription": "Only return the main content of the page excluding headers, navs, footers, etc."
+          },
+          {
+            "renderTypeList": ["reference"],
+            "selectedTypeIndex": 0,
+            "valueType": "boolean",
+            "canEdit": true,
+            "key": "fetchPageContent",
+            "label": "fetchPageContent",
+            "description": "Fetch the content of each page. If false, defaults to a basic fast serp API.",
+            "required": true,
+            "toolDescription": "Fetch the content of each page. If false, defaults to a basic fast serp API."
+          },
+          {
+            "renderTypeList": ["reference"],
+            "selectedTypeIndex": 0,
+            "valueType": "number",
+            "canEdit": true,
+            "key": "limit",
+            "label": "limit",
+            "description": "Maximum number of results. Max is 20 during beta.",
+            "defaultValue": 3,
+            "required": true,
+            "toolDescription": "Maximum number of results. Max is 20 during beta."
+          },
+          {
+            "renderTypeList": ["reference"],
+            "selectedTypeIndex": 0,
+            "valueType": "string",
+            "canEdit": true,
+            "key": "lang",
+            "label": "lang",
+            "description": "uses this parameter to customize the language in the search location, following the ISO-639 standard. The default is `en`. (e.g., 'en' for English, 'zh-cn' for Chinese).",
+            "required": true,
+            "defaultValue": "en",
+            "toolDescription": "uses this parameter to customize the language in the search location, following the ISO-639 standard. The default is `en`. (e.g., 'en' for English, 'zh-cn' for Chinese)."
+          },
+          {
+            "renderTypeList": ["reference"],
+            "selectedTypeIndex": 0,
+            "valueType": "string",
+            "canEdit": true,
+            "key": "country",
+            "label": "country",
+            "description": "uses this parameter to customize the country information in the search location, using a two-letter lowercase country code. For example, entering `us` will prioritize searching web pages in the United States region.The default is `us`.",
+            "required": true,
+            "defaultValue": "us",
+            "toolDescription": "uses this parameter to customize the country information in the search location, using a two-letter lowercase country code. For example, entering `us` will prioritize searching web pages in the United States region.The default is `us`."
+          }
+        ],
+        "outputs": [
+          {
+            "id": "url",
+            "valueType": "string",
+            "key": "query",
+            "label": "query",
+            "type": "hidden"
+          },
+          {
+            "id": "includeHtml",
+            "valueType": "boolean",
+            "key": "includeHtml",
+            "label": "includeHtml",
+            "type": "hidden"
+          },
+          {
+            "id": "includeRawHtml",
+            "valueType": "boolean",
+            "key": "includeRawHtml",
+            "label": "includeRawHtml",
+            "type": "hidden"
+          },
+          {
+            "id": "onlyMainContent",
+            "valueType": "boolean",
+            "key": "onlyMainContent",
+            "label": "onlyMainContent",
+            "type": "hidden"
+          },
+          {
+            "id": "fetchPageContent",
+            "valueType": "boolean",
+            "key": "fetchPageContent",
+            "label": "fetchPageContent",
+            "type": "hidden"
+          },
+          {
+            "id": "limit",
+            "valueType": "number",
+            "key": "limit",
+            "label": "limit",
+            "type": "hidden"
+          },
+          {
+            "id": "lang",
+            "valueType": "string",
+            "key": "lang",
+            "label": "lang",
+            "type": "hidden"
+          },
+          {
+            "id": "country",
+            "valueType": "string",
+            "key": "country",
+            "label": "country",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "nodeId": "pluginOutput",
+        "name": "自定义插件输出",
+        "intro": "自定义配置外部输出，使用插件时，仅暴露自定义配置的输出",
+        "avatar": "core/workflow/template/pluginOutput",
+        "flowNodeType": "pluginOutput",
+        "showStatus": false,
+        "position": {
+          "x": 1851.5930254553855,
+          "y": -170.026362181713
+        },
+        "version": "481",
+        "inputs": [
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "any",
+            "canEdit": true,
+            "key": "data",
+            "label": "data",
+            "description": "search result",
+            "value": ["mPvC4slZiyoL", "eQpDcVK0hT2K"]
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "nodeId": "mPvC4slZiyoL",
+        "name": "Call search",
+        "intro": "可以发出一个 HTTP 请求，实现更为复杂的操作（联网搜索、数据库查询等）",
+        "avatar": "core/workflow/template/httpRequest",
+        "flowNodeType": "httpRequest468",
+        "showStatus": true,
+        "position": {
+          "x": 1173.4579798129082,
+          "y": -362.19393154724355
+        },
+        "version": "481",
+        "inputs": [
+          {
+            "key": "system_addInputParam",
+            "renderTypeList": ["addInputParam"],
+            "valueType": "dynamic",
+            "label": "",
+            "required": false,
+            "description": "core.module.input.description.HTTP Dynamic Input",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            }
+          },
+          {
+            "key": "system_httpMethod",
+            "renderTypeList": ["custom"],
+            "valueType": "string",
+            "label": "",
+            "value": "POST",
+            "required": true
+          },
+          {
+            "key": "system_httpReqUrl",
+            "renderTypeList": ["hidden"],
+            "valueType": "string",
+            "label": "",
+            "description": "core.module.input.description.Http Request Url",
+            "placeholder": "https://api.ai.com/getInventory",
+            "required": false,
+            "value": "firecrawl/search"
+          },
+          {
+            "key": "system_httpHeader",
+            "renderTypeList": ["custom"],
+            "valueType": "any",
+            "value": [],
+            "label": "",
+            "description": "core.module.input.description.Http Request Header",
+            "placeholder": "core.module.input.description.Http Request Header",
+            "required": false
+          },
+          {
+            "key": "system_httpParams",
+            "renderTypeList": ["hidden"],
+            "valueType": "any",
+            "value": [],
+            "label": "",
+            "required": false
+          },
+          {
+            "key": "system_httpJsonBody",
+            "renderTypeList": ["hidden"],
+            "valueType": "any",
+            "value": "{\r\n  \"query\": \"{{query}}\",\r\n  \"pageOptions\": {\r\n    \"includeHtml\": {{includeHtml}},\r\n    \"includeRawHtml\": {{includeRawHtml}},\r\n    \"onlyMainContent\": {{onlyMainContent}},\r\n    \"fetchPageContent\": {{fetchPageContent}}\r\n  },\r\n  \"searchOptions\": {\r\n    \"limit\": {{limit}},\r\n    \"lang\": \"{{lang}}\",\r\n    \"country\": \"{{country}}\"\r\n  }\r\n}",
+            "label": "",
+            "required": false
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "string",
+            "canEdit": true,
+            "key": "query",
+            "label": "query",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            },
+            "required": true,
+            "value": ["pluginInput", "url"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "boolean",
+            "canEdit": true,
+            "key": "includeHtml",
+            "label": "includeHtml",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            },
+            "required": true,
+            "value": ["pluginInput", "includeHtml"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "boolean",
+            "canEdit": true,
+            "key": "includeRawHtml",
+            "label": "includeRawHtml",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            },
+            "required": true,
+            "value": ["pluginInput", "includeRawHtml"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "boolean",
+            "canEdit": true,
+            "key": "onlyMainContent",
+            "label": "onlyMainContent",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            },
+            "required": true,
+            "value": ["pluginInput", "onlyMainContent"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "boolean",
+            "canEdit": true,
+            "key": "fetchPageContent",
+            "label": "fetchPageContent",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            },
+            "required": true,
+            "value": ["pluginInput", "fetchPageContent"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "number",
+            "canEdit": true,
+            "key": "limit",
+            "label": "limit",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            },
+            "required": true,
+            "value": ["pluginInput", "limit"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "string",
+            "canEdit": true,
+            "key": "lang",
+            "label": "lang",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            },
+            "required": true,
+            "value": ["pluginInput", "lang"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "string",
+            "canEdit": true,
+            "key": "country",
+            "label": "country",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            },
+            "required": true,
+            "value": ["pluginInput", "country"]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "error",
+            "key": "error",
+            "label": "请求错误",
+            "description": "HTTP请求错误信息，成功时返回空",
+            "valueType": "object",
+            "type": "static"
+          },
+          {
+            "id": "httpRawResponse",
+            "key": "httpRawResponse",
+            "label": "原始响应",
+            "required": true,
+            "description": "HTTP请求的原始响应。只能接受字符串或JSON类型响应数据。",
+            "valueType": "any",
+            "type": "static"
+          },
+          {
+            "id": "system_addOutputParam",
+            "key": "system_addOutputParam",
+            "type": "dynamic",
+            "valueType": "dynamic",
+            "label": "",
+            "customFieldConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": false
+            }
+          },
+          {
+            "id": "eQpDcVK0hT2K",
+            "valueType": "any",
+            "type": "dynamic",
+            "key": "data",
+            "label": "data"
+          }
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "source": "pluginInput",
+        "target": "mPvC4slZiyoL",
+        "sourceHandle": "pluginInput-source-right",
+        "targetHandle": "mPvC4slZiyoL-target-left"
+      },
+      {
+        "source": "mPvC4slZiyoL",
+        "target": "pluginOutput",
+        "sourceHandle": "mPvC4slZiyoL-source-right",
+        "targetHandle": "pluginOutput-target-left"
+      }
+    ]
+  }
+}

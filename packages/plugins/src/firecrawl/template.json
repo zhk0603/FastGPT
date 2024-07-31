@@ -1,0 +1,17 @@
+{
+  "author": "赵坤",
+  "version": "486",
+  "name": "Firecrawl 网络爬虫",
+  "avatar": "core/workflow/template/firecrawl",
+  "intro": "Firecrawl API 集成，用于网页爬取和数据抓取。",
+  "showStatus": true,
+  "weight": 15,
+
+  "isTool": true,
+  "templateType": "search",
+
+  "workflow": {
+    "nodes": [],
+    "edges": []
+  }
+}

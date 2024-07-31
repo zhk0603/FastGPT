@@ -12,7 +12,6 @@ import { mongoSessionRun } from '@fastgpt/service/common/mongo/sessionRun';
 import { MongoTeamMember } from '@fastgpt/service/support/user/team/teamMemberSchema';
 import { MongoResourcePermission } from '@fastgpt/service/support/permission/schema';
 import { MongoUser } from '@fastgpt/service/support/user/schema';
-import { UserModelSchema } from '@fastgpt/global/support/user/type';
 import {
   TeamMemberRoleEnum,
   TeamMemberStatusEnum
@@ -40,14 +39,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const getRoleByPer = function (per: number) {
       if (per == ReadPermissionVal) {
-        return TeamMemberRoleEnum.visitor;
+        return 'visitor';
       }
       // 写也是 visitor ？
       if (per == WritePermissionVal) {
-        return TeamMemberRoleEnum.visitor;
+        return 'visitor';
       }
       if (per == ManagePermissionVal) {
-        return TeamMemberRoleEnum.admin;
+        return 'admin';
       }
     };
 

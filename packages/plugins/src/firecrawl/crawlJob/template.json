@@ -1,0 +1,387 @@
+{
+  "author": "赵坤",
+  "version": "486",
+  "name": "Firecrawl 获取爬取结果，或取消抓取任务。",
+  "avatar": "core/workflow/template/firecrawl",
+  "intro": "根据作业ID检索抓取结果，或取消抓取任务。",
+  "showStatus": true,
+  "weight": 15,
+
+  "isTool": true,
+  "templateType": "search",
+
+  "workflow": {
+    "nodes": [
+      {
+        "nodeId": "pluginInput",
+        "name": "自定义插件输入",
+        "intro": "可以配置插件需要哪些输入，利用这些输入来运行插件",
+        "avatar": "core/workflow/template/workflowStart",
+        "flowNodeType": "pluginInput",
+        "showStatus": false,
+        "position": {
+          "x": 617.540351167888,
+          "y": -218.7033672907662
+        },
+        "version": "481",
+        "inputs": [
+          {
+            "renderTypeList": ["reference"],
+            "selectedTypeIndex": 0,
+            "valueType": "string",
+            "canEdit": true,
+            "key": "jobId",
+            "label": "jobId",
+            "description": "The crawl job id.",
+            "required": true,
+            "toolDescription": "The crawl job id."
+          },
+          {
+            "renderTypeList": ["reference"],
+            "selectedTypeIndex": 0,
+            "valueType": "string",
+            "canEdit": true,
+            "key": "operation",
+            "label": "operation",
+            "description": "optional：getdata，cancel",
+            "required": true,
+            "toolDescription": "optional：getdata，cancel"
+          }
+        ],
+        "outputs": [
+          {
+            "id": "jobId",
+            "valueType": "string",
+            "key": "jobId",
+            "label": "jobId",
+            "type": "hidden"
+          },
+          {
+            "id": "operation",
+            "valueType": "string",
+            "key": "operation",
+            "label": "operation",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "nodeId": "pluginOutput",
+        "name": "自定义插件输出",
+        "intro": "自定义配置外部输出，使用插件时，仅暴露自定义配置的输出",
+        "avatar": "core/workflow/template/pluginOutput",
+        "flowNodeType": "pluginOutput",
+        "showStatus": false,
+        "position": {
+          "x": 1828.1867769093249,
+          "y": -220.6210221610429
+        },
+        "version": "481",
+        "inputs": [
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "string",
+            "canEdit": true,
+            "key": "status",
+            "label": "status",
+            "description": "Status of the job (completed, active, failed, paused)",
+            "value": ["z6cyVMtrjEyL", "bwvXWUoCJiiT"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "number",
+            "canEdit": true,
+            "key": "current",
+            "label": "current",
+            "description": "Current page number",
+            "value": ["z6cyVMtrjEyL", "nnt15MWXwa79"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "number",
+            "canEdit": true,
+            "key": "total",
+            "label": "total",
+            "description": "Total number of pages",
+            "value": ["z6cyVMtrjEyL", "v4swhGTJgmch"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "object",
+            "canEdit": true,
+            "key": "data",
+            "label": "data",
+            "description": "Data returned from the job (null when it is in progress)",
+            "value": ["z6cyVMtrjEyL", "wIAJEF5JbsoH"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "object",
+            "canEdit": true,
+            "key": "partial_data",
+            "label": "partial_data",
+            "description": "",
+            "value": ["z6cyVMtrjEyL", "ci1nvM7voD5d"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "string",
+            "canEdit": true,
+            "key": "msg",
+            "label": "msg",
+            "description": "",
+            "value": ["z6cyVMtrjEyL", "iibx1wWWIuxu"]
+          }
+        ],
+        "outputs": []
+      },
+      {
+        "nodeId": "z6cyVMtrjEyL",
+        "name": "HTTP 请求",
+        "intro": "可以发出一个 HTTP 请求，实现更为复杂的操作（联网搜索、数据库查询等）",
+        "avatar": "core/workflow/template/httpRequest",
+        "flowNodeType": "httpRequest468",
+        "showStatus": true,
+        "position": {
+          "x": 1227.246811478037,
+          "y": -428.5012837358829
+        },
+        "version": "481",
+        "inputs": [
+          {
+            "key": "system_addInputParam",
+            "renderTypeList": ["addInputParam"],
+            "valueType": "dynamic",
+            "label": "",
+            "required": false,
+            "description": "core.module.input.description.HTTP Dynamic Input",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            }
+          },
+          {
+            "key": "system_httpMethod",
+            "renderTypeList": ["custom"],
+            "valueType": "string",
+            "label": "",
+            "value": "POST",
+            "required": true
+          },
+          {
+            "key": "system_httpReqUrl",
+            "renderTypeList": ["hidden"],
+            "valueType": "string",
+            "label": "",
+            "description": "core.module.input.description.Http Request Url",
+            "placeholder": "https://api.ai.com/getInventory",
+            "required": false,
+            "value": "firecrawl/crawlJob"
+          },
+          {
+            "key": "system_httpHeader",
+            "renderTypeList": ["custom"],
+            "valueType": "any",
+            "value": [],
+            "label": "",
+            "description": "core.module.input.description.Http Request Header",
+            "placeholder": "core.module.input.description.Http Request Header",
+            "required": false
+          },
+          {
+            "key": "system_httpParams",
+            "renderTypeList": ["hidden"],
+            "valueType": "any",
+            "value": [],
+            "label": "",
+            "required": false
+          },
+          {
+            "key": "system_httpJsonBody",
+            "renderTypeList": ["hidden"],
+            "valueType": "any",
+            "value": "",
+            "label": "",
+            "required": false
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "string",
+            "canEdit": true,
+            "key": "jobId",
+            "label": "jobId",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            },
+            "required": true,
+            "value": ["pluginInput", "jobId"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "string",
+            "canEdit": true,
+            "key": "operation",
+            "label": "operation",
+            "customInputConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": true
+            },
+            "required": true,
+            "value": ["pluginInput", "operation"]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "system_addOutputParam",
+            "key": "system_addOutputParam",
+            "type": "dynamic",
+            "valueType": "dynamic",
+            "label": "",
+            "customFieldConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": false
+            }
+          },
+          {
+            "id": "error",
+            "key": "error",
+            "label": "请求错误",
+            "description": "HTTP请求错误信息，成功时返回空",
+            "valueType": "object",
+            "type": "static"
+          },
+          {
+            "id": "httpRawResponse",
+            "key": "httpRawResponse",
+            "label": "原始响应",
+            "required": true,
+            "description": "HTTP请求的原始响应。只能接受字符串或JSON类型响应数据。",
+            "valueType": "any",
+            "type": "static"
+          },
+          {
+            "id": "bwvXWUoCJiiT",
+            "valueType": "string",
+            "type": "dynamic",
+            "key": "status",
+            "label": "status"
+          },
+          {
+            "id": "nnt15MWXwa79",
+            "valueType": "number",
+            "type": "dynamic",
+            "key": "current",
+            "label": "current"
+          },
+          {
+            "id": "v4swhGTJgmch",
+            "valueType": "number",
+            "type": "dynamic",
+            "key": "total",
+            "label": "total"
+          },
+          {
+            "id": "wIAJEF5JbsoH",
+            "valueType": "object",
+            "type": "dynamic",
+            "key": "data",
+            "label": "data"
+          },
+          {
+            "id": "ci1nvM7voD5d",
+            "valueType": "object",
+            "type": "dynamic",
+            "key": "partial_data",
+            "label": "partial_data"
+          },
+          {
+            "id": "iibx1wWWIuxu",
+            "valueType": "string",
+            "type": "dynamic",
+            "key": "msg",
+            "label": "msg"
+          }
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "source": "pluginInput",
+        "target": "z6cyVMtrjEyL",
+        "sourceHandle": "pluginInput-source-right",
+        "targetHandle": "z6cyVMtrjEyL-target-left"
+      },
+      {
+        "source": "z6cyVMtrjEyL",
+        "target": "pluginOutput",
+        "sourceHandle": "z6cyVMtrjEyL-source-right",
+        "targetHandle": "pluginOutput-target-left"
+      }
+    ]
+  }
+}
