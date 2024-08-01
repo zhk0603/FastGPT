@@ -13,7 +13,9 @@ export const getSafeEnv = () => {
   return {
     LOG_LEVEL: process.env.LOG_LEVEL,
     STORE_LOG_LEVEL: process.env.STORE_LOG_LEVEL,
-    NODE_ENV: process.env.NODE_ENV
+    NODE_ENV: process.env.NODE_ENV,
+    FIRECRAWL_URL: process.env.FIRECRAWL_URL,
+    FIRECRAWL_KEY: process.env.FIRECRAWL_KEY
   };
 };
 

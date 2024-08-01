@@ -1,6 +1,6 @@
 import { PluginSourceEnum } from '@fastgpt/global/core/plugin/constants';
 import { SystemPluginResponseType } from './type';
-import { FastGPTProUrl, isProduction } from '../service/common/system/constants';
+import { FastGPTProUrl, FirecrawlUrl, isProduction } from '../service/common/system/constants';
 import { GET, POST } from '@fastgpt/service/common/api/plusRequest';
 import { SystemPluginTemplateItemType } from '@fastgpt/global/core/workflow/type';
 import { cloneDeep } from 'lodash';
@@ -22,13 +22,18 @@ const packagePluginList = [
   'duckduckgo/search',
   'duckduckgo/searchImg',
   'duckduckgo/searchNews',
-  'duckduckgo/searchVideo',
-  'firecrawl',
-  'firecrawl/scrape',
-  'firecrawl/search',
-  'firecrawl/crawl',
-  'firecrawl/crawlJob'
+  'duckduckgo/searchVideo'
 ];
+console.log('FirecrawlUrl', FirecrawlUrl);
+if (FirecrawlUrl) {
+  packagePluginList.push(
+    'firecrawl',
+    'firecrawl/scrape',
+    'firecrawl/search',
+    'firecrawl/crawl',
+    'firecrawl/crawlJob'
+  );
+}
 
 const list = [...staticPluginList, ...packagePluginList];
 

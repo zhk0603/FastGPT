@@ -325,7 +325,7 @@
             "key": "system_httpJsonBody",
             "renderTypeList": ["hidden"],
             "valueType": "any",
-            "value": "{\r\n  \"url\": \"{{url}}\",\r\n  \"pageOptions\": {\r\n    \"headers\": \"{{headers}}\",\r\n    \"includeHtml\": {{includeHtml}},\r\n    \"includeRawHtml\": {{includeRawHtml}},\r\n    \"onlyIncludeTags\": {{onlyIncludeTags}},\r\n    \"onlyMainContent\": {{onlyMainContent}},\r\n    \"removeTags\": {{removeTags}},\r\n    \"replaceAllPathsWithAbsolutePaths\": {{replaceAllPathsWithAbsolutePaths}},\r\n    \"screenshot\": {{screenshot}},\r\n    \"waitFor\": {{waitFor}}\r\n  }\r\n}",
+            "value": "{\r\n  \"url\": \"{{url}}\",\r\n  \"pageOptions\": {\r\n    \"headers\": \"{{headers}}\",\r\n    \"includeHtml\": {{includeHtml}},\r\n    \"includeRawHtml\": {{includeRawHtml}},\r\n    \"onlyIncludeTags\": \"{{onlyIncludeTags}}\",\r\n    \"onlyMainContent\": {{onlyMainContent}},\r\n    \"removeTags\": \"{{removeTags}}\",\r\n    \"replaceAllPathsWithAbsolutePaths\": {{replaceAllPathsWithAbsolutePaths}},\r\n    \"screenshot\": {{screenshot}},\r\n    \"waitFor\": {{waitFor}}\r\n  }\r\n}",
             "label": "",
             "required": false
           },
