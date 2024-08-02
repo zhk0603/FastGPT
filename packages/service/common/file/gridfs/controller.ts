@@ -44,6 +44,7 @@ export async function uploadFile({
   if (!path) return Promise.reject(`filePath is empty`);
   if (!filename) return Promise.reject(`filename is empty`);
 
+  addLog.debug('path >> ' + path);
   const stats = await fsp.stat(path);
   if (!stats.isFile()) return Promise.reject(`${path} is not a file`);
 

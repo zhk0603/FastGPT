@@ -1,3 +1,6 @@
+import { FirecrawlKey, FirecrawlUrl } from '@fastgpt/service/common/system/constants';
+import FirecrawlApp from '@mendable/firecrawl-js';
+
 export type PageOptions = {
   headers: any;
   includeHtml: boolean;
@@ -41,6 +44,11 @@ export type ExtractorOptions = {
   extractionPrompt: string;
   extractionSchema: any;
 };
+
+export const firecrawlApp = new FirecrawlApp({
+  apiUrl: FirecrawlUrl,
+  apiKey: FirecrawlKey || 'any'
+});
 
 function strToArr(str: any) {
   if (str && typeof str === 'string') {

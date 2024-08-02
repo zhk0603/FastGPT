@@ -1,8 +1,7 @@
 import { delay } from '@fastgpt/global/common/system/utils';
-import { FirecrawlUrl, FirecrawlKey } from '@fastgpt/service/common/system/constants';
 import { addLog } from '@fastgpt/service/common/system/log';
-import FirecrawlApp from '@mendable/firecrawl-js';
 import axios from 'axios';
+import { firecrawlApp } from '../utils';
 
 type Props = {
   jobId: string;
@@ -19,14 +18,11 @@ type Response = Promise<{
   partial_data?: any;
 }>;
 
-// Initialize the FirecrawlApp with your API key
-const app = new FirecrawlApp({ apiUrl: FirecrawlUrl, apiKey: FirecrawlKey || 'any' });
-
 const main = async (props: Props, retry = 3): Response => {
   const { jobId, operation } = props;
   try {
     if (operation === 'getdata') {
-      const result = (await app.checkCrawlStatus(jobId)) as any;
+      const result = (await firecrawlApp.checkCrawlStatus(jobId)) as any;
       return {
         status: result.status,
         current: result.current,
