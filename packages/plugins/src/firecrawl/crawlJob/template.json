@@ -20,8 +20,8 @@
         "flowNodeType": "pluginInput",
         "showStatus": false,
         "position": {
-          "x": 617.540351167888,
-          "y": -218.7033672907662
+          "x": 574.2176536425479,
+          "y": -180.12619251993934
         },
         "version": "481",
         "inputs": [
@@ -32,9 +32,9 @@
             "canEdit": true,
             "key": "jobId",
             "label": "jobId",
-            "description": "The crawl job id.",
+            "description": "ID of the crawl job",
             "required": true,
-            "toolDescription": "The crawl job id."
+            "toolDescription": "ID of the crawl job"
           },
           {
             "renderTypeList": ["reference"],
@@ -73,8 +73,8 @@
         "flowNodeType": "pluginOutput",
         "showStatus": false,
         "position": {
-          "x": 1828.1867769093249,
-          "y": -220.6210221610429
+          "x": 1788.2032456086527,
+          "y": -153.0092565966552
         },
         "version": "481",
         "inputs": [
@@ -85,7 +85,7 @@
             "key": "status",
             "label": "status",
             "description": "Status of the job (completed, active, failed, paused)",
-            "value": ["z6cyVMtrjEyL", "bwvXWUoCJiiT"]
+            "value": ["i2R0OvvJDBMR", "f4n9CbBor2Xt"]
           },
           {
             "renderTypeList": ["reference"],
@@ -94,7 +94,7 @@
             "key": "current",
             "label": "current",
             "description": "Current page number",
-            "value": ["z6cyVMtrjEyL", "nnt15MWXwa79"]
+            "value": ["i2R0OvvJDBMR", "prjplrlnGY3r"]
           },
           {
             "renderTypeList": ["reference"],
@@ -103,7 +103,7 @@
             "key": "total",
             "label": "total",
             "description": "Total number of pages",
-            "value": ["z6cyVMtrjEyL", "v4swhGTJgmch"]
+            "value": ["i2R0OvvJDBMR", "eb0QyY9Tq2hl"]
           },
           {
             "renderTypeList": ["reference"],
@@ -112,7 +112,7 @@
             "key": "data",
             "label": "data",
             "description": "Data returned from the job (null when it is in progress)",
-            "value": ["z6cyVMtrjEyL", "wIAJEF5JbsoH"]
+            "value": ["i2R0OvvJDBMR", "bkoMMDpMupNR"]
           },
           {
             "renderTypeList": ["reference"],
@@ -120,8 +120,8 @@
             "canEdit": true,
             "key": "partial_data",
             "label": "partial_data",
-            "description": "",
-            "value": ["z6cyVMtrjEyL", "ci1nvM7voD5d"]
+            "description": "Partial documents returned as it is being crawled (streaming).",
+            "value": ["i2R0OvvJDBMR", "zMjfZoHHwspp"]
           },
           {
             "renderTypeList": ["reference"],
@@ -130,21 +130,21 @@
             "key": "msg",
             "label": "msg",
             "description": "",
-            "value": ["z6cyVMtrjEyL", "iibx1wWWIuxu"]
+            "value": ["i2R0OvvJDBMR", "xaWeLbs5Jdet"]
           }
         ],
         "outputs": []
       },
       {
-        "nodeId": "z6cyVMtrjEyL",
+        "nodeId": "i2R0OvvJDBMR",
         "name": "HTTP 请求",
         "intro": "可以发出一个 HTTP 请求，实现更为复杂的操作（联网搜索、数据库查询等）",
         "avatar": "core/workflow/template/httpRequest",
         "flowNodeType": "httpRequest468",
         "showStatus": true,
         "position": {
-          "x": 1227.246811478037,
-          "y": -428.5012837358829
+          "x": 1212.043389595066,
+          "y": -409.6916906815707
         },
         "version": "481",
         "inputs": [
@@ -216,7 +216,7 @@
             "key": "system_httpJsonBody",
             "renderTypeList": ["hidden"],
             "valueType": "any",
-            "value": "",
+            "value": "{\r\n  \"jobId\": \"{{jobId}}\",\r\n  \"operation\": \"{{operation}}\"\r\n}",
             "label": "",
             "required": false
           },
@@ -325,42 +325,42 @@
             "type": "static"
           },
           {
-            "id": "bwvXWUoCJiiT",
+            "id": "f4n9CbBor2Xt",
             "valueType": "string",
             "type": "dynamic",
             "key": "status",
             "label": "status"
           },
           {
-            "id": "nnt15MWXwa79",
+            "id": "prjplrlnGY3r",
             "valueType": "number",
             "type": "dynamic",
             "key": "current",
             "label": "current"
           },
           {
-            "id": "v4swhGTJgmch",
+            "id": "eb0QyY9Tq2hl",
             "valueType": "number",
             "type": "dynamic",
             "key": "total",
             "label": "total"
           },
           {
-            "id": "wIAJEF5JbsoH",
+            "id": "bkoMMDpMupNR",
             "valueType": "object",
             "type": "dynamic",
             "key": "data",
             "label": "data"
           },
           {
-            "id": "ci1nvM7voD5d",
+            "id": "zMjfZoHHwspp",
             "valueType": "object",
             "type": "dynamic",
             "key": "partial_data",
             "label": "partial_data"
           },
           {
-            "id": "iibx1wWWIuxu",
+            "id": "xaWeLbs5Jdet",
             "valueType": "string",
             "type": "dynamic",
             "key": "msg",
@@ -372,14 +372,14 @@
     "edges": [
       {
         "source": "pluginInput",
-        "target": "z6cyVMtrjEyL",
+        "target": "i2R0OvvJDBMR",
         "sourceHandle": "pluginInput-source-right",
-        "targetHandle": "z6cyVMtrjEyL-target-left"
+        "targetHandle": "i2R0OvvJDBMR-target-left"
       },
       {
-        "source": "z6cyVMtrjEyL",
+        "source": "i2R0OvvJDBMR",
         "target": "pluginOutput",
-        "sourceHandle": "z6cyVMtrjEyL-source-right",
+        "sourceHandle": "i2R0OvvJDBMR-source-right",
         "targetHandle": "pluginOutput-target-left"
       }
     ]

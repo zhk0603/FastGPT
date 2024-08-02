@@ -131,10 +131,10 @@
             "canEdit": true,
             "key": "headers",
             "label": "headers",
-            "description": "Headers to send with the request. Can be used to send cookies, user-agent, etc.",
+            "description": "Headers to send with the request. Can be used to send cookies, user-agent, etc. default: {}",
             "required": false,
             "defaultValue": "{}",
-            "toolDescription": "Headers to send with the request. Can be used to send cookies, user-agent, etc."
+            "toolDescription": "Headers to send with the request. Can be used to send cookies, user-agent, etc. default: {}"
           }
         ],
         "outputs": [

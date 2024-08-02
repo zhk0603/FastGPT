@@ -2,23 +2,11 @@ import { delay } from '@fastgpt/global/common/system/utils';
 import { FirecrawlKey, FirecrawlUrl } from '@fastgpt/service/common/system/constants';
 import { addLog } from '@fastgpt/service/common/system/log';
 import FirecrawlApp from '@mendable/firecrawl-js';
-
-type PageOptions = {
-  includeHtml: boolean;
-  includeRawHtml: boolean;
-  onlyMainContent: boolean;
-  fetchPageContent: boolean;
-};
-
-type SearchOptions = {
-  limit: number;
-  lang: string;
-  country: string;
-};
+import { SearchOptions, SearchPageOptions } from '../utils';
 
 type Props = {
   query: string;
-  pageOptions: PageOptions;
+  pageOptions: SearchPageOptions;
   searchOptions: SearchOptions;
 };
 

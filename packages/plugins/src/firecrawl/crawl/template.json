@@ -20,8 +20,8 @@
         "flowNodeType": "pluginInput",
         "showStatus": false,
         "position": {
-          "x": 616.4226348688949,
-          "y": -165.05298493910115
+          "x": 686.2312664521887,
+          "y": 414.18492618395294
         },
         "version": "481",
         "inputs": [
@@ -98,9 +98,9 @@
             "canEdit": true,
             "key": "mode",
             "label": "mode",
-            "description": "The crawling mode to use. Fast mode crawls 4x faster websites without sitemap, but may not be as accurate and shouldn't be used in heavy js-rendered websites. Available options: default, fast ",
+            "description": "The crawling mode to use. Fast mode crawls 4x faster websites without sitemap, but may not be as accurate and shouldn't be used in heavy js-rendered websites. Available options: default, fast. default value: default",
             "required": false,
-            "toolDescription": "The crawling mode to use. Fast mode crawls 4x faster websites without sitemap, but may not be as accurate and shouldn't be used in heavy js-rendered websites. Available options: default, fast "
+            "toolDescription": "The crawling mode to use. Fast mode crawls 4x faster websites without sitemap, but may not be as accurate and shouldn't be used in heavy js-rendered websites. Available options: default, fast. default value: default"
           },
           {
             "renderTypeList": ["reference"],
@@ -397,8 +397,8 @@
         "flowNodeType": "pluginOutput",
         "showStatus": false,
         "position": {
-          "x": 2262.0810559832075,
-          "y": 77.39365831608302
+          "x": 2177.2009282586255,
+          "y": 843.3357632593376
         },
         "version": "481",
         "inputs": [
@@ -410,6 +410,15 @@
             "label": "jobId",
             "description": "The crawl job id.",
             "value": ["vZVVn7R2IL9m", "wRRHFzxBbZfR"]
+          },
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "string",
+            "canEdit": true,
+            "key": "msg",
+            "label": "msg",
+            "description": "",
+            "value": ["vZVVn7R2IL9m", "i4n1spt5lfWH"]
           }
         ],
         "outputs": []
@@ -422,8 +431,8 @@
         "flowNodeType": "httpRequest468",
         "showStatus": true,
         "position": {
-          "x": 1529.258733511062,
-          "y": -145.64027325265113
+          "x": 1499.7733841527258,
+          "y": -249.24993390994211
         },
         "version": "481",
         "inputs": [
@@ -495,7 +504,7 @@
             "key": "system_httpJsonBody",
             "renderTypeList": ["hidden"],
             "valueType": "any",
-            "value": "",
+            "value": "{\r\n  \"url\": \"{{url}}\",\r\n  \"crawlerOptions\": {\r\n    \"includes\": \"{{includes}}\",\r\n    \"excludes\": \"{{excludes}}\",\r\n    \"generateImgAltText\": {{generateImgAltText}},\r\n    \"returnOnlyUrls\": {{returnOnlyUrls}},\r\n    \"maxDepth\": {{maxDepth}},\r\n    \"mode\": \"{{mode}}\",\r\n    \"ignoreSitemap\": {{ignoreSitemap}},\r\n    \"limit\": {{limit}},\r\n    \"allowBackwardCrawling\": {{allowBackwardCrawling}},\r\n    \"allowExternalContentLinks\": {{allowExternalContentLinks}}\r\n  },\r\n  \"pageOptions\": {\r\n    \"headers\": \"{{headers}}\",\r\n    \"includeHtml\": {{includeHtml}},\r\n    \"includeRawHtml\": {{includeRawHtml}},\r\n    \"onlyIncludeTags\": \"{{onlyIncludeTags}}\",\r\n    \"onlyMainContent\": {{onlyMainContent}},\r\n    \"removeTags\": \"{{removeTags}}\",\r\n    \"replaceAllPathsWithAbsolutePaths\": {{replaceAllPathsWithAbsolutePaths}},\r\n    \"screenshot\": {{screenshot}},\r\n    \"waitFor\": {{waitFor}}\r\n  }\r\n}",
             "label": "",
             "required": false
           },
@@ -1131,6 +1140,13 @@
             "type": "dynamic",
             "key": "jobId",
             "label": "jobId"
+          },
+          {
+            "id": "i4n1spt5lfWH",
+            "valueType": "string",
+            "type": "dynamic",
+            "key": "msg",
+            "label": "msg"
           }
         ]
       }
