@@ -60,7 +60,8 @@ export default async function handler(
             source: 1,
             appName: 1,
             totalPoints: 1,
-            list: 1
+            list: 1,
+            time: 1
           }
         }
       ]),
