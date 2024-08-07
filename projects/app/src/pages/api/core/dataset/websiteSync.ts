@@ -6,13 +6,14 @@ import { DatasetItemType } from '@fastgpt/global/core/dataset/type';
 import { ApiRequestProps } from '@fastgpt/service/type/next';
 import { CommonErrEnum } from '@fastgpt/global/common/error/code/common';
 import { firecrawlApp } from '@fastgpt/plugins/src/firecrawl/utils';
+import { MongoDataset } from '@fastgpt/service/core/dataset/schema';
 
 type Query = {
   billId: string;
   datasetId: string;
 };
 
-async function handler(req: ApiRequestProps<Query>): Promise<void> {
+async function handler(req: ApiRequestProps<Query>): Promise<{ jobId: string }> {
   const { billId, datasetId } = req.body;
 
   if (!datasetId || !billId) {
@@ -37,11 +38,22 @@ async function handler(req: ApiRequestProps<Query>): Promise<void> {
     {
       pageOptions: {
         onlyIncludeTags: dataset.websiteConfig?.selector || undefined,
-        waitFor: 30000
+        waitFor: 2000
       }
     },
     false
   );
+
+  MongoDataset.findByIdAndUpdate(dataset._id, {
+    websiteConfig: {
+      ...dataset.websiteConfig,
+      jobId: crawlResult.jobId
+    }
+  });
+
+  return {
+    jobId: crawlResult.jobId
+  };
 }
 
 export default NextAPI(handler);
