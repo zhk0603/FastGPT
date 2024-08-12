@@ -26,7 +26,7 @@ const packagePluginList = [
   'duckduckgo/searchNews',
   'duckduckgo/searchVideo'
 ];
-console.log('FirecrawlUrl', FirecrawlUrl);
+
 if (FirecrawlUrl) {
   packagePluginList.push(
     'firecrawl',
