@@ -44,10 +44,10 @@ async function handler(req: ApiRequestProps<Query>): Promise<{ jobId: string }> 
     false
   );
 
-  MongoDataset.findByIdAndUpdate(dataset._id, {
-    websiteConfig: {
-      ...dataset.websiteConfig,
-      jobId: crawlResult.jobId
+  await MongoDataset.findByIdAndUpdate(dataset._id, {
+    jobInfo: {
+      jobId: crawlResult.jobId,
+      status: 'active'
     }
   });
 

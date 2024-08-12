@@ -30,9 +30,12 @@ export type DatasetSchemaType = {
   websiteConfig?: {
     url: string;
     selector: string;
-    jobId: string;
   };
   externalReadUrl?: string;
+  jobInfo?: {
+    jobId: string;
+    status: string;
+  };
 } & PermissionSchemaType;
 // } & PermissionSchemaType;
 
