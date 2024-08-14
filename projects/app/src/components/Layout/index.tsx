@@ -21,6 +21,7 @@ const ImportantInform = dynamic(() => import('@/components/support/user/inform/I
 const pcUnShowLayoutRoute: Record<string, boolean> = {
   '/': true,
   '/login': true,
+  '/auth-redirect': true,
   '/login/provider': true,
   '/login/fastlogin': true,
   '/chat/share': true,
@@ -33,6 +34,7 @@ const pcUnShowLayoutRoute: Record<string, boolean> = {
 const phoneUnShowLayoutRoute: Record<string, boolean> = {
   '/': true,
   '/login': true,
+  '/auth-redirect': true,
   '/login/provider': true,
   '/login/fastlogin': true,
   '/chat/share': true,

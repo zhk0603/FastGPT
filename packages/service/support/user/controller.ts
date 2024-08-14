@@ -1,4 +1,4 @@
-import { UserType } from '@fastgpt/global/support/user/type';
+import { UserType, UniUserType } from '@fastgpt/global/support/user/type';
 import { MongoUser } from './schema';
 import { getTmbInfoByTmbId, getUserDefaultTeam } from './team/controller';
 import { ERROR_ENUM } from '@fastgpt/global/common/error/errorCode';
@@ -49,4 +49,53 @@ export async function getUserDetail({
     notificationAccount: tmb.notificationAccount,
     permission: tmb.permission
   };
+}
+
+interface DataPager<T> {
+  records: T[];
+  total: number;
+}
+
+export async function getUserLists(pageIndex: number, pageSize: number)
+: Promise<DataPager<UniUserType>> {
+  try {
+    const skip = (pageIndex - 1) * pageSize;
+
+    const users = formatUserData(await MongoUser.find()
+      .select('+password')
+      .skip(skip)
+      .limit(pageSize)
+      .exec());
+    const totalCount = await MongoUser.countDocuments();
+
+    return {
+      records: users,
+      total: totalCount
+    };
+  } catch (error) {
+    console.error('分页查询用户出错:', error, pageIndex, pageSize);
+    // 返回空结果集
+    return {
+      records: [],
+      total: 0
+    };
+  }
+}
+
+function formatUserData(users: any[]): UniUserType[] {
+  console.log("users", users)
+  return users.map(user => {
+    const formattedUser: UniUserType = {
+      userId: user._id.toString(),
+      username: user.username,
+      password: user.password,
+    };
+
+    if (user.avatar) formattedUser.avatar = user.avatar;
+    if (user.status) formattedUser.status = user.status;
+    if (user.promotionRate !== undefined) formattedUser.promotionRate = user.promotionRate;
+    if (user.timezone) formattedUser.timezone = user.timezone;
+    if (user.createTime) formattedUser.createTime = new Date(user.createTime);
+    return formattedUser;
+  });
 }
