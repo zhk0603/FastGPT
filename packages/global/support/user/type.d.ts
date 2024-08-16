@@ -35,7 +35,8 @@ export type UserType = {
 
 export type UniUserType = {
   userId: string; 
-  username: string;
+  userName: string;
+  loginName: string;
   password: string;
   avatar?: string;
   status?: string;

@@ -32,9 +32,10 @@ async function getSysInfo(
 
   switch (req.body.syncType) {
     case 100001:
+      return getUserLists(pageIndex, pageSize);
     default:
       // 目前只有查找用户一种情况
-      return getUserLists(pageIndex, pageSize);
+      return {};
   }
 }
 
