@@ -85,6 +85,18 @@ const DatasetSchema = new Schema({
       }
     }
   },
+  jobInfo: {
+    type: {
+      jobId: {
+        type: String,
+        required: true
+      },
+      status: {
+        type: String,
+        default: 'active'
+      }
+    }
+  },
   externalReadUrl: {
     type: String
   },

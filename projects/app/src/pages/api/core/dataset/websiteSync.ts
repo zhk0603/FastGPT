@@ -36,6 +36,9 @@ async function handler(req: ApiRequestProps<Query>): Promise<{ jobId: string }> 
   const crawlResult = await firecrawlApp.crawlUrl(
     url,
     {
+      crawlerOptions: {
+        ignoreSitemap: true
+      },
       pageOptions: {
         onlyIncludeTags: dataset.websiteConfig?.selector || undefined,
         waitFor: 2000

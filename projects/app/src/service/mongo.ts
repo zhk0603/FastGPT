@@ -12,6 +12,7 @@ import { startMongoWatch } from './common/system/volumnMongoWatch';
 import { startTrainingQueue } from './core/dataset/training/utils';
 import { systemStartCb } from '@fastgpt/service/common/system/tools';
 import { addLog } from '@fastgpt/service/common/system/log';
+import { initMq } from './common/system/mq';
 
 /**
  * This function is equivalent to the entry to the service
@@ -39,6 +40,9 @@ export function connectToDatabase() {
 
       // start queue
       startTrainingQueue(true);
+
+      // init mq
+      initMq();
     } catch (error) {
       addLog.error('init error', error);
       exit(1);
