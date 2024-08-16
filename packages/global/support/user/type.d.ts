@@ -32,3 +32,14 @@ export type UserType = {
   notificationAccount?: string;
   permission: TeamPermission;
 };
+
+export type UniUserType = {
+  userId: string; 
+  username: string;
+  password: string;
+  avatar?: string;
+  status?: string;
+  promotionRate?: number;
+  timezone?: string;
+  createTime?: Date;
+};
