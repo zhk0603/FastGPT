@@ -5,7 +5,7 @@ import { loginByToken, getSdkPublicKey } from '@/web/support/uni/api';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 
-const API_BASE_URL = 'http://192.168.0.58:9902';
+const API_BASE_URL = 'https://szctr.topevery.com/uni.portal.wapi';
 
 const AuthRedirect = () => {
   const router = useRouter();
