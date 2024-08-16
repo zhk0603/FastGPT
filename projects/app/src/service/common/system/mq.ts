@@ -38,7 +38,7 @@ export function initMq() {
   }
 }
 
-async function processJob(job: Job, done) {
+async function processJob(job: Job, done: any) {
   addLog.debug('job:', job);
   done();
 }
