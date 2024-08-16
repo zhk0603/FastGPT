@@ -87,7 +87,8 @@ function formatUserData(users: any[]): UniUserType[] {
   return users.map(user => {
     const formattedUser: UniUserType = {
       userId: user._id.toString(),
-      username: user.username,
+      userName: user.username,
+      loginName: user.username,
       password: user.password,
     };
 
