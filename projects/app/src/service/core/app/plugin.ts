@@ -18,7 +18,8 @@ export const getSystemPlugins = async (refresh = false) => {
       global.systemPlugins = [];
     }
 
-    global.systemPlugins = FastGPTProUrl ? await getCommercialPlugins() : getCommunityPlugins();
+    // global.systemPlugins = FastGPTProUrl ? await getCommercialPlugins() : getCommunityPlugins();
+    global.systemPlugins = getCommunityPlugins();
 
     addLog.info(`Load system plugin successfully: ${global.systemPlugins.length}`);
 
@@ -59,7 +60,8 @@ export const getSystemPluginCb = async () => {
 
   try {
     global.systemPluginCb = {};
-    global.systemPluginCb = FastGPTProUrl ? await getCommercialCb() : await getCommunityCb();
+    // global.systemPluginCb = FastGPTProUrl ? await getCommercialCb() : await getCommunityCb();
+    global.systemPluginCb = await getCommunityCb();
     return global.systemPluginCb;
   } catch (error) {
     //@ts-ignore
