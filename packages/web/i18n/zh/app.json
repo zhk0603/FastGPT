@@ -18,6 +18,9 @@
   "confirm_delete_folder_tip": "确认删除该文件夹？将会删除它下面所有应用及对应的聊天记录，请确认！",
   "copy_one_app": "创建副本",
   "create_copy_success": "创建副本成功",
+  "create_empty_app": "创建空白应用",
+  "create_empty_plugin": "创建空白插件",
+  "create_empty_workflow": "创建空白工作流",
   "cron": {
     "every_day": "每天执行",
     "every_month": "每月执行",
@@ -84,6 +87,23 @@
   "template": {
     "simple_robot": "简易机器人"
   },
+  "templateMarket": {
+    "Search_template": "搜索模板",
+    "Template_market": "模板市场",
+    "Use": "使用",
+    "no_intro": "还没有介绍～",
+    "templateTags": {
+      "Image_generation": "图片生成",
+      "Office_services": "办公服务",
+      "Recommendation": "推荐",
+      "Roleplay": "角色扮演",
+      "Web_search": "联网搜索",
+      "Writing": "文本创作"
+    }
+  },
+  "template_market": "模板市场",
+  "template_market_description": "在模板市场探索更多玩法，配置教程与使用引导，带你理解并上手各种应用",
+  "template_market_empty_data": "找不到合适的模板",
   "time_zone": "时区",
   "tool_input_param_tip": "该插件正常运行需要配置相关信息",
   "transition_to_workflow": "转成工作流",
@@ -91,20 +111,26 @@
   "transition_to_workflow_create_new_tip": "转化成工作流后，将无法转化回简易模式，请确认！",
   "type": {
     "All": "全部",
-    "Create http plugin tip": "通过 OpenAPI Schema 批量创建插件，兼容 GPTs 格式。",
+    "Create http plugin tip": "通过 OpenAPI Schema 批量创建插件，兼容 GPTs 格式",
     "Create one plugin tip": "可以自定义输入和输出的工作流，通常用于封装重复使用的工作流",
     "Create plugin bot": "创建插件",
     "Create simple bot": "创建简易应用",
     "Create simple bot tip": "通过填表单形式，创建简单的 AI 应用，适合新手",
+    "Create template tip": "在模板市场探索更多玩法，带你理解并上手各种应用",
     "Create workflow bot": "创建工作流",
     "Create workflow tip": "通过低代码的方式，构建逻辑复杂的多轮对话 AI 应用，推荐高级玩家使用",
     "Http plugin": "HTTP 插件",
     "Plugin": "插件",
     "Simple bot": "简易应用",
+    "Template": "通过模板创建",
     "Workflow bot": "工作流"
   },
   "upload_file_max_amount": "最大文件数量",
   "upload_file_max_amount_tip": "1.单次上传文件的最大数量。\n2.对话窗口记忆的最大文件数量：每轮对话会自动获取历史中的文件，超出范围的文件会被遗忘。",
+  "variable": {
+    "select type_desc": "可以定义一个无需用户填写的全局变量。\n该变量的值可以来自于 API 接口，分享链接的 Query 或通过【变量更新】模块进行赋值。",
+    "textarea_type_desc": "允许用户最多输入4000字的对话框。"
+  },
   "version": {
     "Revert success": "回滚成功"
   },
@@ -121,14 +147,20 @@
   "workflow": {
     "Input guide": "填写说明",
     "file_url": "文档链接",
+    "option1": "选项 1",
+    "option2": "选项 2",
     "read_files": "文档解析",
     "read_files_result": "文档解析结果",
     "read_files_result_desc": "文档原文，由文件名和文档内容组成，多个文件之间通过横线隔开。",
     "read_files_tip": "解析对话中所有上传的文档，并返回对应文档内容",
+    "select_description": "说明文字",
+    "select_result": "选择的结果",
     "template": {
       "communication": "通信"
     },
     "user_file_input": "文件链接",
-    "user_file_input_desc": "用户上传的文档和图片链接"
+    "user_file_input_desc": "用户上传的文档和图片链接",
+    "user_select": "用户选择",
+    "user_select_tip": "该模块可配置多个选项，以供对话时选择。不同选项可导向不同工作流支线"
   }
 }

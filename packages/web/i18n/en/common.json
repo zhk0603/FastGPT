@@ -271,6 +271,7 @@
     }
   },
   "confirm_choice": "Confirm selection",
+  "contribute_app_template": "Contribution template",
   "core": {
     "Chat": "Chat",
     "Max Token": "Max token per data",
@@ -483,8 +484,10 @@
       },
       "logs": {
         "api": "API call",
+        "feishu": "Lark",
         "online": "Online use",
         "share": "External link call",
+        "team": "Team chat",
         "test": "Test"
       },
       "markdown": {
@@ -524,7 +527,8 @@
         "module tokens": "total tokens",
         "plugin output": "Plugin output value",
         "search using reRank": "Result rearrangement",
-        "text output": "text output"
+        "text output": "text output",
+        "user_select_result": "User select result"
       },
       "retry": "Regenerate",
       "tts": {
@@ -596,8 +600,7 @@
             "success": "Start syncing"
           }
         },
-        "training": {
-        }
+        "training": {}
       },
       "data": {
         "Auxiliary Data": "Auxiliary data",
@@ -758,6 +761,7 @@
     },
     "module": {
       "Add question type": "Add question type",
+      "Add_option": "Add option",
       "Can not connect self": "Cannot connect to self",
       "Confirm Delete Node": "Confirm delete node?",
       "Data Type": "Data type",
@@ -768,6 +772,7 @@
       "Default Value": "Default value",
       "Default value": "Default value",
       "Default value placeholder": "If not filled, the default return is an empty string",
+      "Diagram": "Diagram",
       "Edit intro": "Edit description",
       "Field Description": "Field description",
       "Field Name": "Field name",
@@ -945,7 +950,9 @@
         "OnRevert version confirm": "Confirm to revert to this version? It will save the configuration of the version being edited and create a new published version for the reverted version.",
         "histories": "Publishing records"
       },
+      "run_test": "Test",
       "template": {
+        "Interactive": "Interactive",
         "Multimodal": "Multimodal",
         "Search": "Search"
       },
@@ -1057,6 +1064,7 @@
   "no_data": "No data",
   "no_laf_env": "The system is not configured with Laf environment",
   "not_yet_introduced": "No introduction yet",
+  "option": "Option",
   "pay": {
     "amount": "Amount",
     "balance": "Account balance",
@@ -1261,7 +1269,9 @@
         "Sub plan": "Subscription plan",
         "Sub plan tip": "Free use of {{title}} or upgrade to a higher plan",
         "Team plan and usage": "Plan and usage",
+        "web_site_sync": "Website sync",
         "Training weight": "Training priority: {{weight}}",
+        "rerank": "Rerank",
         "Update extra ai points": "Extra AI points",
         "Update extra dataset size": "Extra storage",
         "Upgrade plan": "Upgrade plan",
@@ -1431,5 +1441,6 @@
     },
     "type": "type"
   },
-  "verification": "verify"
+  "verification": "verify",
+  "xx_search_result": "{{key}} Search results"
 }
