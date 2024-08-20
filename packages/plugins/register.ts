@@ -63,7 +63,7 @@ export const getCommunityPlugins = () => {
 export const getSystemPluginTemplates = () => {
   const oldPlugins = global.communityPlugins ?? [];
   console.log(oldPlugins, global.systemPlugins);
-  return [...oldPlugins, ...cloneDeep(global.systemPlugins)];
+  return [...oldPlugins, ...cloneDeep(global.systemPlugins || [])];
 };
 
 export const getCommunityCb = async () => {

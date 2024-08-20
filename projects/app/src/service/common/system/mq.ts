@@ -5,6 +5,7 @@ import { Queue as BullQueue, Job } from 'bull';
 import { rawText2Chunks } from '@fastgpt/service/core/dataset/read';
 import {
   DatasetCollectionTypeEnum,
+  DatasetStatusEnum,
   TrainingModeEnum
 } from '@fastgpt/global/core/dataset/constants';
 import { mongoSessionRun } from '@fastgpt/service/common/mongo/sessionRun';
@@ -53,13 +54,26 @@ export function initMq() {
 }
 
 async function processJob(job: Job, done: any) {
-  const jobId = job.data.jobId;
+  const { jobId, status } = job.data;
 
   addLog.debug('processJob:', jobId);
 
   const dataset = await MongoDataset.findOne({ 'jobInfo.jobId': jobId });
   if (!dataset) {
     addLog.warn('jobId 没有关联的数据集 ', jobId);
+    done();
+    return;
+  }
+
+  if (status != 'active') {
+    await MongoDataset.findByIdAndUpdate(dataset._id, {
+      status: DatasetStatusEnum.active,
+      jobInfo: {
+        jobId,
+        status
+      }
+    });
+
     done();
     return;
   }
@@ -89,7 +103,7 @@ async function processJob(job: Job, done: any) {
       tmbId: dataset.tmbId,
       datasetId: dataset._id,
       type: DatasetCollectionTypeEnum.link,
-      name: sourceURL,
+      name: title,
       rawLink: sourceURL,
 
       // metadata: {
