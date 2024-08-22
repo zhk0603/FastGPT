@@ -1,7 +1,6 @@
 import { addLog } from '@fastgpt/service/common/system/log';
 import { MongoDataset } from '@fastgpt/service/core/dataset/schema';
-import Queue from 'bull';
-import { Queue as BullQueue, Job } from 'bull';
+import { Queue, Job, Worker } from 'bullmq';
 import { rawText2Chunks } from '@fastgpt/service/core/dataset/read';
 import {
   DatasetCollectionTypeEnum,
@@ -16,9 +15,38 @@ import { UsageSourceEnum } from '@fastgpt/global/support/wallet/usage/constants'
 import { getLLMModel, getVectorModel } from '@fastgpt/service/core/ai/model';
 import { pushDataListToTrainingQueue } from '@fastgpt/service/core/dataset/training/controller';
 import { Prompt_AgentQA } from '@fastgpt/global/core/ai/prompt/agent';
+import IORedis from 'ioredis';
+import { v4 as uuidv4 } from 'uuid';
+import systemMonitor from './system-monitor';
 
-let datasetQueue: BullQueue;
+let datasetQueue: Queue;
+let redisConnection: IORedis;
 let isProcessorRegistered = false;
+
+let isShuttingDown = false;
+
+process.on('SIGINT', () => {
+  addLog.info('Received SIGINT. Shutting down gracefully...');
+  isShuttingDown = true;
+});
+
+const queueName = 'web-datasets';
+const gotJobInterval = Number(process.env.CONNECTION_MONITOR_INTERVAL) || 20;
+const connectionMonitorInterval = Number(process.env.CONNECTION_MONITOR_INTERVAL) || 10;
+const jobLockExtendInterval = Number(process.env.JOB_LOCK_EXTEND_INTERVAL) || 15000;
+const jobLockExtensionTime = Number(process.env.JOB_LOCK_EXTENSION_TIME) || 60000;
+const cantAcceptConnectionInterval = Number(process.env.CANT_ACCEPT_CONNECTION_INTERVAL) || 2000;
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function getRedisConnection() {
+  if (!redisConnection) {
+    redisConnection = new IORedis(process.env.REDIS_URL as string, {
+      maxRetriesPerRequest: null
+    });
+  }
+
+  return redisConnection;
+}
 
 export function getDatasetQueue() {
   if (!datasetQueue) {
@@ -26,34 +54,33 @@ export function getDatasetQueue() {
       throw new Error('未配置Redis链接。');
     }
 
-    datasetQueue = new Queue('web-datasets', process.env.REDIS_URL as string, {
-      settings: {
-        lockDuration: 1 * 60 * 1000, // 1 minute in milliseconds,
-        lockRenewTime: 15 * 1000, // 15 seconds in milliseconds
-        stalledInterval: 30 * 1000,
-        maxStalledCount: 10
-      },
-      defaultJobOptions: {
-        attempts: 5
-      }
-    });
+    datasetQueue = new Queue(queueName, { connection: getRedisConnection() });
     addLog.info('Datasets queue created');
   }
   return datasetQueue;
 }
 
-export function initMq() {
-  if (!process.env.REDIS_URL) {
-    return;
-  }
-  const query = getDatasetQueue();
-  if (!isProcessorRegistered) {
-    query.process(Math.floor(Number(process.env.NUM_WORKERS_PER_QUEUE ?? 2)), processJob);
-    isProcessorRegistered = true;
-  }
-}
+const processJobInternal = async (token: string, job: Job) => {
+  const extendLockInterval = setInterval(async () => {
+    addLog.info(`🐂 Worker extending lock on job ${job.id}`);
+    await job.extendLock(token, jobLockExtensionTime);
+  }, jobLockExtendInterval);
 
-async function processJob(job: Job, done: any) {
+  try {
+    await processJob(job, token);
+    try {
+      await job.moveToCompleted(null, token, false);
+    } catch (e) {}
+  } catch (error) {
+    addLog.error('Job failed, error:', error);
+
+    await job.moveToFailed(error as Error, token, false);
+  } finally {
+    clearInterval(extendLockInterval);
+  }
+};
+
+async function processJob(job: Job, token: string): Promise<void> {
   const { jobId, status } = job.data;
 
   addLog.debug('processJob:', jobId);
@@ -61,7 +88,6 @@ async function processJob(job: Job, done: any) {
   const dataset = await MongoDataset.findOne({ 'jobInfo.jobId': jobId });
   if (!dataset) {
     addLog.warn('jobId 没有关联的数据集 ', jobId);
-    done();
     return;
   }
 
@@ -74,7 +100,6 @@ async function processJob(job: Job, done: any) {
       }
     });
 
-    done();
     return;
   }
 
@@ -152,6 +177,53 @@ async function processJob(job: Job, done: any) {
 
     return collectionId;
   });
+}
 
-  done();
+const workerFun = async (
+  queueName: string,
+  processJobInternal: (token: string, job: Job) => Promise<void>
+) => {
+  const worker = new Worker(queueName, null, {
+    connection: getRedisConnection(),
+    lockDuration: 1 * 60 * 1000, // 1 minute
+    // lockRenewTime: 15 * 1000, // 15 seconds
+    stalledInterval: 30 * 1000, // 30 seconds
+    maxStalledCount: 10 // 10 times
+  });
+
+  worker.startStalledCheckTimer();
+
+  const monitor = await systemMonitor;
+
+  while (true) {
+    if (isShuttingDown) {
+      addLog.info('No longer accepting new jobs. SIGINT');
+      break;
+    }
+    const token = uuidv4();
+    const canAcceptConnection = await monitor.acceptConnection();
+    if (!canAcceptConnection) {
+      addLog.info('Cant accept connection');
+      await sleep(cantAcceptConnectionInterval); // more sleep
+      continue;
+    }
+
+    const job = await worker.getNextJob(token);
+    if (job) {
+      processJobInternal(token, job);
+      await sleep(gotJobInterval);
+    } else {
+      await sleep(connectionMonitorInterval);
+    }
+  }
+};
+
+export function initMq() {
+  if (!process.env.REDIS_URL) {
+    return;
+  }
+  if (!isProcessorRegistered) {
+    workerFun(queueName, processJobInternal);
+    isProcessorRegistered = true;
+  }
 }

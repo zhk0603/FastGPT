@@ -22,7 +22,7 @@ importers:
         version: 13.3.0
       next-i18next:
         specifier: 15.3.0
-        version: 15.3.0(i18next@23.11.5)(next@14.2.5(@babel/core@7.24.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.8))(react-i18next@14.1.2(i18next@23.11.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
+        version: 15.3.0(i18next@23.11.5)(next@14.2.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.8))(react-i18next@14.1.2(i18next@23.11.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       prettier:
         specifier: 3.2.4
         version: 3.2.4
@@ -253,7 +253,7 @@ importers:
         version: 2.1.1(@chakra-ui/system@2.6.1(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@emotion/styled@11.11.0(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(react@18.3.1))(react@18.3.1))(react@18.3.1)
       '@chakra-ui/next-js':
         specifier: 2.1.5
-        version: 2.1.5(@chakra-ui/react@2.8.1(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@emotion/styled@11.11.0(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(framer-motion@9.1.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(next@14.2.5(@babel/core@7.24.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.8))(react@18.3.1)
+        version: 2.1.5(@chakra-ui/react@2.8.1(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@emotion/styled@11.11.0(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(framer-motion@9.1.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(next@14.2.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.8))(react@18.3.1)
       '@chakra-ui/react':
         specifier: 2.8.1
         version: 2.8.1(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@emotion/styled@11.11.0(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(framer-motion@9.1.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -313,7 +313,7 @@ importers:
         version: 4.17.21
       next-i18next:
         specifier: 15.3.0
-        version: 15.3.0(i18next@23.11.5)(next@14.2.5(@babel/core@7.24.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.8))(react-i18next@14.1.2(i18next@23.11.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
+        version: 15.3.0(i18next@23.11.5)(next@14.2.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.8))(react-i18next@14.1.2(i18next@23.11.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       papaparse:
         specifier: ^5.4.1
         version: 5.4.1
@@ -371,7 +371,7 @@ importers:
         version: 2.1.1(@chakra-ui/system@2.6.1(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@emotion/styled@11.11.0(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(react@18.3.1))(react@18.3.1))(react@18.3.1)
       '@chakra-ui/next-js':
         specifier: 2.1.5
-        version: 2.1.5(@chakra-ui/react@2.8.1(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@emotion/styled@11.11.0(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(framer-motion@9.1.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(next@14.2.5(@babel/core@7.24.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.8))(react@18.3.1)
+        version: 2.1.5(@chakra-ui/react@2.8.1(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@emotion/styled@11.11.0(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(framer-motion@9.1.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(next@14.2.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.8))(react@18.3.1)
       '@chakra-ui/react':
         specifier: 2.8.1
         version: 2.8.1(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@emotion/styled@11.11.0(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(framer-motion@9.1.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -414,12 +414,15 @@ importers:
       ahooks:
         specifier: ^3.7.11
         version: 3.8.0(react@18.3.1)
+      async-mutex:
+        specifier: ^0.5.0
+        version: 0.5.0
       axios:
         specifier: ^1.5.1
         version: 1.7.2
-      bull:
-        specifier: ^4.15.0
-        version: 4.16.0
+      bullmq:
+        specifier: ^5.11.0
+        version: 5.12.9
       date-fns:
         specifier: 2.30.0
         version: 2.30.0
@@ -447,6 +450,9 @@ importers:
       immer:
         specifier: ^9.0.19
         version: 9.0.21
+      ioredis:
+        specifier: ^5.4.1
+        version: 5.4.1
       js-yaml:
         specifier: ^4.1.0
         version: 4.1.0
@@ -470,7 +476,7 @@ importers:
         version: 14.2.5(@babel/core@7.24.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.8)
       next-i18next:
         specifier: 15.3.0
-        version: 15.3.0(i18next@23.11.5)(next@14.2.5(@babel/core@7.24.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.8))(react-i18next@14.1.2(i18next@23.11.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
+        version: 15.3.0(i18next@23.11.5)(next@14.2.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.8))(react-i18next@14.1.2(i18next@23.11.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       nextjs-node-loader:
         specifier: ^1.1.5
         version: 1.1.5(webpack@5.92.1)
@@ -522,9 +528,15 @@ importers:
       sass:
         specifier: ^1.58.3
         version: 1.77.8
+      systeminformation:
+        specifier: ^5.22.11
+        version: 5.23.4
       use-context-selector:
         specifier: ^1.4.4
         version: 1.4.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(scheduler@0.23.2)
+      uuid:
+        specifier: ^10.0.0
+        version: 10.0.0
       zustand:
         specifier: ^4.3.5
         version: 4.5.4(@types/react@18.3.1)(immer@9.0.21)(react@18.3.1)
@@ -532,9 +544,6 @@ importers:
       '@svgr/webpack':
         specifier: ^6.5.1
         version: 6.5.1
-      '@types/bull':
-        specifier: ^4.10.0
-        version: 4.10.0
       '@types/formidable':
         specifier: ^2.0.5
         version: 2.0.6
@@ -565,6 +574,9 @@ importers:
       '@types/request-ip':
         specifier: ^0.0.37
         version: 0.0.37
+      '@types/uuid':
+        specifier: ^10.0.0
+        version: 10.0.0
       eslint:
         specifier: 8.56.0
         version: 8.56.0
@@ -3177,10 +3189,6 @@ packages:
   '@types/body-parser@1.19.5':
     resolution: {integrity: sha512-fB3Zu92ucau0iQ0JMCFQE7b/dv8Ot07NI3KaZIkIUNXq82k4eBAqUaneXfleGY9JWskeS9y+u0nXMyspcuQrCg==}
 
-  '@types/bull@4.10.0':
-    resolution: {integrity: sha512-RkYW8K2H3J76HT6twmHYbzJ0GtLDDotpLP9ah9gtiA7zfF6peBH1l5fEiK0oeIZ3/642M7Jcb9sPmor8Vf4w6g==}
-    deprecated: This is a stub types definition. bull provides its own type definitions, so you do not need this installed.
-
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
 
@@ -3468,6 +3476,9 @@ packages:
 
   '@types/unist@3.0.2':
     resolution: {integrity: sha512-dqId9J8K/vGi5Zr7oo212BGii5m3q5Hxlkwy3WpYuKPklmBEvsbMYYyLxAQpSffdLl/gdW0XUpKWFvYmyoWCoQ==}
+
+  '@types/uuid@10.0.0':
+    resolution: {integrity: sha512-7gqG38EyHgyP1S+7+xomFtL+ZNHcKv6DwNaCZmJmo1vgMugyF3TCnXVg4t1uk89mLNwnLtnY3TpOpCOyp1/xHQ==}
 
   '@types/webidl-conversions@7.0.3':
     resolution: {integrity: sha512-CiJJvcRtIgzadHCYXw7dqEnMNRjhGZlYK05Mj9OyktqV8uVT8fD2BFOB7S1uwBE3Kj2Z+4UyPmFw/Ixgw/LAlA==}
@@ -3871,6 +3882,9 @@ packages:
   ast-types-flow@0.0.8:
     resolution: {integrity: sha512-OH/2E5Fg20h2aPrbe+QL8JZQFko0YZaF+j4mnQ7BGhfavO7OpSLa8a0y9sBwomHdSbkhTS8TQNayBfnW5DwbvQ==}
 
+  async-mutex@0.5.0:
+    resolution: {integrity: sha512-1A94B18jkJ3DYq284ohPxoXbfTA5HsQ7/Mf4DEhcyLx3Bz27Rh59iScbB6EPiP+B+joue6YCxcMXSbFC1tZKwA==}
+
   async@3.2.5:
     resolution: {integrity: sha512-baNZyqaaLhyLVKm/DlvdW051MSgO6b8eVfIezl9E5PqWxFgzLm/wQntEW4zOytVburDEr0JlALEpdOFwvErLsg==}
 
@@ -4027,9 +4041,8 @@ packages:
   buffer@6.0.3:
     resolution: {integrity: sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==}
 
-  bull@4.16.0:
-    resolution: {integrity: sha512-dgHRLULPexLkpm9wP/7F7Vlf2fdvmffdwhv3Bqu5lFhO+XDDJ4yGqlTPE61Jj1zM8CgchLmJEgIfe7y69jtuOg==}
-    engines: {node: '>=12'}
+  bullmq@5.12.9:
+    resolution: {integrity: sha512-34YW4NaC6IfuAtwdllNkBSEP9/sq9bjpvlvbdSv1JXQUzqbey1+DZTvecM8SdewsNKa0RxuwYx/KATe7iXvH7A==}
 
   busboy@1.6.0:
     resolution: {integrity: sha512-8SFQbg/0hQ9xy3UNTB0YEnsNBbWfhf7RtnzpL7TkBiTBRfrQ9Fxcnz7VJsleJpyp6rVLvXiuORqjlHi5q+PYuA==}
@@ -5386,10 +5399,6 @@ packages:
   get-package-type@0.1.0:
     resolution: {integrity: sha512-pjzuKtY64GYfWizNAJ0fr9VqttZkNiK2iS430LtIHzjBEr6bX8Am2zm4sW4Ro5wjWW5cAlRL1qAMTcXbjNAO2Q==}
     engines: {node: '>=8.0.0'}
-
-  get-port@5.1.1:
-    resolution: {integrity: sha512-g/Q1aTSDOxFpchXC4i8ZWvxA1lnPqx/JHqcpIw0/LX9T8x/GBbi6YnlN5nhaKIFkT8oFsscUKgDJYxfwfS6QsQ==}
-    engines: {node: '>=8'}
 
   get-stream@2.3.1:
     resolution: {integrity: sha512-AUGhbbemXxrZJRD5cDvKtQxLuYaIbNtDTK8YqupCI393Q2KSTreEsLUN3ZxAWFGiKTzL6nKuzfcIvieflUX9qA==}
@@ -8195,6 +8204,12 @@ packages:
     resolution: {integrity: sha512-b19dMThMV4HVFynSAM1++gBHAbk2Tc/osgLIBZMKsyqh34jb2e8Os7T6ZW/Bt3pJFdBTd2JwAnAAEQV7rSNvcQ==}
     engines: {node: '>=0.10'}
 
+  systeminformation@5.23.4:
+    resolution: {integrity: sha512-mD2R9xnOzKOOmIVtxekosf/ghOE/DGLqAPmsEgQMWJK0pMKxBtX19riz1Ss0tN4omcfS2FQ2RDJ4lkxgADxIPw==}
+    engines: {node: '>=8.0.0'}
+    os: [darwin, linux, win32, freebsd, openbsd, netbsd, sunos, android]
+    hasBin: true
+
   tapable@2.2.1:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
     engines: {node: '>=6'}
@@ -8639,6 +8654,10 @@ packages:
   utils-merge@1.0.1:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
+
+  uuid@10.0.0:
+    resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
+    hasBin: true
 
   uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
@@ -10149,7 +10168,7 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@chakra-ui/next-js@2.1.5(@chakra-ui/react@2.8.1(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@emotion/styled@11.11.0(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(framer-motion@9.1.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(next@14.2.5(@babel/core@7.24.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.8))(react@18.3.1)':
+  '@chakra-ui/next-js@2.1.5(@chakra-ui/react@2.8.1(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@emotion/styled@11.11.0(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(framer-motion@9.1.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(next@14.2.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.8))(react@18.3.1)':
     dependencies:
       '@chakra-ui/react': 2.8.1(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@emotion/styled@11.11.0(@emotion/react@11.11.1(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(react@18.3.1))(@types/react@18.3.1)(framer-motion@9.1.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@emotion/cache': 11.11.0
@@ -11960,12 +11979,6 @@ snapshots:
       '@types/connect': 3.4.38
       '@types/node': 20.14.11
 
-  '@types/bull@4.10.0':
-    dependencies:
-      bull: 4.16.0
-    transitivePeerDependencies:
-      - supports-color
-
   '@types/connect@3.4.38':
     dependencies:
       '@types/node': 20.14.11
@@ -12311,6 +12324,8 @@ snapshots:
   '@types/unist@2.0.10': {}
 
   '@types/unist@3.0.2': {}
+
+  '@types/uuid@10.0.0': {}
 
   '@types/webidl-conversions@7.0.3': {}
 
@@ -12845,6 +12860,10 @@ snapshots:
 
   ast-types-flow@0.0.8: {}
 
+  async-mutex@0.5.0:
+    dependencies:
+      tslib: 2.6.3
+
   async@3.2.5: {}
 
   asynckit@0.4.0: {}
@@ -13055,15 +13074,15 @@ snapshots:
       base64-js: 1.5.1
       ieee754: 1.2.1
 
-  bull@4.16.0:
+  bullmq@5.12.9:
     dependencies:
       cron-parser: 4.9.0
-      get-port: 5.1.1
       ioredis: 5.4.1
-      lodash: 4.17.21
       msgpackr: 1.11.0
+      node-abort-controller: 3.1.1
       semver: 7.6.3
-      uuid: 8.3.2
+      tslib: 2.6.3
+      uuid: 9.0.1
     transitivePeerDependencies:
       - supports-color
 
@@ -14755,8 +14774,6 @@ snapshots:
   get-nonce@1.0.1: {}
 
   get-package-type@0.1.0: {}
-
-  get-port@5.1.1: {}
 
   get-stream@2.3.1:
     dependencies:
@@ -16840,7 +16857,7 @@ snapshots:
 
   neo-async@2.6.2: {}
 
-  next-i18next@15.3.0(i18next@23.11.5)(next@14.2.5(@babel/core@7.24.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.8))(react-i18next@14.1.2(i18next@23.11.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1):
+  next-i18next@15.3.0(i18next@23.11.5)(next@14.2.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.8))(react-i18next@14.1.2(i18next@23.11.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1):
     dependencies:
       '@babel/runtime': 7.24.8
       '@types/hoist-non-react-statics': 3.3.5
@@ -18323,6 +18340,8 @@ snapshots:
 
   symbol-observable@4.0.0: {}
 
+  systeminformation@5.23.4: {}
+
   tapable@2.2.1: {}
 
   tar-fs@2.1.1:
@@ -18764,6 +18783,8 @@ snapshots:
   util-deprecate@1.0.2: {}
 
   utils-merge@1.0.1: {}
+
+  uuid@10.0.0: {}
 
   uuid@8.3.2: {}
 
