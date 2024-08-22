@@ -7,6 +7,8 @@ import { ApiRequestProps } from '@fastgpt/service/type/next';
 import { CommonErrEnum } from '@fastgpt/global/common/error/code/common';
 import { firecrawlApp } from '@fastgpt/plugins/src/firecrawl/utils';
 import { MongoDataset } from '@fastgpt/service/core/dataset/schema';
+import { status } from 'nprogress';
+import { DatasetStatusEnum } from '@fastgpt/global/core/dataset/constants';
 
 type Query = {
   billId: string;
@@ -33,30 +35,51 @@ async function handler(req: ApiRequestProps<Query>): Promise<{ jobId: string }> 
     throw new Error('知识库未配置站点信息');
   }
 
-  const crawlResult = await firecrawlApp.crawlUrl(
-    url,
-    {
-      crawlerOptions: {
-        ignoreSitemap: true
-      },
-      pageOptions: {
-        onlyIncludeTags: dataset.websiteConfig?.selector || undefined,
-        waitFor: 2000
-      }
-    },
-    false
-  );
-
-  await MongoDataset.findByIdAndUpdate(dataset._id, {
-    jobInfo: {
-      jobId: crawlResult.jobId,
-      status: 'active'
+  const strToArray = function (str: string | undefined) {
+    if (str) {
+      return str.split(',');
     }
-  });
-
-  return {
-    jobId: crawlResult.jobId
+    return undefined;
   };
+
+  try {
+    const crawlResult = await firecrawlApp.crawlUrl(
+      url,
+      {
+        crawlerOptions: {
+          includes: strToArray(dataset.websiteConfig?.includes),
+          excludes: strToArray(dataset.websiteConfig?.excludes),
+          limit: dataset.websiteConfig?.limit,
+          maxDepth: dataset.websiteConfig?.maxDepth,
+          ignoreSitemap: dataset.websiteConfig?.ignoreSitemap
+        },
+        pageOptions: {
+          onlyIncludeTags: strToArray(dataset.websiteConfig?.onlyIncludeTags),
+          onlyMainContent: dataset.websiteConfig?.onlyMainContent,
+          removeTags: strToArray(dataset.websiteConfig?.removeTags),
+          waitFor: dataset.websiteConfig?.waitFor
+        }
+      },
+      false
+    );
+
+    await MongoDataset.findByIdAndUpdate(dataset._id, {
+      jobInfo: {
+        jobId: crawlResult.jobId,
+        status: 'active'
+      }
+    });
+
+    return {
+      jobId: crawlResult.jobId
+    };
+  } catch (e) {
+    await MongoDataset.findByIdAndUpdate(dataset._id, {
+      status: DatasetStatusEnum.active
+    });
+
+    throw e;
+  }
 }
 
 export default NextAPI(handler);

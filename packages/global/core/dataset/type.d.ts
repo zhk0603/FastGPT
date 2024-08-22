@@ -30,6 +30,15 @@ export type DatasetSchemaType = {
   websiteConfig?: {
     url: string;
     selector: string;
+    limit: number;
+    maxDepth: number;
+    includes: string;
+    excludes: string;
+    ignoreSitemap: boolean;
+    onlyIncludeTags: string;
+    removeTags: string;
+    onlyMainContent: boolean;
+    waitFor: number;
   };
   externalReadUrl?: string;
   jobInfo?: {

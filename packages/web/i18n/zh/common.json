@@ -762,13 +762,22 @@
       "website": {
         "Base Url": "根地址",
         "Config": "Web 站点配置",
-        "Config Description": "Web 站点同步功能允许你填写一个网站的根地址，系统会自动深度抓取相关的网页进行知识库训练。仅会抓取静态的网站，以项目文档、博客为主。",
+        "Config Description": "Web 站点同步功能允许你填写一个网站的根地址，系统会自动深度抓取相关的网页进行知识库训练。",
         "Confirm Create Tips": "确认同步该站点，同步任务将随后开启，请确认！",
         "Confirm Update Tips": "确认更新站点配置？会立即按新的配置开始同步，请确认！",
         "Selector": "选择器",
         "Selector Course": "使用教程",
         "Start Sync": "开始同步",
-        "UnValid Website Tip": "您的站点可能非静态站点，无法同步"
+        "UnValid Website Tip": "您的站点可能非静态站点，无法同步",
+        "Limit": "最大抓取页面数",
+        "MaxDepth": "最大爬网深度",
+        "Includes": "包含路径",
+        "Excludes": "排除路径",
+        "IgnoreSitemap": "忽略 sitemap.xml",
+        "OnlyIncludeTags": "包含标签，只爬取页面中指定的 tag、class和 ID。",
+        "RemoveTags": "排除标签，要从页面中删除的 tag、class和 ID。",
+        "OnlyMainContent": "只提取主要内容（没有页眉、导航、页脚等）",
+        "WaitFor": "等待页面加载（毫秒）"
       }
     },
     "module": {

@@ -154,7 +154,15 @@ const CollectionPageContextProvider = ({ children }: { children: ReactNode }) =>
               onSuccess={onUpdateDatasetWebsiteConfig}
               defaultValue={{
                 url: datasetDetail?.websiteConfig?.url,
-                selector: datasetDetail?.websiteConfig?.selector
+                limit: datasetDetail?.websiteConfig?.limit || 10000,
+                maxDepth: datasetDetail?.websiteConfig?.maxDepth || 10,
+                includes: datasetDetail?.websiteConfig?.includes,
+                excludes: datasetDetail?.websiteConfig?.excludes,
+                ignoreSitemap: datasetDetail?.websiteConfig?.ignoreSitemap || true,
+                onlyMainContent: datasetDetail?.websiteConfig?.onlyMainContent || false,
+                onlyIncludeTags: datasetDetail?.websiteConfig?.onlyIncludeTags,
+                removeTags: datasetDetail?.websiteConfig?.removeTags,
+                waitFor: datasetDetail?.websiteConfig?.waitFor || 1000
               }}
             />
           )}

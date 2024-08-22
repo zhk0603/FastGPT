@@ -82,6 +82,42 @@ const DatasetSchema = new Schema({
       selector: {
         type: String,
         default: 'body'
+      },
+      limit: {
+        type: Number,
+        default: 10000
+      },
+      maxDepth: {
+        type: Number,
+        default: 10
+      },
+      includes: {
+        type: String,
+        default: ''
+      },
+      excludes: {
+        type: String,
+        default: ''
+      },
+      ignoreSitemap: {
+        type: Boolean,
+        default: true
+      },
+      onlyIncludeTags: {
+        type: String,
+        default: ''
+      },
+      removeTags: {
+        type: String,
+        default: ''
+      },
+      onlyMainContent: {
+        type: Boolean,
+        default: false
+      },
+      waitFor: {
+        type: Number,
+        default: 1000
       }
     }
   },

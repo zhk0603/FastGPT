@@ -1,7 +1,7 @@
 import React from 'react';
 import MyModal from '@fastgpt/web/components/common/MyModal';
 import { useTranslation } from 'next-i18next';
-import { Box, Button, Input, Link, ModalBody, ModalFooter } from '@chakra-ui/react';
+import { Box, Button, Input, Link, ModalBody, ModalFooter, Switch } from '@chakra-ui/react';
 import { strIsLink } from '@fastgpt/global/common/string/tools';
 import { useToast } from '@fastgpt/web/hooks/useToast';
 import { useForm } from 'react-hook-form';
@@ -11,7 +11,15 @@ import { useSystemStore } from '@/web/common/system/useSystemStore';
 
 type FormType = {
   url?: string | undefined;
-  selector?: string | undefined;
+  limit?: number | undefined;
+  maxDepth?: number | undefined;
+  includes?: string | undefined;
+  excludes?: string | undefined;
+  ignoreSitemap?: boolean | undefined;
+  onlyIncludeTags?: string | undefined;
+  removeTags?: string | undefined;
+  onlyMainContent?: boolean | undefined;
+  waitFor?: number | undefined;
 };
 
 const WebsiteConfigModal = ({
@@ -19,7 +27,15 @@ const WebsiteConfigModal = ({
   onSuccess,
   defaultValue = {
     url: '',
-    selector: ''
+    limit: 10000,
+    maxDepth: 10,
+    includes: '',
+    excludes: '',
+    ignoreSitemap: true,
+    onlyIncludeTags: '',
+    removeTags: '',
+    onlyMainContent: false,
+    waitFor: 1000
   }
 }: {
   onClose: () => void;
@@ -47,7 +63,7 @@ const WebsiteConfigModal = ({
       iconSrc="core/dataset/websiteDataset"
       title={t('common:core.dataset.website.Config')}
       onClose={onClose}
-      maxW={'500px'}
+      maxW={'900px'}
     >
       <ModalBody>
         <Box fontSize={'sm'} color={'myGray.600'}>
@@ -63,20 +79,84 @@ const WebsiteConfigModal = ({
             </Link>
           )}
         </Box>
-        <Box mt={2}>
-          <Box>{t('common:core.dataset.website.Base Url')}</Box>
-          <Input
-            placeholder={t('common:core.dataset.collection.Website Link')}
-            {...register('url', {
-              required: true
-            })}
-          />
-        </Box>
-        <Box mt={3}>
-          <Box>
-            {t('common:core.dataset.website.Selector')}({t('common:common.choosable')})
+        <Box mt={2} display="flex" justifyContent="space-between" flexWrap="wrap">
+          <Box flexBasis={['100%', '48%']} mb={4}>
+            <Box>{t('common:core.dataset.website.Base Url')}</Box>
+            <Input
+              placeholder={t('common:core.dataset.collection.Website Link')}
+              {...register('url', {
+                required: true
+              })}
+            />
           </Box>
-          <Input {...register('selector')} placeholder="body .content #document" />
+          <Box flexBasis={['100%', '48%']} mb={4}>
+            <Box>{t('common:core.dataset.website.Limit')}</Box>
+            <Input
+              type="number"
+              {...register('limit', {
+                required: true
+              })}
+              placeholder="最大抓取页面数"
+            />
+          </Box>
+          <Box flexBasis={['100%', '48%']} mb={4}>
+            <Box>{t('common:core.dataset.website.MaxDepth')}</Box>
+            <Input
+              type="number"
+              {...register('maxDepth', {
+                required: true
+              })}
+              placeholder="相对于输入的 URL 的最大爬网深度。"
+            />
+          </Box>
+          <Box flexBasis={['100%', '48%']} mb={4}>
+            <Box>{t('common:core.dataset.website.IgnoreSitemap')}</Box>
+            <Switch {...register('ignoreSitemap')} />
+          </Box>
+          <Box flexBasis={['100%', '48%']} mb={4}>
+            <Box>
+              {t('common:core.dataset.website.Includes')}({t('common:common.choosable')})
+            </Box>
+            <Input {...register('includes')} placeholder="docs/*,articles/*" />
+          </Box>
+          <Box flexBasis={['100%', '48%']} mb={4}>
+            <Box>
+              {t('common:core.dataset.website.Excludes')}({t('common:common.choosable')})
+            </Box>
+            <Input {...register('excludes')} placeholder="blog/*,/about/*" />
+          </Box>
+          <Box flexBasis={['100%', '48%']} mb={4}>
+            <Box>
+              {t('common:core.dataset.website.OnlyIncludeTags')}({t('common:common.choosable')})
+            </Box>
+            <Input
+              {...register('onlyIncludeTags')}
+              placeholder="使用逗号分隔值。示例：“script, .ad, #footer”"
+            />
+          </Box>
+          <Box flexBasis={['100%', '48%']} mb={4}>
+            <Box>
+              {t('common:core.dataset.website.RemoveTags')}({t('common:common.choosable')})
+            </Box>
+            <Input
+              {...register('removeTags')}
+              placeholder="使用逗号分隔值。示例：“script, .ad, #foote”"
+            />
+          </Box>
+          <Box flexBasis={['100%', '48%']} mb={4}>
+            <Box>{t('common:core.dataset.website.OnlyMainContent')}</Box>
+            <Switch {...register('onlyMainContent')} />
+          </Box>
+          <Box flexBasis={['100%', '48%']} mb={4}>
+            <Box>{t('common:core.dataset.website.WaitFor')}</Box>
+            <Input
+              type="number"
+              {...register('waitFor', {
+                required: true
+              })}
+              placeholder="等待指定毫秒，页面加载以获取内容"
+            />
+          </Box>
         </Box>
       </ModalBody>
       <ModalFooter>
