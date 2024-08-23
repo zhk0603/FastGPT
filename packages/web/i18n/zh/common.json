@@ -29,6 +29,7 @@
   "UnKnow": "未知",
   "Warning": "提示",
   "add_new": "新增",
+  "back": "返回",
   "chose_condition": "选择条件",
   "chosen": "已选",
   "classification": "分类",
@@ -137,6 +138,7 @@
     "Done": "完成",
     "Edit": "编辑",
     "Exit": "退出",
+    "Exit Directly": "直接退出",
     "Expired Time": "过期时间",
     "Field": "字段",
     "File": "文件",
@@ -183,6 +185,7 @@
     "Save": "保存",
     "Save Failed": "保存异常",
     "Save Success": "保存成功",
+    "Save_and_exit": "保存并退出",
     "Search": "搜索",
     "Select File Failed": "选择文件异常",
     "Select template": "选择模板",
@@ -239,6 +242,7 @@
       "empty": "这个目录已经没东西可选了~",
       "open_dataset": "打开知识库"
     },
+    "have_done": "已完成",
     "input": {
       "Repeat Value": "有重复的值"
     },
@@ -254,12 +258,17 @@
     "no_intro": "暂无介绍",
     "not_support": "不支持",
     "page_center": "页面居中",
+    "redo_tip": "恢复  ctrl  shift  z",
+    "redo_tip_mac": "恢复  ⌘  shift  z",
     "request_end": "已加载全部",
     "request_more": "点击加载更多",
     "speech": {
       "error tip": "语音转文字失败",
       "not support": "您的浏览器不支持语音输入"
     },
+    "submit_success": "提交成功",
+    "submitted": "已提交",
+    "submitting": "提交中",
     "support": "支持",
     "system": {
       "Commercial version function": "请升级商业版后使用该功能：https://fastgpt.in",
@@ -270,7 +279,13 @@
       "textarea": {
         "Magnifying": "放大"
       }
-    }
+    },
+    "undo_tip": "撤销  ctrl  z",
+    "undo_tip_mac": "撤销  ⌘  z ",
+    "zoomin_tip": "缩小  ctrl  -",
+    "zoomin_tip_mac": "缩小  ⌘  -",
+    "zoomout_tip": "放大  ctrl  +",
+    "zoomout_tip_mac": "放大  ⌘  +"
   },
   "confirm_choice": "确认选择",
   "contribute_app_template": "贡献模板",
@@ -306,6 +321,7 @@
       "Max histories": "聊天记录数量",
       "Max tokens": "回复上限",
       "Name and avatar": "头像 & 名称",
+      "Not saved": "未保存",
       "Onclick to save": "点击保存",
       "Publish": "发布",
       "Publish Confirm": "确认发布应用？会立即更新所有发布渠道的应用状态。",
@@ -356,6 +372,7 @@
         "close custom feedback": "关闭反馈"
       },
       "have_publish": "已发布",
+      "have_saved": "已保存",
       "loading": "加载中",
       "logs": {
         "Source And Time": "来源 & 时间"
@@ -370,6 +387,7 @@
       },
       "no_app": "还没有应用，快去创建一个吧！",
       "not_published": "未发布",
+      "not_saved": "未保存",
       "outLink": {
         "Can Drag": "图标可拖拽",
         "Default open": "默认打开",
@@ -470,6 +488,7 @@
       "Recent use": "最近使用",
       "Record": "语音输入",
       "Restart": "重开对话",
+      "Run test": "运行预览",
       "Select Image": "选择图片",
       "Select dataset": "选择知识库",
       "Select dataset Desc": "选择一个知识库存储预期答案",
@@ -557,7 +576,7 @@
       "Avatar": "知识库头像",
       "Choose Dataset": "关联知识库",
       "Collection": "数据集",
-      "Create dataset": "创建一个知识库",
+      "Create dataset": "创建一个{{name}}",
       "Dataset": "知识库",
       "Dataset ID": "知识库 ID",
       "Dataset Type": "知识库类型",
@@ -612,7 +631,8 @@
             "success": "开始同步"
           }
         },
-        "training": {}
+        "training": {
+        }
       },
       "data": {
         "Auxiliary Data": "辅助数据",
@@ -800,6 +820,7 @@
       "Field Name": "字段名",
       "Http request props": "请求参数",
       "Http request settings": "请求配置",
+      "Http timeout": "超时时长",
       "Input Type": "输入类型",
       "Laf sync params": "同步参数",
       "Max Length": "最大长度",
@@ -938,7 +959,10 @@
       "Debug Node": "Debug 模式",
       "Failed": "运行失败",
       "Not intro": "这个节点没有介绍~",
+      "Run": "运行",
       "Running": "运行中",
+      "Save and publish": "保存并发布",
+      "Save to cloud": "仅保存",
       "Skipped": "跳过运行",
       "Stop debug": "停止调试",
       "Success": "运行成功",
@@ -1035,6 +1059,7 @@
       },
       "input is empty": "数据内容不能为空 "
     },
+    "dataset_name": "知识库名称",
     "deleteFolderTips": "确认删除该文件夹及其包含的所有知识库？删除后数据无法恢复，请确认！",
     "test": {
       "noResult": "搜索结果为空"
@@ -1066,7 +1091,7 @@
     "include": "包含标准套餐与额外资源包",
     "node_info": "调整该模块会对工具调用时机有影响。\n你可以通过精确的描述该模块功能，引导模型进行工具调用。",
     "old_version_attention": "检测到您的高级编排为旧版，系统将为您自动格式化成新版工作流。\n\n由于版本差异较大，会导致一些工作流无法正常排布，请重新手动连接工作流。如仍异常，可尝试删除对应节点后重新添加。\n\n你可以直接点击调试进行工作流测试，调试完毕后点击发布。直到你点击发布，新工作流才会真正保存生效。\n\n在你发布新工作流前，自动保存不会生效。",
-    "open_api_notice": "可以填写 OpenAI/OneAPI的相关秘钥。如果你填写了该内容，在线上平台使用【AI对话】、【问题分类】和【内容提取】将会走你填写的Key，不会计费。请注意你的Key 是否有访问对应模型的权限。GPT模型可以选择 FastAI。",
+    "open_api_notice": "可以填写 OpenAI/OneAPI的相关密钥。如果你填写了该内容，在线上平台使用【AI对话】、【问题分类】和【内容提取】将会走你填写的Key，不会计费。请注意你的Key 是否有访问对应模型的权限。GPT模型可以选择 FastAI。",
     "open_api_placeholder": "请求地址，默认为 openai 官方。可填中转地址，未自动补全 \"v1\"",
     "resource": "资源用量"
   },
@@ -1083,6 +1108,7 @@
     "Tools": "工具"
   },
   "new_create": "新建",
+  "no": "否",
   "no_data": "暂无数据",
   "no_laf_env": "系统未配置Laf环境",
   "not_yet_introduced": "暂无介绍",
@@ -1094,9 +1120,10 @@
     "confirm_pay": "确认支付",
     "get_pay_QR": "获取充值二维码",
     "need_pay": "需支付",
+    "need_to_pay": "实付",
     "new_package_price": "新套餐价格",
     "notice": "请勿关闭页面",
-    "old_package_price": "旧套餐价格",
+    "old_package_price": "旧套餐余额",
     "other": "其他金额，请取整数",
     "to_recharge": "余额不足，去充值",
     "wechat": "请微信扫码支付: {{price}}元，请勿关闭页面",
@@ -1163,10 +1190,10 @@
     },
     "openapi": {
       "Api baseurl": "API 根地址",
-      "Api manager": "API 秘钥管理",
+      "Api manager": "API 密钥管理",
       "Copy success": "已复制 API 地址",
-      "New api key": "新的 API 秘钥",
-      "New api key tip": "请保管好你的秘钥，秘钥不会再次展示~"
+      "New api key": "新的 API 密钥",
+      "New api key tip": "请保管好你的密钥，密钥不会再次展示~"
     },
     "outlink": {
       "Delete link tip": "确认删除该免登录链接？删除后，该链接将会立即失效，对话日志仍会保留，请确认！",
@@ -1243,7 +1270,7 @@
     "wallet": {
       "Ai point every thousand tokens": "{{points}} 积分/1K tokens",
       "Amount": "金额",
-      "Bills": "账单",
+      "Bills": "账单与开票",
       "Buy": "购买",
       "Confirm pay": "支付确认",
       "Not sufficient": "您的 AI 积分不足，请先升级套餐或购买额外 AI 积分后继续使用。",
@@ -1252,6 +1279,7 @@
       "Standard Plan Detail": "套餐详情",
       "To read plan": "查看套餐",
       "amount_0": "购买数量不能为0",
+      "apply_invoice": "申请开票",
       "bill": {
         "Number": "订单号",
         "Status": "状态",
@@ -1268,12 +1296,36 @@
           "success": "支付成功"
         }
       },
+      "bill_detail": "账单详情",
+      "bill_tag": {
+        "bill": "账单记录",
+        "default_header": "默认抬头",
+        "invoice": "开票记录"
+      },
+      "billable_invoice": "可开票账单",
       "buy_resource": "购买资源包",
+      "has_invoice": "是否已开票",
+      "invoice_amount": "开票金额",
+      "invoice_data": {
+        "bank": "开户银行",
+        "bank_account": "开户账号",
+        "company_address": "公司地址",
+        "company_phone": "公司电话",
+        "email": "邮箱地址",
+        "in_valid": "存在空字段或邮箱格式错误",
+        "need_special_invoice": "是否需要专票",
+        "organization_name": "组织名称",
+        "unit_code": "统一信用代码"
+      },
+      "invoice_detail": "发票详情",
+      "invoice_info": "发票将在 3-7 个工作日内发送至邮箱，请耐心等待",
+      "invoicing": "开票",
       "moduleName": {
         "index": "索引生成",
         "qa": "QA 拆分"
       },
       "noBill": "无账单记录~",
+      "no_invoice": "暂无开票记录",
       "subscription": {
         "AI points": "AI 积分",
         "AI points click to read tip": "每次调用 AI 模型时，都会消耗一定的 AI 积分（类似于 token）。点击可查看详细计算规则。",
@@ -1297,8 +1349,6 @@
         "Sub plan tip": "免费使用 {{title}} 或升级更高的套餐",
         "Team plan and usage": "套餐与用量",
         "Training weight": "训练优先级：{{weight}}",
-        "web_site_sync": "Web 站点同步",
-        "rerank": "检索结果重排",
         "Update extra ai points": "额外 AI 积分",
         "Update extra dataset size": "额外存储量",
         "Upgrade plan": "升级套餐",
@@ -1318,6 +1368,7 @@
           "Year sale": "赠送两个月"
         },
         "point": "积分",
+        "rerank": "检索结果重排",
         "standardSubLevel": {
           "enterprise": "企业版",
           "experience": "体验版",
@@ -1331,7 +1382,8 @@
           "extraDatasetSize": "知识库扩容",
           "extraPoints": "AI 积分套餐",
           "standard": "套餐订阅"
-        }
+        },
+        "web_site_sync": "Web 站点同步"
       },
       "usage": {
         "Ai model": "AI 模型",
@@ -1349,7 +1401,8 @@
         "Total points": "AI 积分消耗",
         "Usage Detail": "使用详情",
         "Whisper": "语音输入"
-      }
+      },
+      "use_default": "使用默认抬头"
     }
   },
   "sync_link": "同步链接",
@@ -1409,7 +1462,7 @@
     "Update password successful": "修改密码成功",
     "Usage Record": "使用记录",
     "apikey": {
-      "key": "API 秘钥"
+      "key": "API 密钥"
     },
     "confirm_password": "确认密码",
     "new_password": "新密码",
@@ -1469,5 +1522,6 @@
     "type": "类型"
   },
   "verification": "验证",
-  "xx_search_result": "{{key}} 的搜索结果"
+  "xx_search_result": "{{key}} 的搜索结果",
+  "yes": "是"
 }

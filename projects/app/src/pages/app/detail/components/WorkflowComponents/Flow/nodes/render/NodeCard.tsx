@@ -201,7 +201,7 @@ const NodeCard = (props: Props) => {
                 </Button>
               </MyTooltip>
             )}
-            {!!nodeTemplate?.diagram && (
+            {!!nodeTemplate?.diagram && !hasNewVersion && (
               <MyTooltip
                 label={
                   <Image src={nodeTemplate?.diagram} w={'100%'} minH={['auto', '200px']} alt={''} />
@@ -386,7 +386,7 @@ const MenuRender = React.memo(function MenuRender({
               icon: 'delete',
               label: t('common:common.Delete'),
               variant: 'whiteDanger',
-              onClick: onOpenConfirmDeleteNode(() => onDelNode(nodeId))
+              onClick: () => onDelNode(nodeId)
             }
           ])
     ];
@@ -429,7 +429,6 @@ const MenuRender = React.memo(function MenuRender({
     menuForbid?.copy,
     menuForbid?.delete,
     t,
-    onOpenConfirmDeleteNode,
     ConfirmDeleteModal,
     DebugInputModal,
     openDebugNode,

@@ -31,6 +31,7 @@ type HttpRequestProps = ModuleDispatchProps<{
   [NodeInputKeyEnum.httpParams]: PropsArrType[];
   [NodeInputKeyEnum.httpJsonBody]: string;
   [NodeInputKeyEnum.addInputParam]: Record<string, any>;
+  [NodeInputKeyEnum.httpTimeout]?: number;
   [key: string]: any;
 }>;
 type HttpResponse = DispatchNodeResultType<{
@@ -57,6 +58,7 @@ export const dispatchHttp468Request = async (props: HttpRequestProps): Promise<H
       system_httpHeader: httpHeader,
       system_httpParams: httpParams = [],
       system_httpJsonBody: httpJsonBody,
+      system_httpTimeout: httpTimeout = 60,
       [NodeInputKeyEnum.addInputParam]: dynamicInput,
       ...body
     }
@@ -143,7 +145,8 @@ export const dispatchHttp468Request = async (props: HttpRequestProps): Promise<H
         url: httpReqUrl,
         headers,
         body: requestBody,
-        params
+        params,
+        timeout: httpTimeout
       });
     })();
 
@@ -199,13 +202,15 @@ async function fetchData({
   url,
   headers,
   body,
-  params
+  params,
+  timeout
 }: {
   method: string;
   url: string;
   headers: Record<string, any>;
   body: Record<string, any> | string;
   params: Record<string, any>;
+  timeout: number;
 }) {
   const { data: response } = await axios({
     method,
@@ -215,7 +220,7 @@ async function fetchData({
       'Content-Type': 'application/json',
       ...headers
     },
-    timeout: 120000,
+    timeout: timeout * 1000,
     params: params,
     data: ['POST', 'PUT', 'PATCH'].includes(method) ? body : undefined
   });
@@ -308,7 +313,7 @@ function replaceVariable(text: string, obj: Record<string, any>) {
         replacement.startsWith('"') && replacement.endsWith('"')
           ? replacement.slice(1, -1)
           : replacement;
-      text = text.replace(new RegExp(`{{(${key})}}`, 'g'), unquotedReplacement);
+      text = text.replace(new RegExp(`{{(${key})}}`, 'g'), () => unquotedReplacement);
     }
   }
   return text || '';
