@@ -109,7 +109,7 @@ async function processJob(job: Job, token: string): Promise<void> {
   } = job.data;
 
   // 后期通过页面配置
-  const chunkSize = 1024;
+  const chunkSize = getVectorModel(dataset.vectorModel)?.defaultToken || 1024;
   const trainingType = TrainingModeEnum.chunk;
   const qaPrompt = Prompt_AgentQA.description;
 
