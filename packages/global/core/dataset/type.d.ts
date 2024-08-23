@@ -39,6 +39,7 @@ export type DatasetSchemaType = {
     removeTags: string;
     onlyMainContent: boolean;
     waitFor: number;
+    allowBackwardCrawling: boolean;
   };
   externalReadUrl?: string;
   jobInfo?: {

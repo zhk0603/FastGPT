@@ -162,7 +162,8 @@ const CollectionPageContextProvider = ({ children }: { children: ReactNode }) =>
                 onlyMainContent: datasetDetail?.websiteConfig?.onlyMainContent || false,
                 onlyIncludeTags: datasetDetail?.websiteConfig?.onlyIncludeTags,
                 removeTags: datasetDetail?.websiteConfig?.removeTags,
-                waitFor: datasetDetail?.websiteConfig?.waitFor || 1000
+                waitFor: datasetDetail?.websiteConfig?.waitFor || 1000,
+                allowBackwardCrawling: datasetDetail?.websiteConfig?.allowBackwardCrawling || false
               }}
             />
           )}

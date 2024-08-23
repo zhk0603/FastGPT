@@ -51,7 +51,8 @@ async function handler(req: ApiRequestProps<Query>): Promise<{ jobId: string }> 
           excludes: strToArray(dataset.websiteConfig?.excludes),
           limit: dataset.websiteConfig?.limit,
           maxDepth: dataset.websiteConfig?.maxDepth,
-          ignoreSitemap: dataset.websiteConfig?.ignoreSitemap
+          ignoreSitemap: dataset.websiteConfig?.ignoreSitemap,
+          allowBackwardCrawling: dataset?.websiteConfig?.allowBackwardCrawling
         },
         pageOptions: {
           onlyIncludeTags: strToArray(dataset.websiteConfig?.onlyIncludeTags),

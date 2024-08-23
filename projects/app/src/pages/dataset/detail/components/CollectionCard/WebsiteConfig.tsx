@@ -20,6 +20,7 @@ type FormType = {
   removeTags?: string | undefined;
   onlyMainContent?: boolean | undefined;
   waitFor?: number | undefined;
+  allowBackwardCrawling?: boolean | undefined;
 };
 
 const WebsiteConfigModal = ({
@@ -35,7 +36,8 @@ const WebsiteConfigModal = ({
     onlyIncludeTags: '',
     removeTags: '',
     onlyMainContent: false,
-    waitFor: 1000
+    waitFor: 1000,
+    allowBackwardCrawling: false
   }
 }: {
   onClose: () => void;
@@ -156,6 +158,10 @@ const WebsiteConfigModal = ({
               })}
               placeholder="等待指定毫秒，页面加载以获取内容"
             />
+          </Box>
+          <Box flexBasis={['100%', '48%']} mb={4}>
+            <Box>{t('common:core.dataset.website.AllowBackwardCrawling')}</Box>
+            <Switch {...register('allowBackwardCrawling')} />
           </Box>
         </Box>
       </ModalBody>

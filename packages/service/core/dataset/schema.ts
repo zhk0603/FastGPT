@@ -118,6 +118,10 @@ const DatasetSchema = new Schema({
       waitFor: {
         type: Number,
         default: 1000
+      },
+      allowBackwardCrawling: {
+        type: Boolean,
+        default: false
       }
     }
   },
