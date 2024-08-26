@@ -29,6 +29,7 @@ import MyModal from '@fastgpt/web/components/common/MyModal';
 import { compareSnapshot } from '@/web/core/workflow/utils';
 import SaveAndPublishModal from '../WorkflowComponents/Flow/components/SaveAndPublish';
 import { formatTime2YMDHMS } from '@fastgpt/global/common/string/time';
+import { useToast } from '@fastgpt/web/hooks/useToast';
 
 const PublishHistories = dynamic(() => import('../WorkflowPublishHistoriesSlider'));
 
@@ -36,10 +37,15 @@ const Header = () => {
   const { t } = useTranslation();
   const { isPc } = useSystem();
   const router = useRouter();
+  const { toast } = useToast();
 
-  const { appDetail, onPublish, currentTab } = useContextSelector(AppContext, (v) => v);
+  const { appDetail, onSaveApp, currentTab } = useContextSelector(AppContext, (v) => v);
   const isV2Workflow = appDetail?.version === 'v2';
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenBackConfirm,
+    onOpen: onOpenBackConfirm,
+    onClose: onCloseBackConfirm
+  } = useDisclosure();
   const {
     isOpen: isSaveAndPublishModalOpen,
     onOpen: onSaveAndPublishModalOpen,
@@ -61,6 +67,9 @@ const Header = () => {
   } = useContextSelector(WorkflowContext, (v) => v);
 
   const isPublished = useMemo(() => {
+    /* 
+      Find the last saved snapshot in the past and future snapshots
+    */
     const savedSnapshot =
       future.findLast((snapshot) => snapshot.isSaved) || past.find((snapshot) => snapshot.isSaved);
 
@@ -89,7 +98,7 @@ const Header = () => {
       const data = flowData2StoreData();
 
       if (data) {
-        await onPublish({
+        await onSaveApp({
           ...data,
           isPublish,
           versionName,
@@ -97,9 +106,10 @@ const Header = () => {
           //@ts-ignore
           version: 'v2'
         });
+        // Mark the current snapshot as saved
         setPast((prevPast) =>
           prevPast.map((item, index) =>
-            index === prevPast.length - 1
+            index === 0
               ? {
                   ...item,
                   isSaved: true
@@ -151,33 +161,9 @@ const Header = () => {
             name={'common/leftArrowLight'}
             w={'1.75rem'}
             cursor={'pointer'}
-            onClick={isPublished ? onBack : onOpen}
+            onClick={isPublished ? onBack : onOpenBackConfirm}
           />
-          <MyModal
-            isOpen={isOpen}
-            onClose={onClose}
-            iconSrc="common/warn"
-            title={t('common:common.Exit')}
-            w={'400px'}
-          >
-            <ModalBody>
-              <Box>{t('workflow:workflow.exit_tips')}</Box>
-            </ModalBody>
-            <ModalFooter gap={3}>
-              <Button variant={'whiteDanger'} onClick={onBack}>
-                {t('common:common.Exit Directly')}
-              </Button>
-              <Button
-                isLoading={loading}
-                onClick={async () => {
-                  await onClickSave({});
-                  onBack();
-                }}
-              >
-                {t('common:common.Save_and_exit')}
-              </Button>
-            </ModalFooter>
-          </MyModal>
+
           {/* app info */}
           <Box ml={1}>
             <AppCard isPublished={isPublished} showSaveStatus={isV2Workflow} />
@@ -246,7 +232,7 @@ const Header = () => {
                     </Button>
                   }
                 >
-                  {({}) => (
+                  {({ onClose }) => (
                     <MyBox p={1.5}>
                       <MyBox
                         display={'flex'}
@@ -259,6 +245,10 @@ const Header = () => {
                         isLoading={loading}
                         onClick={async () => {
                           await onClickSave({});
+                          toast({
+                            status: 'success',
+                            title: t('app:saved_success')
+                          });
                         }}
                       >
                         <MyIcon name={'core/workflow/upload'} w={'16px'} mr={2} />
@@ -275,6 +265,7 @@ const Header = () => {
                           if (data) {
                             onSaveAndPublishModalOpen();
                           }
+                          onClose();
                         }}
                       >
                         <MyIcon name={'core/workflow/publish'} w={'16px'} mr={2} />
@@ -301,21 +292,51 @@ const Header = () => {
             }}
           />
         )}
+        <MyModal
+          isOpen={isOpenBackConfirm}
+          onClose={onCloseBackConfirm}
+          iconSrc="common/warn"
+          title={t('common:common.Exit')}
+          w={'400px'}
+        >
+          <ModalBody>
+            <Box>{t('workflow:workflow.exit_tips')}</Box>
+          </ModalBody>
+          <ModalFooter gap={3}>
+            <Button variant={'whiteDanger'} onClick={onBack}>
+              {t('common:common.Exit Directly')}
+            </Button>
+            <Button
+              isLoading={loading}
+              onClick={async () => {
+                await onClickSave({});
+                onCloseBackConfirm();
+                onBack();
+                toast({
+                  status: 'success',
+                  title: t('app:saved_success')
+                });
+              }}
+            >
+              {t('common:common.Save_and_exit')}
+            </Button>
+          </ModalFooter>
+        </MyModal>
       </>
     );
   }, [
     isPc,
     currentTab,
     isPublished,
-    isOpen,
-    onClose,
+    onBack,
+    isOpenBackConfirm,
+    onOpenBackConfirm,
+    onCloseBackConfirm,
     t,
     loading,
     isV2Workflow,
     historiesDefaultData,
     isSave,
-    onBack,
-    onOpen,
     onClickSave,
     setHistoriesDefaultData,
     appDetail.chatConfig,
@@ -323,6 +344,7 @@ const Header = () => {
     setWorkflowTestData,
     isSaveAndPublishModalOpen,
     onSaveAndPublishModalClose,
+    toast,
     onSaveAndPublishModalOpen
   ]);
 

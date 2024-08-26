@@ -15,7 +15,7 @@ import { RuntimeEdgeItemType, StoreEdgeItemType } from '@fastgpt/global/core/wor
 import { FlowNodeChangeProps } from '@fastgpt/global/core/workflow/type/fe';
 import { FlowNodeInputItemType } from '@fastgpt/global/core/workflow/type/io';
 import { useToast } from '@fastgpt/web/hooks/useToast';
-import { useLocalStorageState, useMemoizedFn, useUpdateEffect } from 'ahooks';
+import { useDebounceEffect, useLocalStorageState, useMemoizedFn, useUpdateEffect } from 'ahooks';
 import React, {
   Dispatch,
   SetStateAction,
@@ -424,7 +424,7 @@ const WorkflowContextProvider = ({
   const onChangeNode = useMemoizedFn((props: FlowNodeChangeProps) => {
     const { nodeId, type } = props;
     setNodes((nodes) => {
-      const newNodes = nodes.map((node) => {
+      return nodes.map((node) => {
         if (node.id !== nodeId) return node;
 
         const updateObj = cloneDeep(node.data);
@@ -490,7 +490,6 @@ const WorkflowContextProvider = ({
           data: updateObj
         };
       });
-      return newNodes;
     });
   });
   const getNodeDynamicInputs = useCallback(
@@ -532,6 +531,13 @@ const WorkflowContextProvider = ({
 
   const initData = useMemoizedFn(
     async (e: Parameters<WorkflowContextType['initData']>[0], isInit?: boolean) => {
+      /* 
+        Refresh web page, load init
+      */
+      if (isInit && past.length > 0) {
+        return resetSnapshot(past[0]);
+      }
+
       setNodes(e.nodes?.map((item) => storeNode2FlowNode({ item })) || []);
       setEdges(e.edges?.map((item) => storeEdgesRenderEdge({ edge: item })) || []);
 
@@ -544,19 +550,15 @@ const WorkflowContextProvider = ({
       }
 
       // If it is the initial data, save the initial snapshot
-      if (!isInit) return;
-      // If it has been initialized, it will not be saved
-      if (past.length > 0) {
-        resetSnapshot(past[0]);
-        return;
+      if (isInit) {
+        saveSnapshot({
+          pastNodes: e.nodes?.map((item) => storeNode2FlowNode({ item })) || [],
+          pastEdges: e.edges?.map((item) => storeEdgesRenderEdge({ edge: item })) || [],
+          customTitle: t(`app:app.version_initial`),
+          chatConfig: appDetail.chatConfig,
+          isSaved: true
+        });
       }
-      saveSnapshot({
-        pastNodes: e.nodes?.map((item) => storeNode2FlowNode({ item })) || [],
-        pastEdges: e.edges?.map((item) => storeEdgesRenderEdge({ edge: item })) || [],
-        customTitle: t(`app:app.version_initial`),
-        chatConfig: appDetail.chatConfig,
-        isSaved: true
-      });
     }
   );
 
@@ -898,20 +900,23 @@ const WorkflowContextProvider = ({
       return true;
     },
     {
-      debounceWait: 500,
       refreshDeps: [nodes, edges, appDetail.chatConfig, past]
     }
   );
 
-  useEffect(() => {
-    if (!nodes.length) return;
-    saveSnapshot({
-      pastNodes: nodes,
-      pastEdges: edges,
-      customTitle: formatTime2YMDHMS(new Date()),
-      chatConfig: appDetail.chatConfig
-    });
-  }, [nodes, edges, appDetail.chatConfig]);
+  useDebounceEffect(
+    () => {
+      if (!nodes.length) return;
+      saveSnapshot({
+        pastNodes: nodes,
+        pastEdges: edges,
+        customTitle: formatTime2YMDHMS(new Date()),
+        chatConfig: appDetail.chatConfig
+      });
+    },
+    [nodes, edges, appDetail.chatConfig],
+    { wait: 500 }
+  );
 
   const undo = useCallback(() => {
     if (past[1]) {

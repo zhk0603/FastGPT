@@ -123,7 +123,8 @@ const NodeTemplatesModal = ({ isOpen, onClose }: ModuleTemplateListProps) => {
     },
     {
       manual: false,
-      refreshDeps: [members, basicNodeTemplates, nodeList, hasToolNode, templateType]
+      throttleWait: 100,
+      refreshDeps: [basicNodeTemplates, nodeList, hasToolNode, templateType]
     }
   );
   const {
@@ -168,7 +169,7 @@ const NodeTemplatesModal = ({ isOpen, onClose }: ModuleTemplateListProps) => {
         setParentId(parentId);
         setTemplateType(type);
       },
-      refreshDeps: [searchKey, templateType]
+      refreshDeps: [members, searchKey, templateType]
     }
   );
 

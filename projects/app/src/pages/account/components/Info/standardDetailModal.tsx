@@ -9,7 +9,9 @@ import {
   Th,
   Td,
   TableContainer,
-  ModalCloseButton
+  ModalCloseButton,
+  HStack,
+  Box
 } from '@chakra-ui/react';
 import MyModal from '@fastgpt/web/components/common/MyModal';
 import { useTranslation } from 'next-i18next';
@@ -21,6 +23,7 @@ import { subTypeMap, standardSubLevelMap } from '@fastgpt/global/support/wallet/
 import { TeamSubSchema } from '@fastgpt/global/support/wallet/sub/type';
 import { formatTime2YMDHM } from '@fastgpt/global/common/string/time';
 import { useSystemStore } from '@/web/common/system/useSystemStore';
+
 const StandDetailModal = ({ onClose }: { onClose: () => void }) => {
   const { t } = useTranslation();
   const { Loading } = useLoading();
@@ -33,6 +36,7 @@ const StandDetailModal = ({ onClose }: { onClose: () => void }) => {
       maxW={['90vw', '1200px']}
       iconSrc="modal/teamPlans"
       title={t('common:support.wallet.Standard Plan Detail')}
+      isCentered
     >
       <ModalCloseButton onClick={onClose} />
       <ModalBody>
@@ -43,7 +47,7 @@ const StandDetailModal = ({ onClose }: { onClose: () => void }) => {
                 <Th>{t('common:support.standard.type')}</Th>
                 <Th>{t('common:support.standard.storage')}</Th>
                 <Th>{t('common:support.standard.AI Bonus Points')}</Th>
-                <Th>{t('common:support.standard.Start Time')}</Th>
+                <Th>{t('user:bill.valid_time')}</Th>
                 <Th>{t('common:support.standard.Expired Time')}</Th>
               </Tr>
             </Thead>
@@ -96,6 +100,10 @@ const StandDetailModal = ({ onClose }: { onClose: () => void }) => {
           </Table>
           <Loading loading={isLoading} fixed={false} />
         </TableContainer>
+        <HStack mt={4} color={'primary.600'}>
+          <MyIcon name={'infoRounded'} w={'1rem'} />
+          <Box fontSize={'sm'}>{t('user:bill.standard_valid_tip')}</Box>
+        </HStack>
       </ModalBody>
       <ModalFooter></ModalFooter>
     </MyModal>
