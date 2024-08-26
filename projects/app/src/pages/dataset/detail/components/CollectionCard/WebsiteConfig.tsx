@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { useConfirm } from '@fastgpt/web/hooks/useConfirm';
 import { getDocPath } from '@/web/common/system/doc';
 import { useSystemStore } from '@/web/common/system/useSystemStore';
+import QuestionTip from '@fastgpt/web/components/common/MyTooltip/QuestionTip';
 
 type FormType = {
   url?: string | undefined;
@@ -160,7 +161,10 @@ const WebsiteConfigModal = ({
             />
           </Box>
           <Box flexBasis={['100%', '48%']} mb={4}>
-            <Box>{t('common:core.dataset.website.AllowBackwardCrawling')}</Box>
+            <Box>
+              {t('common:core.dataset.website.AllowBackwardCrawling')}{' '}
+              <QuestionTip label={t('common:core.dataset.website.AllowBackwardCrawling Tip')} />
+            </Box>
             <Switch {...register('allowBackwardCrawling')} />
           </Box>
         </Box>

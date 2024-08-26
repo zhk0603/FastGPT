@@ -631,8 +631,7 @@
             "success": "开始同步"
           }
         },
-        "training": {
-        }
+        "training": {}
       },
       "data": {
         "Auxiliary Data": "辅助数据",
@@ -798,7 +797,8 @@
         "RemoveTags": "排除标签，要从页面中删除的 tag、class和 ID。",
         "OnlyMainContent": "只提取主要内容（没有页眉、导航、页脚等）",
         "WaitFor": "等待页面加载（毫秒）",
-        "AllowBackwardCrawling": "允许向前爬取上级路径，例如从“example.com/product/123”返回“example.com/product”"
+        "AllowBackwardCrawling": "允许向前爬取上级路径",
+        "AllowBackwardCrawling Tip": "例如从“example.com/product/123”返回“example.com/product”"
       }
     },
     "module": {
