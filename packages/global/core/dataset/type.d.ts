@@ -65,6 +65,7 @@ export type DatasetCollectionSchemaType = {
   chunkSize: number;
   chunkSplitter?: string;
   qaPrompt?: string;
+  ocrParse?: boolean;
 
   tags?: string[];
 

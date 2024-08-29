@@ -48,6 +48,7 @@ const ResponseTags = ({
     };
   }>();
   const [quoteFolded, setQuoteFolded] = useState<boolean>(true);
+
   const {
     isOpen: isOpenWholeModal,
     onOpen: onOpenWholeModal,
@@ -58,6 +59,7 @@ const ResponseTags = ({
     onOpen: onOpenContextModal,
     onClose: onCloseContextModal
   } = useDisclosure();
+
   useSize(quoteListRef);
   const quoteIsOverflow = quoteListRef.current
     ? quoteListRef.current.scrollHeight > (isPc ? 50 : 55)

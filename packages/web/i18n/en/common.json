@@ -10,6 +10,8 @@
     "auto_renew_q": "Will the subscription package automatically renew?",
     "change_package_a": "When the current package price is greater than the new package, you cannot switch immediately. You will be switched in the form of \"renewal\" after the current package expires.\n\nWhen the current package price is lower than the new package, the system will automatically calculate the remaining balance of the current package, and you can pay the price difference to switch packages.",
     "change_package_q": "Can I switch subscription plans?",
+    "check_subscription_a": "Account - personal information - package details - usage. \nYou can view the effective and expiry dates of the packages you own. \nWhen the paid package expires, it will automatically switch to the free version.",
+    "check_subscription_q": "Where can I check my subscribed plans?",
     "dataset_compute_a": "1 knowledge base storage is equal to 1 knowledge base index. \nA piece of knowledge base data can contain one or more knowledge base indexes. \nDuring enhanced training, 1 piece of data will generate 5 indexes.",
     "dataset_compute_q": "How to calculate knowledge base storage?",
     "dataset_index_a": "Won't. \nHowever, when the knowledge base index exceeds, knowledge base content cannot be inserted and updated.",
@@ -17,7 +19,9 @@
     "free_user_clean_a": "After free version users (free version without purchasing additional packages) have no usage records for 30 days, the system will automatically clear all knowledge base content under the account.",
     "free_user_clean_q": "Will the data in the free version be cleared?",
     "package_overlay_a": "OK. \nEach resource package purchased is independent and will be used stacked within its validity period. \nAI points will be deducted from the resource package that expires first.",
-    "package_overlay_q": "Can additional resource packs be stacked?"
+    "package_overlay_q": "Can additional resource packs be stacked?",
+    "switch_package_a": "The package usage rule is to give priority to more advanced packages. Therefore, if the new package purchased is more advanced than the current package, the new package will take effect immediately: otherwise, the current package will continue to be used.",
+    "switch_package_q": "Switch subscription plans?"
   },
   "Folder": "Folder",
   "Login": "Login",
@@ -122,6 +126,7 @@
     "Confirm to leave the page": "Confirm to leave the page?",
     "Copy": "Copy",
     "Copy Successful": "Copy Successful",
+    "Copy_failed": "Copy failed, please copy manually",
     "Create Failed": "Create Failed",
     "Create New": "Create New",
     "Create Success": "Create Success",
@@ -216,6 +221,7 @@
       "Select Avatar": "Click to select avatar",
       "Select Failed": "Select avatar failed"
     },
+    "base_config": "Basic configuration",
     "choosable": "Choosable",
     "confirm": {
       "Common Tip": "Operation confirmation"
@@ -777,7 +783,8 @@
         "QA mode": "Question and answer split",
         "Vector queue": "Index queue",
         "Waiting": "Estimated 5 minutes",
-        "Website Sync": "Web site sync"
+        "Website Sync": "Web site sync",
+        "tag": "queue situation"
       },
       "website": {
         "Base Url": "Base URL",
@@ -902,6 +909,7 @@
         "System Plugin": "System",
         "System input module": "System input",
         "Team Plugin": "Team",
+        "Team app": "Team",
         "Tool module": "Tool",
         "UnKnow Module": "Unknown module",
         "http body placeholder": "Same syntax as APIFox"
@@ -914,6 +922,7 @@
         "add option": "Add option",
         "input type": "Text",
         "key": "Variable key",
+        "key already exists": "Key already exist",
         "key is required": "Variable key is required",
         "select type": "Dropdown single select",
         "text max length": "Maximum length",
@@ -1068,6 +1077,7 @@
   },
   "extraction_results": "Extract results",
   "field_name": "Name",
+  "free": "free",
   "get_QR_failed": "Failed to obtain QR code",
   "get_app_failed": "Failed to get app",
   "get_laf_failed": "Failed to get Laf function list",
@@ -1087,6 +1097,7 @@
   },
   "invalid_variable": "Invalid variable",
   "is_open": "Opened",
+  "is_using": "in use",
   "item_description": "Field description",
   "item_name": "Field name",
   "key_repetition": "key duplicate",
@@ -1115,6 +1126,11 @@
     "notice": "Do not close the page",
     "old_package_price": "Old package price",
     "other": "For other amounts, please round up the whole number",
+    "package_tip": {
+      "buy": "The package level you purchased is lower than the current package, and the package will take effect after the current package expires. \nYou can check the package usage in Account—Personal Information—Package Details.",
+      "renewal": "You are renewing your plan. \nYou can check the package usage in Account—Personal Information—Package Details.",
+      "upgrade": "If the package you purchased is higher than the current package, the package will take effect immediately, and the current package will take effect later. \nYou can check the package usage in Account—Personal Information—Package Details."
+    },
     "to_recharge": "Insufficient balance, please recharge",
     "wechat": "Please scan the QR code on WeChat to pay:",
     "yuan": "Yuan"
@@ -1161,6 +1177,7 @@
     "Please bind laf accout first": "Please bind laf account first",
     "Plugin List": "Plugin list",
     "Search plugin": "Search plugin",
+    "Search_app": "Search app",
     "Set Name": "Name the plugin",
     "contribute": "Contribute plugins",
     "go to laf": "Go to write",
@@ -1202,6 +1219,7 @@
       "AI Bonus Points": "AI points",
       "Expired Time": "End time",
       "Start Time": "Start time",
+      "due_date": "Expiration time",
       "storage": "Storage amount",
       "type": "Type"
     },
@@ -1362,10 +1380,18 @@
         "standardSubLevel": {
           "custom": "Customized version",
           "enterprise": "Enterprise edition",
+          "enterprise_desc": "Suitable for small and medium-sized enterprises to build knowledge base applications in production environments",
           "experience": "Experience edition",
+          "experience_desc": "Unlocks the full functionality of FastGPT",
           "free": "Free edition",
           "free desc": "Basic functions can be used for free every month, and the knowledge base will be cleared if there is no usage record for 30 days",
-          "team": "Team edition"
+          "team": "Team edition",
+          "team_desc": "Suitable for small teams to build knowledge base applications and provide external services"
+        },
+        "status": {
+          "active": "Taking effect",
+          "expired": "Expired",
+          "inactive": "To be used"
         },
         "token_compute": "Click to view the online Tokens calculator",
         "type": {
@@ -1407,7 +1433,7 @@
     "Quote Content Tip": "You can customize the structure of the quote content to better adapt to different scenarios. You can use some variables for template configuration:\n{{q}} - search content, {{a}} - expected content, {{source}} - source, {{sourceId}} - source file name, {{index}} - the nth quote, they are all optional, here are the default values:\n{{default}}",
     "Quote Prompt Tip": "You can use {{quote}} to insert the quote content template, and use {{question}} to insert the question. Here are the default values:\n{{default}}"
   },
-  "textarea_variable_picker_tip": "Input / to select variables",
+  "textarea_variable_picker_tip": "Input '/' to select variables",
   "tool_field": "Tool field parameter configuration",
   "undefined_var": "An undefined variable is referenced. Is it automatically added?",
   "unit": {
