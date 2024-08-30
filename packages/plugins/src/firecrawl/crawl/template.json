@@ -2,13 +2,13 @@
   "author": "赵坤",
   "version": "486",
   "name": "Firecrawl 爬取指定网站所有可访问的页面",
-  "avatar": "core/workflow/template/duckduckgo",
+  "avatar": "core/workflow/template/firecrawl",
   "intro": "爬取 URL 和所有可访问的子页面。这将提交爬取作业并返回作业 ID 以检查任务的状态。",
   "showStatus": true,
   "weight": 15,
 
   "isTool": true,
-  "templateType": "tools",
+  "templateType": "search",
 
   "workflow": {
     "nodes": [

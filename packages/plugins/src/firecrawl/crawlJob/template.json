@@ -3,7 +3,7 @@
   "version": "486",
   "name": "Firecrawl 获取爬取结果，或取消抓取任务。",
   "avatar": "core/workflow/template/firecrawl",
-  "intro": "根据作业ID检索抓取结果，或取消抓取任务。",
+  "intro": "根据Crawl jobId检索抓取结果，或取消抓取任务。",
   "showStatus": true,
   "weight": 15,
 
