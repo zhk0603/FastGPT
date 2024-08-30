@@ -565,6 +565,7 @@
         "plugin output": "Plugin output value",
         "search using reRank": "Result rearrangement",
         "text output": "text output",
+        "update_var_result": "Variable update results (display multiple variable update results in order)",
         "user_select_result": "User select result"
       },
       "retry": "Regenerate",
@@ -1104,7 +1105,7 @@
   "navbar": {
     "Account": "Account",
     "Chat": "Chat",
-    "Datasets": "Knowledge Base",
+    "Datasets": "Knowledge",
     "Studio": "Studio",
     "Tools": "Tools"
   },
@@ -1132,7 +1133,7 @@
       "upgrade": "If the package you purchased is higher than the current package, the package will take effect immediately, and the current package will take effect later. \nYou can check the package usage in Account—Personal Information—Package Details."
     },
     "to_recharge": "Insufficient balance, please recharge",
-    "wechat": "Please scan the QR code on WeChat to pay:",
+    "wechat": "WeChat scan the QR code to pay: ¥{{price}}",
     "yuan": "Yuan"
   },
   "permission": {
