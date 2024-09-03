@@ -27,6 +27,7 @@
   "Login": "Login",
   "Move": "Move",
   "Name": "Name",
+  "Not_selected": "Not selected",
   "Rename": "Rename",
   "Resume": "Resume",
   "Running": "Running",
@@ -226,6 +227,7 @@
     "confirm": {
       "Common Tip": "Operation confirmation"
     },
+    "copy_to_clipboard": "copy to clipboard",
     "course": {
       "Read Course": "Read course"
     },
@@ -237,6 +239,7 @@
       "too_many_request": "Too many requests, please try again later.",
       "unKnow": "An unexpected error occurred~"
     },
+    "export_to_json": "Export to JSON",
     "failed": "fail",
     "folder": {
       "Drag Tip": "Drag me",
@@ -256,6 +259,7 @@
     "jsonEditor": {
       "Parse error": "JSON may be incorrect, please check carefully"
     },
+    "json_config": "JSON configuration",
     "link": {
       "UnValid": "Invalid link"
     },
@@ -288,10 +292,14 @@
     },
     "undo_tip": "unde ctrl z",
     "undo_tip_mac": "undo  ⌘  z  ",
+    "upload_file": "Upload files",
     "zoomin_tip": "zoomIn  ctrl  -",
     "zoomin_tip_mac": "zoomIn ⌘  -",
     "zoomout_tip": "zoomOut  ctrl  +",
     "zoomout_tip_mac": "zoomOut  ⌘  +"
+  },
+  "comon": {
+    "Continue_Adding": "Continue Adding"
   },
   "confirm_choice": "Confirm selection",
   "contribute_app_template": "Contribution template",
@@ -439,7 +447,8 @@
       "tool_label": {
         "doc": "Use documentation",
         "github": "GitHub address",
-        "price": "Billing instructions"
+        "price": "Billing instructions",
+        "view_doc": "View documentation"
       },
       "tts": {
         "Close": "Do not use",
@@ -655,6 +664,7 @@
         "Search data placeholder": "Search related data",
         "Too Long": "Total length too long",
         "Total Amount": "{{total}} sets",
+        "empty_index": "No custom index",
         "group": "Group",
         "unit": "items"
       },
@@ -982,9 +992,12 @@
         "Manual input": "Manual input",
         "Manual select": "Manual select",
         "Reference": "Variable reference",
+        "custom": "Custom",
         "dynamicTargetInput": "Dynamic external data",
+        "file_link": "File link",
         "input": "Single line input box",
         "number input": "Number input box",
+        "select": "Select",
         "selectApp": "App selection",
         "selectDataset": "Knowledge base selection",
         "selectLLMModel": "Dialogue model selection",
@@ -1055,7 +1068,8 @@
         "Content": "Data content",
         "Course": "Documentation",
         "Delete": "Delete data",
-        "Index": "Data Index ({{amount}})"
+        "Index": "Data Index ({{amount}})",
+        "divide_content": "Chunked content"
       },
       "input is empty": "Data content cannot be empty"
     },

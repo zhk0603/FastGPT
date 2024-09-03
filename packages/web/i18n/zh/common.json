@@ -27,6 +27,7 @@
   "Login": "登录",
   "Move": "移动",
   "Name": "名称",
+  "Not_selected": "未选择",
   "Rename": "重命名",
   "Resume": "恢复",
   "Running": "运行中",
@@ -111,6 +112,7 @@
   "common": {
     "Action": "操作",
     "Add": "添加",
+    "copy_to_clipboard": "复制到剪贴板",
     "Add New": "新增",
     "Add Success": "添加成功",
     "All": "全部",
@@ -121,6 +123,7 @@
     "Confirm": "确认",
     "Confirm Create": "确认创建",
     "Confirm Import": "确认导入",
+    "export_to_json": "导出为 JSON",
     "Confirm Move": "移动到这",
     "Confirm Update": "确认更新",
     "Confirm to leave the page": "确认离开该页面？",
@@ -192,6 +195,7 @@
     "Save Success": "保存成功",
     "Save_and_exit": "保存并退出",
     "Search": "搜索",
+    "json_config": "JSON 配置",
     "Select File Failed": "选择文件异常",
     "Select template": "选择模板",
     "Set Avatar": "点击设置头像",
@@ -288,10 +292,14 @@
     },
     "undo_tip": "撤销  ctrl  z",
     "undo_tip_mac": "撤销  ⌘  z ",
+    "upload_file": "上传文件",
     "zoomin_tip": "缩小  ctrl  -",
     "zoomin_tip_mac": "缩小  ⌘  -",
     "zoomout_tip": "放大  ctrl  +",
     "zoomout_tip_mac": "放大  ⌘  +"
+  },
+  "comon": {
+    "Continue_Adding": "继续添加"
   },
   "confirm_choice": "确认选择",
   "contribute_app_template": "贡献模板",
@@ -439,7 +447,8 @@
       "tool_label": {
         "doc": "使用文档",
         "github": "GitHub地址",
-        "price": "计费说明"
+        "price": "计费说明",
+        "view_doc": "查看说明文档"
       },
       "tts": {
         "Close": "不使用",
@@ -638,8 +647,7 @@
             "success": "开始同步"
           }
         },
-        "training": {
-        }
+        "training": {}
       },
       "data": {
         "Auxiliary Data": "辅助数据",
@@ -655,6 +663,7 @@
         "Search data placeholder": "搜索相关数据",
         "Too Long": "总长度超长了",
         "Total Amount": "{{total}} 组",
+        "empty_index": "无自定义索引",
         "group": "组",
         "unit": "条"
       },
@@ -993,9 +1002,12 @@
         "Manual input": "手动输入",
         "Manual select": "手动选择",
         "Reference": "变量引用",
+        "custom": "自定义变量",
         "dynamicTargetInput": "动态外部数据",
+        "file_link": "文件上传",
         "input": "单行输入框",
         "number input": "数字输入框",
+        "select": "单选框",
         "selectApp": "应用选择",
         "selectDataset": "知识库选择",
         "selectLLMModel": "对话模型选择",
@@ -1066,7 +1078,8 @@
         "Content": "数据内容",
         "Course": "说明文档",
         "Delete": "删除数据",
-        "Index": "数据索引（{{amount}}）"
+        "Index": "数据索引({{amount}})",
+        "divide_content": "分块内容"
       },
       "input is empty": "数据内容不能为空 "
     },
@@ -1141,10 +1154,10 @@
     "package_tip": {
       "buy": "您购买的套餐等级低于当前套餐，该套餐将在当前套餐过期后生效。\n您可在账号—个人信息—套餐详情里，查看套餐使用情况。",
       "renewal": "您正在续费套餐。您可在账号—个人信息—套餐详情里，查看套餐使用情况。",
-      "upgrade": "您购买的套餐等级高于当前套餐，该套餐将即刻生效，当前套餐将延后生效。\n您可在账号—个人信息—套餐详情里，查看套餐使用情况。"
+      "upgrade": "您购买的套餐等级高于当前套餐，该套餐将即刻生效，当前套餐将延后生效。您可在账号—个人信息—套餐详情里，查看套餐使用情况。"
     },
     "to_recharge": "余额不足，去充值",
-    "wechat": "微信扫码支付: {{price}}元\n请勿关闭页面",
+    "wechat": "请微信扫码支付: {{price}}元\n请勿关闭页面",
     "yuan": "{{amount}}元"
   },
   "permission": {

@@ -100,8 +100,7 @@ const NodeVariableUpdate = ({ data, selected }: NodeProps<FlowNodeItemType>) => 
           const { valueType } = getRefData({
             variable: updateItem.variable,
             nodeList,
-            chatConfig: appDetail.chatConfig,
-            t
+            chatConfig: appDetail.chatConfig
           });
           const renderTypeData = menuList.find((item) => item.renderType === updateItem.renderType);
           const handleUpdate = (newValue: ReferenceValueProps | string) => {
@@ -174,6 +173,7 @@ const NodeVariableUpdate = ({ data, selected }: NodeProps<FlowNodeItemType>) => 
                       bg={'white'}
                       borderRadius={'xs'}
                       mx={2}
+                      color={'primary.600'}
                       onClick={() => {
                         onUpdateList(
                           updateList.map((update, i) => {

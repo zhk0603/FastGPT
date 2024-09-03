@@ -43,7 +43,7 @@ const UNDEFINED_SIGN = 'null';
 
 export const dispatchHttp468Request = async (props: HttpRequestProps): Promise<HttpResponse> => {
   let {
-    app: { _id: appId },
+    runningAppInfo: { id: appId },
     chatId,
     responseChatItemId,
     variables,
