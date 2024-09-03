@@ -166,6 +166,9 @@ export enum NodeOutputKeyEnum {
   // http
   httpRawResponse = 'httpRawResponse',
 
+  // http header
+  httpHeader = 'httpHeader',
+
   // plugin
   pluginStart = 'pluginStart',
 

@@ -35,7 +35,7 @@ const WebsiteConfigModal = ({
     excludes: '',
     ignoreSitemap: true,
     onlyIncludeTags: '',
-    removeTags: '',
+    removeTags: 'script',
     onlyMainContent: false,
     waitFor: 1000,
     allowBackwardCrawling: false

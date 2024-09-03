@@ -102,6 +102,8 @@
   "question_optimization": "问题优化",
   "quote_num": "引用{{num}}",
   "raw_response": "原始响应",
+  "http_header": "响应Header",
+  "http_header_description": "Http请求的响应Header",
   "regex": "正则",
   "reply_text": "回复的文本",
   "request_error": "请求错误",

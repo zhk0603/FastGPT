@@ -16,6 +16,7 @@ import { DispatchNodeResultType } from '@fastgpt/global/core/workflow/runtime/ty
 import { getErrText } from '@fastgpt/global/common/error/utils';
 import { textAdaptGptResponse } from '@fastgpt/global/core/workflow/runtime/utils';
 import { getSystemPluginCb } from '../../../../../plugins/register';
+const qs = require('qs');
 
 type PropsArrType = {
   key: string;
@@ -128,13 +129,14 @@ export const dispatchHttp468Request = async (props: HttpRequestProps): Promise<H
   })();
 
   try {
-    const { formatResponse, rawResponse } = await (async () => {
+    const { formatResponse, rawResponse, httpHeader } = await (async () => {
       const systemPluginCb = await getSystemPluginCb();
       if (systemPluginCb[httpReqUrl]) {
         const pluginResult = await systemPluginCb[httpReqUrl](requestBody);
         return {
           formatResponse: pluginResult,
-          rawResponse: pluginResult
+          rawResponse: pluginResult,
+          httpHeader: null
         };
       }
       return fetchData({
@@ -175,6 +177,7 @@ export const dispatchHttp468Request = async (props: HttpRequestProps): Promise<H
       [DispatchNodeResponseKeyEnum.toolResponses]:
         Object.keys(results).length > 0 ? results : rawResponse,
       [NodeOutputKeyEnum.httpRawResponse]: rawResponse,
+      [NodeOutputKeyEnum.httpHeader]: httpHeader,
       ...results
     };
   } catch (error) {
@@ -208,7 +211,15 @@ async function fetchData({
   params: Record<string, any>;
   timeout: number;
 }) {
-  const { data: response } = await axios({
+  if (headers['Content-Type']) {
+    const isUrlEncoded =
+      headers['Content-Type'].toLowerCase().indexOf('application/x-www-form-urlencoded') > -1;
+    if (isUrlEncoded) {
+      body = qs.stringify(body);
+    }
+  }
+
+  const { data: response, headers: httpHeader } = await axios({
     method,
     baseURL: `http://${SERVICE_LOCAL_HOST}`,
     url,
@@ -295,7 +306,8 @@ async function fetchData({
   return {
     formatResponse:
       typeof response === 'object' && !Array.isArray(response) ? parseJson(response) : {},
-    rawResponse: response
+    rawResponse: response,
+    httpHeader: httpHeader
   };
 }
 

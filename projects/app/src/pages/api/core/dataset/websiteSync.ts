@@ -55,6 +55,7 @@ async function handler(req: ApiRequestProps<Query>): Promise<{ jobId: string }> 
           allowBackwardCrawling: dataset?.websiteConfig?.allowBackwardCrawling
         },
         pageOptions: {
+          replaceAllPathsWithAbsolutePaths: true,
           onlyIncludeTags: strToArray(dataset.websiteConfig?.onlyIncludeTags),
           onlyMainContent: dataset.websiteConfig?.onlyMainContent,
           removeTags: strToArray(dataset.websiteConfig?.removeTags),

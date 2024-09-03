@@ -111,6 +111,15 @@ export const HttpNode468: FlowNodeTemplateType = {
       description: i18nT('workflow:http_raw_response_description'),
       valueType: WorkflowIOValueTypeEnum.any,
       type: FlowNodeOutputTypeEnum.static
+    },
+    {
+      id: NodeOutputKeyEnum.httpHeader,
+      key: NodeOutputKeyEnum.httpHeader,
+      required: false,
+      label: i18nT('workflow:http_header'),
+      description: i18nT('workflow:http_header_description'),
+      valueType: WorkflowIOValueTypeEnum.any,
+      type: FlowNodeOutputTypeEnum.static
     }
   ]
 };

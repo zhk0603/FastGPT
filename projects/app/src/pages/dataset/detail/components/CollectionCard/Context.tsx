@@ -161,7 +161,7 @@ const CollectionPageContextProvider = ({ children }: { children: ReactNode }) =>
                 ignoreSitemap: datasetDetail?.websiteConfig?.ignoreSitemap ?? true,
                 onlyMainContent: datasetDetail?.websiteConfig?.onlyMainContent ?? false,
                 onlyIncludeTags: datasetDetail?.websiteConfig?.onlyIncludeTags,
-                removeTags: datasetDetail?.websiteConfig?.removeTags,
+                removeTags: datasetDetail?.websiteConfig?.removeTags ?? 'script',
                 waitFor: datasetDetail?.websiteConfig?.waitFor ?? 1000,
                 allowBackwardCrawling: datasetDetail?.websiteConfig?.allowBackwardCrawling ?? false
               }}
