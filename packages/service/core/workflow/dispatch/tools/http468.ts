@@ -308,7 +308,8 @@ export const dispatchHttp468Request = async (props: HttpRequestProps): Promise<H
         headers: Object.keys(headers).length > 0 ? headers : undefined,
         httpResult: { error: formatHttpError(error) }
       },
-      [NodeOutputKeyEnum.httpRawResponse]: getErrText(error)
+      [NodeOutputKeyEnum.httpRawResponse]: getErrText(error),
+      [NodeOutputKeyEnum.httpHeader]: httpHeader
     };
   }
 };

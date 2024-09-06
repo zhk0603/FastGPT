@@ -116,6 +116,8 @@
   "question_optimization": "Problem optimization",
   "quote_num": "Reference {{num}}",
   "raw_response": "original response",
+  "http_header": "Response headers",
+  "http_header_description": "HTTP request response headers",
   "regex": "regular",
   "reply_text": "Reply text",
   "request_error": "Request error",

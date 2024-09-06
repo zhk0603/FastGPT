@@ -138,7 +138,7 @@ export const HttpNode468: FlowNodeTemplateType = {
       required: false,
       label: i18nT('workflow:http_header'),
       description: i18nT('workflow:http_header_description'),
-      valueType: WorkflowIOValueTypeEnum.any,
+      valueType: WorkflowIOValueTypeEnum.object,
       type: FlowNodeOutputTypeEnum.static
     }
   ]
