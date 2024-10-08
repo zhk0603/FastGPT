@@ -27,6 +27,7 @@ import { GPTMessages2Chats } from '@fastgpt/global/core/chat/adapt';
 import { updateToolInputValue } from './utils';
 import { computedMaxToken, llmCompletionsBodyFormat } from '../../../../ai/utils';
 import { WorkflowResponseType } from '../../type';
+import { toolValueTypeList } from '@fastgpt/global/core/workflow/constants';
 
 type FunctionCallCompletion = {
   id: string;
@@ -68,12 +69,18 @@ export const runToolWithPromptCall = async (
           type: string;
           description: string;
           required?: boolean;
+          enum?: string[];
         }
       > = {};
       item.toolParams.forEach((item) => {
+        const jsonSchema = (
+          toolValueTypeList.find((type) => type.value === item.valueType) || toolValueTypeList[0]
+        ).jsonSchema;
+
         properties[item.key] = {
-          type: 'string',
-          description: item.toolDescription || ''
+          ...jsonSchema,
+          description: item.toolDescription || '',
+          enum: item.enum?.split('\n').filter(Boolean) || []
         };
       });
 
@@ -275,43 +282,42 @@ export const runToolWithPromptCall = async (
     };
   })();
 
-  // Run tool status
-  if (node.showStatus) {
-    workflowStreamResponse?.({
-      event: SseResponseEventEnum.flowNodeStatus,
-      data: {
-        status: 'running',
-        name: node.name
-      }
-    });
-  }
-
   // 合并工具调用的结果，使用 functionCall 格式存储。
   const assistantToolMsgParams: ChatCompletionAssistantMessageParam = {
     role: ChatCompletionRequestMessageRoleEnum.Assistant,
     function_call: toolJson
   };
+
+  /* 
+    ...
+    user
+    assistant: tool data
+  */
   const concatToolMessages = [
     ...requestMessages,
     assistantToolMsgParams
   ] as ChatCompletionMessageParam[];
+  // Only toolCall tokens are counted here, Tool response tokens count towards the next reply
   const tokens = await countGptMessagesTokens(concatToolMessages, undefined);
-  const completeMessages: ChatCompletionMessageParam[] = [
-    ...concatToolMessages,
-    {
-      role: ChatCompletionRequestMessageRoleEnum.Function,
-      name: toolJson.name,
-      content: toolsRunResponse.toolResponsePrompt
-    }
-  ];
 
-  // tool assistant
-  const toolAssistants = toolsRunResponse.moduleRunResponse.assistantResponses || [];
+  /* 
+    ...
+    user
+    assistant: tool data
+    function: tool response
+  */
+  const functionResponseMessage: ChatCompletionMessageParam = {
+    role: ChatCompletionRequestMessageRoleEnum.Function,
+    name: toolJson.name,
+    content: toolsRunResponse.toolResponsePrompt
+  };
+
   // tool node assistant
-  const adaptChatMessages = GPTMessages2Chats(completeMessages);
-  const toolNodeAssistant = adaptChatMessages.pop() as AIChatItemType;
-
-  const toolNodeAssistants = [...assistantResponses, ...toolAssistants, ...toolNodeAssistant.value];
+  const toolNodeAssistant = GPTMessages2Chats([
+    assistantToolMsgParams,
+    functionResponseMessage
+  ])[0] as AIChatItemType;
+  const toolNodeAssistants = [...assistantResponses, ...toolNodeAssistant.value];
 
   const dispatchFlowResponse = response
     ? response.dispatchFlowResponse.concat(toolsRunResponse.moduleRunResponse)

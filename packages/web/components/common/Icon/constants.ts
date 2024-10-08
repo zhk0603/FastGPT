@@ -7,6 +7,7 @@ export const iconPaths = {
   closeSolid: () => import('./icons/closeSolid.svg'),
   collectionLight: () => import('./icons/collectionLight.svg'),
   collectionSolid: () => import('./icons/collectionSolid.svg'),
+  comment: () => import('./icons/comment.svg'),
   'common/add2': () => import('./icons/common/add2.svg'),
   'common/addCircleLight': () => import('./icons/common/addCircleLight.svg'),
   'common/addLight': () => import('./icons/common/addLight.svg'),
@@ -37,9 +38,12 @@ export const iconPaths = {
   'common/importLight': () => import('./icons/common/importLight.svg'),
   'common/info': () => import('./icons/common/info.svg'),
   'common/inviteLight': () => import('./icons/common/inviteLight.svg'),
+  'common/language/America': () => import('./icons/common/language/America.svg'),
+  'common/language/China': () => import('./icons/common/language/China.svg'),
   'common/language/en': () => import('./icons/common/language/en.svg'),
   'common/language/zh': () => import('./icons/common/language/zh.svg'),
   'common/leftArrowLight': () => import('./icons/common/leftArrowLight.svg'),
+  'common/line': () => import('./icons/common/line.svg'),
   'common/lineChange': () => import('./icons/common/lineChange.svg'),
   'common/linkBlue': () => import('./icons/common/linkBlue.svg'),
   'common/list': () => import('./icons/common/list.svg'),
@@ -122,6 +126,7 @@ export const iconPaths = {
   'core/chat/chatLight': () => import('./icons/core/chat/chatLight.svg'),
   'core/chat/chatModelTag': () => import('./icons/core/chat/chatModelTag.svg'),
   'core/chat/chevronDown': () => import('./icons/core/chat/chevronDown.svg'),
+  'core/chat/chevronRight': () => import('./icons/core/chat/chevronRight.svg'),
   'core/chat/chevronSelector': () => import('./icons/core/chat/chevronSelector.svg'),
   'core/chat/chevronUp': () => import('./icons/core/chat/chevronUp.svg'),
   'core/chat/export/pdf': () => import('./icons/core/chat/export/pdf.svg'),
@@ -208,8 +213,10 @@ export const iconPaths = {
   'core/workflow/runSkip': () => import('./icons/core/workflow/runSkip.svg'),
   'core/workflow/runSuccess': () => import('./icons/core/workflow/runSuccess.svg'),
   'core/workflow/running': () => import('./icons/core/workflow/running.svg'),
+  'core/workflow/template/BI': () => import('./icons/core/workflow/template/BI.svg'),
   'core/workflow/template/FileRead': () => import('./icons/core/workflow/template/FileRead.svg'),
   'core/workflow/template/aiChat': () => import('./icons/core/workflow/template/aiChat.svg'),
+  'core/workflow/template/baseChart': () => import('./icons/core/workflow/template/baseChart.svg'),
   'core/workflow/template/codeRun': () => import('./icons/core/workflow/template/codeRun.svg'),
   'core/workflow/template/customFeedback': () =>
     import('./icons/core/workflow/template/customFeedback.svg'),
@@ -222,6 +229,7 @@ export const iconPaths = {
   'core/workflow/template/extractJson': () =>
     import('./icons/core/workflow/template/extractJson.svg'),
   'core/workflow/template/fetchUrl': () => import('./icons/core/workflow/template/fetchUrl.svg'),
+  'core/workflow/template/formInput': () => import('./icons/core/workflow/template/formInput.svg'),
   'core/workflow/template/getTime': () => import('./icons/core/workflow/template/getTime.svg'),
   'core/workflow/template/httpRequest': () =>
     import('./icons/core/workflow/template/httpRequest.svg'),
@@ -247,6 +255,12 @@ export const iconPaths = {
   'core/workflow/template/textConcat': () =>
     import('./icons/core/workflow/template/textConcat.svg'),
   'core/workflow/template/toolCall': () => import('./icons/core/workflow/template/toolCall.svg'),
+  'core/workflow/template/toolParams': () =>
+    import('./icons/core/workflow/template/toolParams.svg'),
+  'core/workflow/template/toolkitActive': () =>
+    import('./icons/core/workflow/template/toolkitActive.svg'),
+  'core/workflow/template/toolkitInactive': () =>
+    import('./icons/core/workflow/template/toolkitInactive.svg'),
   'core/workflow/template/userSelect': () =>
     import('./icons/core/workflow/template/userSelect.svg'),
   'core/workflow/template/variable': () => import('./icons/core/workflow/template/variable.svg'),

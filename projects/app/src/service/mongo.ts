@@ -12,9 +12,8 @@ import { startMongoWatch } from './common/system/volumnMongoWatch';
 import { startTrainingQueue } from './core/dataset/training/utils';
 import { systemStartCb } from '@fastgpt/service/common/system/tools';
 import { addLog } from '@fastgpt/service/common/system/log';
+import { getSystemPluginCb } from './core/app/plugin';
 import { initMq } from './common/system/mq';
-import { getSystemPlugins, getSystemPluginCb } from './core/app/plugin';
-
 /**
  * This function is equivalent to the entry to the service
  * connect MongoDB and init data
@@ -33,13 +32,7 @@ export function connectToDatabase() {
       systemStartCb();
 
       //init system config；init vector database；init root user
-      await Promise.all([
-        getInitConfig(),
-        getSystemPlugins(),
-        getSystemPluginCb(),
-        initVectorStore(),
-        initRootUser()
-      ]);
+      await Promise.all([getInitConfig(), getSystemPluginCb(), initVectorStore(), initRootUser()]);
 
       startMongoWatch();
       // cron

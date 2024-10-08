@@ -37,6 +37,60 @@ export enum WorkflowIOValueTypeEnum {
   selectDataset = 'selectDataset'
 }
 
+export const toolValueTypeList = [
+  {
+    label: WorkflowIOValueTypeEnum.string,
+    value: WorkflowIOValueTypeEnum.string,
+    jsonSchema: {
+      type: 'string'
+    }
+  },
+  {
+    label: WorkflowIOValueTypeEnum.number,
+    value: WorkflowIOValueTypeEnum.number,
+    jsonSchema: {
+      type: 'number'
+    }
+  },
+  {
+    label: WorkflowIOValueTypeEnum.boolean,
+    value: WorkflowIOValueTypeEnum.boolean,
+    jsonSchema: {
+      type: 'boolean'
+    }
+  },
+  {
+    label: 'array<string>',
+    value: WorkflowIOValueTypeEnum.arrayString,
+    jsonSchema: {
+      type: 'array',
+      items: {
+        type: 'string'
+      }
+    }
+  },
+  {
+    label: 'array<number>',
+    value: WorkflowIOValueTypeEnum.arrayNumber,
+    jsonSchema: {
+      type: 'array',
+      items: {
+        type: 'number'
+      }
+    }
+  },
+  {
+    label: 'array<boolean>',
+    value: WorkflowIOValueTypeEnum.arrayBoolean,
+    jsonSchema: {
+      type: 'array',
+      items: {
+        type: 'boolean'
+      }
+    }
+  }
+];
+
 /* reg: modulename key */
 export enum NodeInputKeyEnum {
   // old
@@ -70,6 +124,7 @@ export enum NodeInputKeyEnum {
   anyInput = 'system_anyInput',
   textareaInput = 'system_textareaInput',
   addInputParam = 'system_addInputParam',
+  forbidStream = 'system_forbid_stream',
 
   // history
   historyMaxAmount = 'maxContext',
@@ -147,7 +202,14 @@ export enum NodeInputKeyEnum {
   // loop start
   loopStartInput = 'loopStartInput',
   // loop end
-  loopEndInput = 'loopEndInput'
+  loopEndInput = 'loopEndInput',
+
+  // form input
+  userInputForms = 'userInputForms',
+
+  // comment
+  commentText = 'commentText',
+  commentSize = 'commentSize'
 }
 
 export enum NodeOutputKeyEnum {
@@ -199,7 +261,10 @@ export enum NodeOutputKeyEnum {
   loopArray = 'loopArray',
 
   // loop start
-  loopStartInput = 'loopStartInput'
+  loopStartInput = 'loopStartInput',
+
+  // form input
+  formInputResult = 'formInputResult'
 }
 
 export enum VariableInputEnum {

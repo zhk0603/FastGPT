@@ -25,7 +25,9 @@ const packagePluginList = [
   'duckduckgo/search',
   'duckduckgo/searchImg',
   'duckduckgo/searchNews',
-  'duckduckgo/searchVideo'
+  'duckduckgo/searchVideo',
+  'drawing',
+  'drawing/baseChart'
 ];
 
 if (FirecrawlUrl) {

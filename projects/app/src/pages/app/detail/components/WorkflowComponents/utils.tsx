@@ -16,6 +16,7 @@ export const uiWorkflow2StoreWorkflow = ({
 }) => {
   const formatNodes: StoreNodeItemType[] = nodes.map((item) => ({
     nodeId: item.data.nodeId,
+    parentNodeId: item.data.parentNodeId,
     name: item.data.name,
     intro: item.data.intro,
     avatar: item.data.avatar,
@@ -26,9 +27,17 @@ export const uiWorkflow2StoreWorkflow = ({
     inputs: item.data.inputs,
     outputs: item.data.outputs,
     pluginId: item.data.pluginId,
-    parentNodeId: item.data.parentNodeId
+    isFolded: item.data.isFolded
   }));
 
+  // get all handle
+  const reactFlowViewport = document.querySelector('.react-flow__viewport');
+  // Gets the value of data-handleid on all elements below it whose data-handleid is not empty
+  const handleList =
+    reactFlowViewport?.querySelectorAll('[data-handleid]:not([data-handleid=""])') || [];
+  const handleIdList = Array.from(handleList).map(
+    (item) => item.getAttribute('data-handleid') || ''
+  );
   const formatEdges: StoreEdgeItemType[] = edges
     .map((item) => ({
       source: item.source,
@@ -36,7 +45,19 @@ export const uiWorkflow2StoreWorkflow = ({
       sourceHandle: item.sourceHandle || '',
       targetHandle: item.targetHandle || ''
     }))
-    .filter((item) => item.sourceHandle && item.targetHandle);
+    .filter((item) => item.sourceHandle && item.targetHandle)
+    .filter(
+      // Filter out edges that do not have both sourceHandle and targetHandle
+      (item) => {
+        if (!reactFlowViewport) return true;
+        const currentSourceNode = nodes.find((node) => node.data.nodeId === item.source);
+
+        if (currentSourceNode?.data.isFolded) return true;
+
+        // Not in react flow page
+        return handleIdList.includes(item.sourceHandle) && handleIdList.includes(item.targetHandle);
+      }
+    );
 
   return {
     nodes: formatNodes,

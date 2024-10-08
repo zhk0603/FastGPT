@@ -64,11 +64,13 @@ import { dispatchUserSelect } from './interactive/userSelect';
 import {
   InteractiveNodeResponseItemType,
   UserSelectInteractive
-} from '@fastgpt/global/core/workflow/template/system/userSelect/type';
+} from '@fastgpt/global/core/workflow/template/system/interactive/type';
 import { dispatchRunAppNode } from './plugin/runApp';
 import { dispatchLoop } from './loop/runLoop';
 import { dispatchLoopEnd } from './loop/runLoopEnd';
 import { dispatchLoopStart } from './loop/runLoopStart';
+import { dispatchFormInput } from './interactive/formInput';
+import { dispatchToolParams } from './agent/runTool/toolParams';
 
 const callbackMap: Record<FlowNodeTypeEnum, Function> = {
   [FlowNodeTypeEnum.workflowStart]: dispatchWorkflowStart,
@@ -86,6 +88,7 @@ const callbackMap: Record<FlowNodeTypeEnum, Function> = {
   [FlowNodeTypeEnum.queryExtension]: dispatchQueryExtension,
   [FlowNodeTypeEnum.tools]: dispatchRunTools,
   [FlowNodeTypeEnum.stopTool]: dispatchStopToolCall,
+  [FlowNodeTypeEnum.toolParams]: dispatchToolParams,
   [FlowNodeTypeEnum.lafModule]: dispatchLafRequest,
   [FlowNodeTypeEnum.ifElseNode]: dispatchIfElse,
   [FlowNodeTypeEnum.variableUpdate]: dispatchUpdateVariable,
@@ -97,12 +100,14 @@ const callbackMap: Record<FlowNodeTypeEnum, Function> = {
   [FlowNodeTypeEnum.loop]: dispatchLoop,
   [FlowNodeTypeEnum.loopStart]: dispatchLoopStart,
   [FlowNodeTypeEnum.loopEnd]: dispatchLoopEnd,
+  [FlowNodeTypeEnum.formInput]: dispatchFormInput,
 
   // none
   [FlowNodeTypeEnum.systemConfig]: dispatchSystemConfig,
   [FlowNodeTypeEnum.pluginConfig]: () => Promise.resolve(),
   [FlowNodeTypeEnum.emptyNode]: () => Promise.resolve(),
   [FlowNodeTypeEnum.globalVariable]: () => Promise.resolve(),
+  [FlowNodeTypeEnum.comment]: () => Promise.resolve(),
 
   [FlowNodeTypeEnum.runApp]: dispatchAppRequest // abandoned
 };
@@ -497,7 +502,7 @@ export async function dispatchWorkFlow(data: Props): Promise<DispatchFlowRespons
     result: Record<string, any>;
   }> {
     // push run status messages
-    if (node.showStatus) {
+    if (node.showStatus && !props.isToolCall) {
       props.workflowStreamResponse?.({
         event: SseResponseEventEnum.flowNodeStatus,
         data: {
@@ -553,6 +558,14 @@ export async function dispatchWorkFlow(data: Props): Promise<DispatchFlowRespons
       dispatchRes[item.key] = valueTypeFormat(item.defaultValue, item.valueType);
     });
 
+    // Update new variables
+    if (dispatchRes[DispatchNodeResponseKeyEnum.newVariables]) {
+      variables = {
+        ...variables,
+        ...dispatchRes[DispatchNodeResponseKeyEnum.newVariables]
+      };
+    }
+
     return {
       node,
       runStatus: 'run',
@@ -584,7 +597,10 @@ export async function dispatchWorkFlow(data: Props): Promise<DispatchFlowRespons
   // reset entry
   runtimeNodes.forEach((item) => {
     // Interactive node is not the entry node, return interactive result
-    if (item.flowNodeType !== FlowNodeTypeEnum.userSelect) {
+    if (
+      item.flowNodeType !== FlowNodeTypeEnum.userSelect &&
+      item.flowNodeType !== FlowNodeTypeEnum.formInput
+    ) {
       item.isEntry = false;
     }
   });

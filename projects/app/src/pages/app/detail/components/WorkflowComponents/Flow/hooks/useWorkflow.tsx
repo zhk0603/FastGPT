@@ -13,7 +13,8 @@ import {
   getNodesBounds,
   Rect,
   NodeRemoveChange,
-  NodeSelectionChange
+  NodeSelectionChange,
+  EdgeRemoveChange
 } from 'reactflow';
 import { EDGE_TYPE, FlowNodeTypeEnum } from '@fastgpt/global/core/workflow/node/constant';
 import 'reactflow/dist/style.css';
@@ -30,6 +31,8 @@ import {
   Input_Template_Node_Width
 } from '@fastgpt/global/core/workflow/template/input';
 import { FlowNodeItemType } from '@fastgpt/global/core/workflow/type/node';
+import { getHandleId } from '@fastgpt/global/core/workflow/utils';
+import { IfElseResultEnum } from '@fastgpt/global/core/workflow/template/system/ifElse/constant';
 
 /* 
   Compute helper lines for snapping nodes to each other
@@ -273,12 +276,15 @@ export const useWorkflow = () => {
   const { isDowningCtrl } = useKeyboard();
   const {
     setConnectingEdge,
+    edges,
     nodes,
+    nodeList,
     onNodesChange,
     setEdges,
     onChangeNode,
     onEdgesChange,
-    setHoverEdgeId
+    setHoverEdgeId,
+    setMenu
   } = useContextSelector(WorkflowContext, (v) => v);
 
   const { getIntersectingNodes } = useReactFlow();
@@ -369,8 +375,10 @@ export const useWorkflow = () => {
 
     // 获取所有与当前节点相交的节点
     const intersections = getIntersectingNodes(node);
-    // 获取所有与当前节点相交的节点中，类型为 loop 的节点
-    const parentNode = intersections.find((item) => item.type === FlowNodeTypeEnum.loop);
+    // 获取所有与当前节点相交的节点中，类型为 loop 的节点且它不能是折叠状态
+    const parentNode = intersections.find(
+      (item) => !item.data.isFolded && item.type === FlowNodeTypeEnum.loop
+    );
 
     const unSupportedTypes = [
       FlowNodeTypeEnum.workflowStart,
@@ -406,41 +414,32 @@ export const useWorkflow = () => {
   });
 
   /* node */
-  const handleRemoveNode = useMemoizedFn((change: NodeRemoveChange, node: Node) => {
-    if (node.data.forbidDelete) {
-      toast({
-        status: 'warning',
-        title: t('common:core.workflow.Can not delete node')
-      });
-      return false;
-    }
-
+  const handleRemoveNode = useMemoizedFn((change: NodeRemoveChange, nodeId: string) => {
     // If the node has child nodes, remove the child nodes
-    if (nodes.some((n) => n.data.parentNodeId === node.id)) {
-      const childNodes = nodes.filter((n) => n.data.parentNodeId === node.id);
-      const childNodeIds = childNodes.map((n) => n.id);
-      const childNodesChange = childNodes.map((node) => ({
-        ...change,
-        id: node.id
-      }));
-      onNodesChange(childNodesChange);
-      setEdges((state) =>
-        state.filter(
-          (edge) =>
-            edge.source !== change.id &&
-            edge.target !== change.id &&
-            !childNodeIds.includes(edge.source) &&
-            !childNodeIds.includes(edge.target)
-        )
+    const childNodes = nodes.filter((n) => n.data.parentNodeId === nodeId);
+    if (childNodes.length > 0) {
+      const childNodeIds = childNodes.map((node) => node.id);
+      const childEdges = edges.filter(
+        (edge) => childNodeIds.includes(edge.source) || childNodeIds.includes(edge.target)
       );
-      return;
+
+      onNodesChange(
+        childNodes.map<NodeRemoveChange>((node) => ({
+          type: 'remove',
+          id: node.id
+        }))
+      );
+      onEdgesChange(
+        childEdges.map<EdgeRemoveChange>((edge) => ({
+          type: 'remove',
+          id: edge.id
+        }))
+      );
     }
 
-    setEdges((state) =>
-      state.filter((edge) => edge.source !== change.id && edge.target !== change.id)
-    );
+    onNodesChange([change]);
 
-    return true;
+    return;
   });
   const handleSelectNode = useMemoizedFn((change: NodeSelectionChange) => {
     // If the node is not selected and the Ctrl key is pressed, select the node
@@ -509,10 +508,20 @@ export const useWorkflow = () => {
     for (const change of changes) {
       if (change.type === 'remove') {
         const node = nodes.find((n) => n.id === change.id);
-        // 如果删除失败，则不继续执行
-        if (node && !handleRemoveNode(change, node)) {
-          return;
+        if (!node) continue;
+
+        const parentNodeDeleted = changes.find(
+          (c) => c.type === 'remove' && c.id === node?.data.parentNodeId
+        );
+        // Forbidden delete && Parents are not deleted together
+        if (node.data.forbidDelete && !parentNodeDeleted) {
+          toast({
+            status: 'warning',
+            title: t('common:core.workflow.Can not delete node')
+          });
+          continue;
         }
+        handleRemoveNode(change, node.id);
       } else if (change.type === 'select') {
         handleSelectNode(change);
       } else if (change.type === 'position') {
@@ -523,8 +532,8 @@ export const useWorkflow = () => {
       }
     }
 
-    // default changes
-    onNodesChange(changes);
+    // Remove separately
+    onNodesChange(changes.filter((c) => c.type !== 'remove'));
   });
 
   const handleEdgeChange = useCallback(
@@ -544,9 +553,21 @@ export const useWorkflow = () => {
   /* connect */
   const onConnectStart = useCallback(
     (event: any, params: OnConnectStartParams) => {
+      if (!params.nodeId) return;
+
+      // If node is folded, unfold it when connecting
+      const sourceNode = nodeList.find((node) => node.nodeId === params.nodeId);
+      if (sourceNode?.isFolded) {
+        return onChangeNode({
+          nodeId: params.nodeId,
+          type: 'attr',
+          key: 'isFolded',
+          value: false
+        });
+      }
       setConnectingEdge(params);
     },
-    [setConnectingEdge]
+    [nodeList, setConnectingEdge, onChangeNode]
   );
   const onConnectEnd = useCallback(() => {
     setConnectingEdge(undefined);
@@ -595,6 +616,24 @@ export const useWorkflow = () => {
     setHoverEdgeId(undefined);
   }, [setHoverEdgeId]);
 
+  // context menu
+  const onPaneContextMenu = useCallback(
+    (e: any) => {
+      // Prevent native context menu from showing
+      e.preventDefault();
+
+      setMenu({
+        top: e.clientY - 64,
+        left: e.clientX - 12
+      });
+    },
+    [setMenu]
+  );
+
+  const onPaneClick = useCallback(() => {
+    setMenu(null);
+  }, [setMenu]);
+
   return {
     handleNodesChange,
     handleEdgeChange,
@@ -606,7 +645,9 @@ export const useWorkflow = () => {
     onEdgeMouseLeave,
     helperLineHorizontal,
     helperLineVertical,
-    onNodeDragStop
+    onNodeDragStop,
+    onPaneContextMenu,
+    onPaneClick
   };
 };
 

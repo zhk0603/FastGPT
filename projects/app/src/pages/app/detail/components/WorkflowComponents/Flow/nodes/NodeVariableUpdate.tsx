@@ -12,8 +12,7 @@ import {
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  Switch,
-  Textarea
+  Switch
 } from '@chakra-ui/react';
 import { TUpdateListItem } from '@fastgpt/global/core/workflow/template/system/variableUpdate/type';
 import { NodeInputKeyEnum, WorkflowIOValueTypeEnum } from '@fastgpt/global/core/workflow/constants';
@@ -25,7 +24,6 @@ import {
 } from '@fastgpt/global/core/workflow/node/constant';
 import Container from '../components/Container';
 import MyIcon from '@fastgpt/web/components/common/Icon';
-import JsonEditor from '@fastgpt/web/components/common/Textarea/JsonEditor';
 import { SmallAddIcon } from '@chakra-ui/icons';
 import MyTooltip from '@fastgpt/web/components/common/MyTooltip';
 import { ReferenceValueProps } from '@fastgpt/global/core/workflow/type/io';
@@ -67,7 +65,7 @@ const NodeVariableUpdate = ({ data, selected }: NodeProps<FlowNodeItemType>) => 
       appDetail,
       t
     });
-  }, [nodeList, edges, inputs, t]);
+  }, [nodeId, nodeList, edges, appDetail, t]);
 
   const updateList = useMemo(
     () =>
@@ -105,8 +103,9 @@ const NodeVariableUpdate = ({ data, selected }: NodeProps<FlowNodeItemType>) => 
         (item) => item.renderType === updateItem.renderType
       );
 
+      const nodeIds = nodeList.map((node) => node.nodeId);
       const handleUpdate = (newValue: ReferenceValueProps | string) => {
-        if (isReferenceValue(newValue)) {
+        if (isReferenceValue(newValue, nodeIds)) {
           onUpdateList(
             updateList.map((update, i) =>
               i === index ? { ...update, value: newValue as ReferenceValueProps } : update
@@ -219,7 +218,7 @@ const NodeVariableUpdate = ({ data, selected }: NodeProps<FlowNodeItemType>) => 
                       onChange={handleUpdate}
                       showOpenModal={false}
                       variableLabels={variables}
-                      h={100}
+                      minH={100}
                     />
                   </Box>
                 );
@@ -251,7 +250,7 @@ const NodeVariableUpdate = ({ data, selected }: NodeProps<FlowNodeItemType>) => 
                     onChange={handleUpdate}
                     showOpenModal={false}
                     variableLabels={variables}
-                    h={100}
+                    minH={100}
                   />
                 </Box>
               );

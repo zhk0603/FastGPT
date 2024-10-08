@@ -49,6 +49,7 @@ import CostTooltip from '@/components/core/app/plugin/CostTooltip';
 import { useUserStore } from '@/web/support/user/useUserStore';
 import { LoopStartNode } from '@fastgpt/global/core/workflow/template/system/loop/loopStart';
 import { LoopEndNode } from '@fastgpt/global/core/workflow/template/system/loop/loopEnd';
+import { NodeInputKeyEnum, NodeOutputKeyEnum } from '@fastgpt/global/core/workflow/constants';
 
 type ModuleTemplateListProps = {
   isOpen: boolean;
@@ -105,8 +106,12 @@ const NodeTemplatesModal = ({ isOpen, onClose }: ModuleTemplateListProps) => {
             if (item.flowNodeType === FlowNodeTypeEnum.lafModule && !feConfigs.lafEnv) {
               return false;
             }
-            // tool stop
-            if (!hasToolNode && item.flowNodeType === FlowNodeTypeEnum.stopTool) {
+            // tool stop or tool params
+            if (
+              !hasToolNode &&
+              (item.flowNodeType === FlowNodeTypeEnum.stopTool ||
+                item.flowNodeType === FlowNodeTypeEnum.toolParams)
+            ) {
               return false;
             }
             return true;
@@ -399,8 +404,7 @@ const RenderList = React.memo(function RenderList({
 
   const { screenToFlowPosition } = useReactFlow();
   const { toast } = useToast();
-  const reactFlowWrapper = useContextSelector(WorkflowContext, (v) => v.reactFlowWrapper);
-  const setNodes = useContextSelector(WorkflowContext, (v) => v.setNodes);
+  const { reactFlowWrapper, setNodes, nodeList } = useContextSelector(WorkflowContext, (v) => v);
   const { computedNewNodeName } = useWorkflowUtils();
 
   const formatTemplates = useMemo<NodeTemplateListType>(() => {
@@ -424,6 +428,7 @@ const RenderList = React.memo(function RenderList({
     }) => {
       if (!reactFlowWrapper?.current) return;
 
+      // Load template node
       const templateNode = await (async () => {
         try {
           // get plugin preview module
@@ -458,6 +463,19 @@ const RenderList = React.memo(function RenderList({
       const mouseX = nodePosition.x - 100;
       const mouseY = nodePosition.y - 20;
 
+      // Add default values to some inputs
+      const defaultValueMap: Record<string, any> = {
+        [NodeInputKeyEnum.userChatInput]: undefined
+      };
+      nodeList.forEach((node) => {
+        if (node.flowNodeType === FlowNodeTypeEnum.workflowStart) {
+          defaultValueMap[NodeInputKeyEnum.userChatInput] = [
+            node.nodeId,
+            NodeOutputKeyEnum.userChatInput
+          ];
+        }
+      });
+
       const newNode = nodeTemplate2FlowNode({
         template: {
           ...templateNode,
@@ -469,6 +487,7 @@ const RenderList = React.memo(function RenderList({
           intro: t(templateNode.intro as any),
           inputs: templateNode.inputs.map((input) => ({
             ...input,
+            value: defaultValueMap[input.key] ?? input.value,
             valueDesc: t(input.valueDesc as any),
             label: t(input.label as any),
             description: t(input.description as any),
@@ -516,7 +535,16 @@ const RenderList = React.memo(function RenderList({
         return newState;
       });
     },
-    [computedNewNodeName, reactFlowWrapper, setLoading, setNodes, t, toast, screenToFlowPosition]
+    [
+      reactFlowWrapper,
+      screenToFlowPosition,
+      nodeList,
+      computedNewNodeName,
+      t,
+      setNodes,
+      setLoading,
+      toast
+    ]
   );
 
   const gridStyle = useMemo(() => {

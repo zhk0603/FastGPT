@@ -25,6 +25,7 @@ import { AIChatItemType } from '@fastgpt/global/core/chat/type';
 import { GPTMessages2Chats } from '@fastgpt/global/core/chat/adapt';
 import { updateToolInputValue } from './utils';
 import { computedMaxToken, llmCompletionsBodyFormat } from '../../../../ai/utils';
+import { toolValueTypeList } from '@fastgpt/global/core/workflow/constants';
 
 type FunctionRunResponseType = {
   toolRunResponse: DispatchFlowResponse;
@@ -60,12 +61,18 @@ export const runToolWithFunctionCall = async (
         type: string;
         description: string;
         required?: boolean;
+        enum?: string[];
       }
     > = {};
     item.toolParams.forEach((item) => {
+      const jsonSchema = (
+        toolValueTypeList.find((type) => type.value === item.valueType) || toolValueTypeList[0]
+      ).jsonSchema;
+
       properties[item.key] = {
-        type: item.valueType || 'string',
-        description: item.toolDescription || ''
+        ...jsonSchema,
+        description: item.toolDescription || '',
+        enum: item.enum?.split('\n').filter(Boolean) || []
       };
     });
 
@@ -244,44 +251,36 @@ export const runToolWithFunctionCall = async (
       role: ChatCompletionRequestMessageRoleEnum.Assistant,
       function_call: functionCall
     };
+
+    /* 
+      ...
+      user
+      assistant: tool data
+    */
     const concatToolMessages = [
       ...requestMessages,
       assistantToolMsgParams
     ] as ChatCompletionMessageParam[];
+    // Only toolCall tokens are counted here, Tool response tokens count towards the next reply
     const tokens = await countGptMessagesTokens(concatToolMessages, undefined, functions);
+    /* 
+      ...
+      user
+      assistant: tool data
+      tool: tool response
+    */
     const completeMessages = [
       ...concatToolMessages,
       ...toolsRunResponse.map((item) => item?.functionCallMsg)
     ];
-    // console.log(tokens, 'tool');
 
-    // Run tool status
-    if (node.showStatus) {
-      workflowStreamResponse?.({
-        event: SseResponseEventEnum.flowNodeStatus,
-        data: {
-          status: 'running',
-          name: node.name
-        }
-      });
-    }
-
-    // tool assistant
-    const toolAssistants = toolsRunResponse
-      .map((item) => {
-        const assistantResponses = item.toolRunResponse.assistantResponses || [];
-        return assistantResponses;
-      })
-      .flat();
     // tool node assistant
-    const adaptChatMessages = GPTMessages2Chats(completeMessages);
-    const toolNodeAssistant = adaptChatMessages.pop() as AIChatItemType;
+    const toolNodeAssistant = GPTMessages2Chats([
+      assistantToolMsgParams,
+      ...toolsRunResponse.map((item) => item?.functionCallMsg)
+    ])[0] as AIChatItemType;
 
-    const toolNodeAssistants = [
-      ...assistantResponses,
-      ...toolAssistants,
-      ...toolNodeAssistant.value
-    ];
+    const toolNodeAssistants = [...assistantResponses, ...toolNodeAssistant.value];
 
     // concat tool responses
     const dispatchFlowResponse = response
@@ -296,7 +295,7 @@ export const runToolWithFunctionCall = async (
       return {
         dispatchFlowResponse,
         totalTokens: response?.totalTokens ? response.totalTokens + tokens : tokens,
-        completeMessages: filterMessages,
+        completeMessages,
         assistantResponses: toolNodeAssistants,
         runTimes:
           (response?.runTimes || 0) +

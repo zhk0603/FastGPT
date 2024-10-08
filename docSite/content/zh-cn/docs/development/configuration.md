@@ -60,7 +60,7 @@ weight: 708
       "charsPointsPrice": 0,
       "censor": false,
       "vision": true,
-      "datasetProcess": false,
+      "datasetProcess": true,
       "usedInClassify": true,
       "usedInExtractFields": true,
       "usedInToolCall": true,
@@ -83,7 +83,7 @@ weight: 708
       "charsPointsPrice": 0,
       "censor": false,
       "vision": false,
-      "datasetProcess": false,
+      "datasetProcess": true,
       "usedInClassify": true,
       "usedInExtractFields": true,
       "usedInToolCall": true,
@@ -110,7 +110,7 @@ weight: 708
       "charsPointsPrice": 0,
       "censor": false,
       "vision": false,
-      "datasetProcess": false,
+      "datasetProcess": true,
       "usedInClassify": true,
       "usedInExtractFields": true,
       "usedInToolCall": true,
@@ -192,7 +192,7 @@ weight: 708
 
 - /imgs/model/baichuan.svg - 百川
 - /imgs/model/chatglm.svg - 智谱
-- /imgs/model/calude.svg - calude
+- /imgs/model/claude.svg - claude
 - /imgs/model/ernie.svg - 文心一言
 - /imgs/model/moonshot.svg - 月之暗面
 - /imgs/model/openai.svg - OpenAI GPT

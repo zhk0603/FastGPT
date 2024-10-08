@@ -79,6 +79,7 @@ export type RuntimeNodeItemType = {
   outputs: FlowNodeOutputItemType[];
 
   pluginId?: string; // workflow id / plugin id
+  version: string;
 };
 
 export type PluginRuntimeType = {
@@ -182,6 +183,12 @@ export type DispatchNodeResponseType = {
   loopInputValue?: any;
   // loop end
   loopOutputValue?: any;
+
+  // form input
+  formInputResult?: string;
+
+  // tool params
+  toolParamsResult?: Record<string, any>;
 };
 
 export type DispatchNodeResultType<T = {}> = {
@@ -193,6 +200,7 @@ export type DispatchNodeResultType<T = {}> = {
   [DispatchNodeResponseKeyEnum.assistantResponses]?: AIChatItemValueItemType[]; // Assistant response(Store to db)
   [DispatchNodeResponseKeyEnum.rewriteHistories]?: ChatItemType[];
   [DispatchNodeResponseKeyEnum.runTimes]?: number;
+  [DispatchNodeResponseKeyEnum.newVariables]?: Record<string, any>;
 } & T;
 
 /* Single node props */

@@ -10,7 +10,7 @@ import { Background, NodeProps } from 'reactflow';
 import NodeCard from '../render/NodeCard';
 import Container from '../../components/Container';
 import IOTitle from '../../components/IOTitle';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import RenderInput from '../render/RenderInput';
 import { Box } from '@chakra-ui/react';
 import FormLabel from '@fastgpt/web/components/common/MyBox/FormLabel';
@@ -22,7 +22,7 @@ import { WorkflowContext } from '../../../context';
 
 const NodeLoop = ({ data, selected }: NodeProps<FlowNodeItemType>) => {
   const { t } = useTranslation();
-  const { nodeId, inputs, outputs } = data;
+  const { nodeId, inputs, outputs, isFolded } = data;
   const { onChangeNode, nodeList } = useContextSelector(WorkflowContext, (v) => v);
 
   const { nodeWidth, nodeHeight } = useMemo(() => {
@@ -53,14 +53,14 @@ const NodeLoop = ({ data, selected }: NodeProps<FlowNodeItemType>) => {
     return (
       <NodeCard
         selected={selected}
-        maxW={'full'}
-        minW={900}
-        minH={900}
-        w={nodeWidth}
-        h={nodeHeight}
-        menuForbid={{
-          copy: true
-        }}
+        maxW="full"
+        {...(!isFolded && {
+          minW: '900px',
+          minH: '900px',
+          w: nodeWidth,
+          h: nodeHeight
+        })}
+        menuForbid={{ copy: true }}
         {...data}
       >
         <Container position={'relative'} flex={1}>

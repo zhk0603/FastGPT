@@ -118,6 +118,7 @@ export enum FlowNodeTypeEnum {
   queryExtension = 'cfr',
   tools = 'tools',
   stopTool = 'stopTool',
+  toolParams = 'toolParams',
   lafModule = 'lafModule',
   ifElseNode = 'ifElseNode',
   variableUpdate = 'variableUpdate',
@@ -128,7 +129,9 @@ export enum FlowNodeTypeEnum {
   userSelect = 'userSelect',
   loop = 'loop',
   loopStart = 'loopStart',
-  loopEnd = 'loopEnd'
+  loopEnd = 'loopEnd',
+  formInput = 'formInput',
+  comment = 'comment'
 }
 
 // node IO value type
