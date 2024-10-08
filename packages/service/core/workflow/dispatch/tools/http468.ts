@@ -100,6 +100,18 @@ export const dispatchHttp468Request = async (props: HttpRequestProps): Promise<H
   };
   httpReqUrl = replaceVariable(httpReqUrl, allVariables);
 
+  const replaceStringVariables = (text: string) => {
+    return replaceVariable(
+      replaceEditorVariable({
+        text,
+        nodes: runtimeNodes,
+        variables: allVariables,
+        runningNode: node
+      }),
+      allVariables
+    );
+  };
+
   // parse header
   const headers = await (() => {
     try {
@@ -111,24 +123,8 @@ export const dispatchHttp468Request = async (props: HttpRequestProps): Promise<H
       if (!httpHeader || httpHeader.length === 0) return {};
       // array
       return httpHeader.reduce((acc: Record<string, string>, item) => {
-        const key = replaceVariable(
-          replaceEditorVariable({
-            text: item.key,
-            nodes: runtimeNodes,
-            variables,
-            runningNode: node
-          }),
-          allVariables
-        );
-        const value = replaceVariable(
-          replaceEditorVariable({
-            text: item.value,
-            nodes: runtimeNodes,
-            variables,
-            runningNode: node
-          }),
-          allVariables
-        );
+        const key = replaceStringVariables(item.key);
+        const value = replaceStringVariables(item.value);
         acc[key] = valueTypeFormat(value, WorkflowIOValueTypeEnum.string);
         return acc;
       }, {});
@@ -138,24 +134,8 @@ export const dispatchHttp468Request = async (props: HttpRequestProps): Promise<H
   })();
 
   const params = httpParams.reduce((acc: Record<string, string>, item) => {
-    const key = replaceVariable(
-      replaceEditorVariable({
-        text: item.key,
-        nodes: runtimeNodes,
-        variables,
-        runningNode: node
-      }),
-      allVariables
-    );
-    const value = replaceVariable(
-      replaceEditorVariable({
-        text: item.value,
-        nodes: runtimeNodes,
-        variables,
-        runningNode: node
-      }),
-      allVariables
-    );
+    const key = replaceStringVariables(item.key);
+    const value = replaceStringVariables(item.value);
     acc[key] = valueTypeFormat(value, WorkflowIOValueTypeEnum.string);
     return acc;
   }, {});
@@ -166,25 +146,9 @@ export const dispatchHttp468Request = async (props: HttpRequestProps): Promise<H
       if (httpContentType === ContentTypes.formData) {
         if (!Array.isArray(httpFormBody)) return {};
         httpFormBody = httpFormBody.map((item) => ({
-          key: replaceVariable(
-            replaceEditorVariable({
-              text: item.key,
-              nodes: runtimeNodes,
-              variables,
-              runningNode: node
-            }),
-            allVariables
-          ),
+          key: replaceStringVariables(item.key),
           type: item.type,
-          value: replaceVariable(
-            replaceEditorVariable({
-              text: item.value,
-              nodes: runtimeNodes,
-              variables,
-              runningNode: node
-            }),
-            allVariables
-          )
+          value: replaceStringVariables(item.value)
         }));
         const formData = new FormData();
         for (const { key, value } of httpFormBody) {
@@ -195,25 +159,9 @@ export const dispatchHttp468Request = async (props: HttpRequestProps): Promise<H
       if (httpContentType === ContentTypes.xWwwFormUrlencoded) {
         if (!Array.isArray(httpFormBody)) return {};
         httpFormBody = httpFormBody.map((item) => ({
-          key: replaceVariable(
-            replaceEditorVariable({
-              text: item.key,
-              nodes: runtimeNodes,
-              variables,
-              runningNode: node
-            }),
-            allVariables
-          ),
+          key: replaceStringVariables(item.key),
           type: item.type,
-          value: replaceVariable(
-            replaceEditorVariable({
-              text: item.value,
-              nodes: runtimeNodes,
-              variables,
-              runningNode: node
-            }),
-            allVariables
-          )
+          value: replaceStringVariables(item.value)
         }));
         const urlSearchParams = new URLSearchParams();
         for (const { key, value } of httpFormBody) {
@@ -229,15 +177,7 @@ export const dispatchHttp468Request = async (props: HttpRequestProps): Promise<H
         const removeSignJson = removeUndefinedSign(jsonParse);
         return removeSignJson;
       }
-      httpJsonBody = replaceVariable(
-        replaceEditorVariable({
-          text: httpJsonBody,
-          nodes: runtimeNodes,
-          variables,
-          runningNode: node
-        }),
-        allVariables
-      );
+      httpJsonBody = replaceStringVariables(httpJsonBody);
       return httpJsonBody.replaceAll(UNDEFINED_SIGN, 'null');
     } catch (error) {
       console.log(error);

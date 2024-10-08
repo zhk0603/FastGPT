@@ -24,7 +24,7 @@ import { getNanoid, sliceStrStartEnd } from '@fastgpt/global/common/string/tools
 import { AIChatItemType } from '@fastgpt/global/core/chat/type';
 import { GPTMessages2Chats } from '@fastgpt/global/core/chat/adapt';
 import { updateToolInputValue } from './utils';
-import { computedMaxToken, computedTemperature } from '../../../../ai/utils';
+import { computedMaxToken, llmCompletionsBodyFormat } from '../../../../ai/utils';
 
 type FunctionRunResponseType = {
   toolRunResponse: DispatchFlowResponse;
@@ -110,19 +110,18 @@ export const runToolWithFunctionCall = async (
       filterMessages
     })
   ]);
-  const requestBody: any = {
-    ...toolModel?.defaultConfig,
-    model: toolModel.model,
-    temperature: computedTemperature({
-      model: toolModel,
-      temperature
-    }),
-    max_tokens,
-    stream,
-    messages: requestMessages,
-    functions,
-    function_call: 'auto'
-  };
+  const requestBody = llmCompletionsBodyFormat(
+    {
+      model: toolModel.model,
+      temperature,
+      max_tokens,
+      stream,
+      messages: requestMessages,
+      functions,
+      function_call: 'auto'
+    },
+    toolModel
+  );
 
   // console.log(JSON.stringify(requestBody, null, 2));
   /* Run llm */
@@ -194,7 +193,10 @@ export const runToolWithFunctionCall = async (
                   isEntry: true,
                   inputs: updateToolInputValue({ params: startParams, inputs: item.inputs })
                 }
-              : item
+              : {
+                  ...item,
+                  isEntry: false
+                }
           )
         });
 
@@ -295,7 +297,10 @@ export const runToolWithFunctionCall = async (
         dispatchFlowResponse,
         totalTokens: response?.totalTokens ? response.totalTokens + tokens : tokens,
         completeMessages: filterMessages,
-        assistantResponses: toolNodeAssistants
+        assistantResponses: toolNodeAssistants,
+        runTimes:
+          (response?.runTimes || 0) +
+          flatToolsResponseData.reduce((sum, item) => sum + item.runTimes, 0)
       };
     }
 
@@ -307,7 +312,10 @@ export const runToolWithFunctionCall = async (
       {
         dispatchFlowResponse,
         totalTokens: response?.totalTokens ? response.totalTokens + tokens : tokens,
-        assistantResponses: toolNodeAssistants
+        assistantResponses: toolNodeAssistants,
+        runTimes:
+          (response?.runTimes || 0) +
+          flatToolsResponseData.reduce((sum, item) => sum + item.runTimes, 0)
       }
     );
   } else {
@@ -327,7 +335,8 @@ export const runToolWithFunctionCall = async (
       dispatchFlowResponse: response?.dispatchFlowResponse || [],
       totalTokens: response?.totalTokens ? response.totalTokens + tokens : tokens,
       completeMessages,
-      assistantResponses: [...assistantResponses, ...toolNodeAssistant.value]
+      assistantResponses: [...assistantResponses, ...toolNodeAssistant.value],
+      runTimes: (response?.runTimes || 0) + 1
     };
   }
 };

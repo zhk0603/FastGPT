@@ -4,7 +4,7 @@ import { SseResponseEventEnum } from '@fastgpt/global/core/workflow/runtime/cons
 import { responseWrite } from '@fastgpt/service/common/response';
 import { pushChatUsage } from '@/service/support/wallet/usage/push';
 import { UsageSourceEnum } from '@fastgpt/global/support/wallet/usage/constants';
-import type { UserChatItemValueItemType } from '@fastgpt/global/core/chat/type';
+import type { UserChatItemType } from '@fastgpt/global/core/chat/type';
 import { authApp } from '@fastgpt/service/support/permission/app/auth';
 import { dispatchWorkFlow } from '@fastgpt/service/core/workflow/dispatch';
 import { authCert } from '@fastgpt/service/support/permission/auth/common';
@@ -13,7 +13,10 @@ import { StoreEdgeItemType } from '@fastgpt/global/core/workflow/type/edge';
 import { removeEmptyUserInput } from '@fastgpt/global/core/chat/utils';
 import { ReadPermissionVal } from '@fastgpt/global/support/permission/constant';
 import { AppTypeEnum } from '@fastgpt/global/core/app/constants';
-import { updatePluginInputByVariables } from '@fastgpt/global/core/workflow/utils';
+import {
+  getPluginRunUserQuery,
+  updatePluginInputByVariables
+} from '@fastgpt/global/core/workflow/utils';
 import { NextAPI } from '@/service/middleware/entry';
 import { GPTMessages2Chats } from '@fastgpt/global/core/chat/adapt';
 import { ChatCompletionMessageParam } from '@fastgpt/global/core/ai/type';
@@ -27,6 +30,8 @@ import {
 import { StoreNodeItemType } from '@fastgpt/global/core/workflow/type/node';
 import { getWorkflowResponseWrite } from '@fastgpt/service/core/workflow/dispatch/utils';
 import { getNanoid } from '@fastgpt/global/common/string/tools';
+import { WORKFLOW_MAX_RUN_TIMES } from '@fastgpt/service/core/workflow/constants';
+import { getPluginInputsFromStoreNodes } from '@fastgpt/global/core/app/plugin/utils';
 
 export type Props = {
   messages: ChatCompletionMessageParam[];
@@ -57,9 +62,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     chatConfig
   } = req.body as Props;
   try {
+    if (!Array.isArray(nodes)) {
+      throw new Error('Nodes is not array');
+    }
+    if (!Array.isArray(edges)) {
+      throw new Error('Edges is not array');
+    }
     const chatMessages = GPTMessages2Chats(messages);
-
-    const userInput = chatMessages.pop()?.value as UserChatItemValueItemType[] | undefined;
+    // console.log(JSON.stringify(chatMessages, null, 2), '====', chatMessages.length);
 
     /* user auth */
     const [{ app }, { teamId, tmbId }] = await Promise.all([
@@ -74,12 +84,21 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     const isPlugin = app.type === AppTypeEnum.plugin;
 
-    if (!Array.isArray(nodes)) {
-      throw new Error('Nodes is not array');
-    }
-    if (!Array.isArray(edges)) {
-      throw new Error('Edges is not array');
-    }
+    const userQuestion: UserChatItemType = (() => {
+      if (isPlugin) {
+        return getPluginRunUserQuery({
+          pluginInputs: getPluginInputsFromStoreNodes(app.modules),
+          variables,
+          files: variables.files
+        });
+      }
+
+      const latestHumanChat = chatMessages.pop() as UserChatItemType | undefined;
+      if (!latestHumanChat) {
+        throw new Error('User question is empty');
+      }
+      return latestHumanChat;
+    })();
 
     let runtimeNodes = storeNodes2RuntimeNodes(nodes, getWorkflowEntryNodeIds(nodes, chatMessages));
 
@@ -88,7 +107,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       runtimeNodes = updatePluginInputByVariables(runtimeNodes, variables);
       variables = {};
     } else {
-      if (!userInput) {
+      if (!userQuestion.value) {
         throw new Error('Params Error');
       }
     }
@@ -116,11 +135,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       runtimeNodes,
       runtimeEdges: initWorkflowEdgeStatus(edges, chatMessages),
       variables,
-      query: removeEmptyUserInput(userInput),
+      query: removeEmptyUserInput(userQuestion.value),
       chatConfig,
       histories: chatMessages,
       stream: true,
-      maxRunTimes: 200,
+      maxRunTimes: WORKFLOW_MAX_RUN_TIMES,
       workflowStreamResponse: workflowResponseWrite
     });
 

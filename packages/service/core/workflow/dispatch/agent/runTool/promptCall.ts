@@ -25,7 +25,7 @@ import {
 import { AIChatItemType } from '@fastgpt/global/core/chat/type';
 import { GPTMessages2Chats } from '@fastgpt/global/core/chat/adapt';
 import { updateToolInputValue } from './utils';
-import { computedMaxToken, computedTemperature } from '../../../../ai/utils';
+import { computedMaxToken, llmCompletionsBodyFormat } from '../../../../ai/utils';
 import { WorkflowResponseType } from '../../type';
 
 type FunctionCallCompletion = {
@@ -113,17 +113,16 @@ export const runToolWithPromptCall = async (
       filterMessages
     })
   ]);
-  const requestBody = {
-    ...toolModel?.defaultConfig,
-    model: toolModel.model,
-    temperature: computedTemperature({
-      model: toolModel,
-      temperature
-    }),
-    max_tokens,
-    stream,
-    messages: requestMessages
-  };
+  const requestBody = llmCompletionsBodyFormat(
+    {
+      model: toolModel.model,
+      temperature,
+      max_tokens,
+      stream,
+      messages: requestMessages
+    },
+    toolModel
+  );
 
   // console.log(JSON.stringify(requestBody, null, 2));
   /* Run llm */
@@ -135,9 +134,13 @@ export const runToolWithPromptCall = async (
       Accept: 'application/json, text/plain, */*'
     }
   });
+  const isStreamResponse =
+    typeof aiResponse === 'object' &&
+    aiResponse !== null &&
+    ('iterator' in aiResponse || 'controller' in aiResponse);
 
   const answer = await (async () => {
-    if (res && stream) {
+    if (res && isStreamResponse) {
       const { answer } = await streamResponse({
         res,
         toolNodes,
@@ -164,6 +167,17 @@ export const runToolWithPromptCall = async (
         })
       });
     }
+
+    // 不支持 stream 模式的模型的流失响应
+    if (stream && !isStreamResponse) {
+      workflowStreamResponse?.({
+        event: SseResponseEventEnum.fastAnswer,
+        data: textAdaptGptResponse({
+          text: replaceAnswer
+        })
+      });
+    }
+
     // No tool is invoked, indicating that the process is over
     const gptAssistantResponse: ChatCompletionAssistantMessageParam = {
       role: ChatCompletionRequestMessageRoleEnum.Assistant,
@@ -180,7 +194,8 @@ export const runToolWithPromptCall = async (
       dispatchFlowResponse: response?.dispatchFlowResponse || [],
       totalTokens: response?.totalTokens ? response.totalTokens + tokens : tokens,
       completeMessages,
-      assistantResponses: [...assistantResponses, ...toolNodeAssistant.value]
+      assistantResponses: [...assistantResponses, ...toolNodeAssistant.value],
+      runTimes: (response?.runTimes || 0) + 1
     };
   }
 
@@ -226,7 +241,10 @@ export const runToolWithPromptCall = async (
               isEntry: true,
               inputs: updateToolInputValue({ params: startParams, inputs: item.inputs })
             }
-          : item
+          : {
+              ...item,
+              isEntry: false
+            }
       )
     });
 
@@ -315,7 +333,8 @@ ANSWER: `;
       dispatchFlowResponse,
       totalTokens: response?.totalTokens ? response.totalTokens + tokens : tokens,
       completeMessages: filterMessages,
-      assistantResponses: toolNodeAssistants
+      assistantResponses: toolNodeAssistants,
+      runTimes: (response?.runTimes || 0) + toolsRunResponse.moduleRunResponse.runTimes
     };
   }
 
@@ -327,7 +346,8 @@ ANSWER: `;
     {
       dispatchFlowResponse,
       totalTokens: response?.totalTokens ? response.totalTokens + tokens : tokens,
-      assistantResponses: toolNodeAssistants
+      assistantResponses: toolNodeAssistants,
+      runTimes: (response?.runTimes || 0) + toolsRunResponse.moduleRunResponse.runTimes
     }
   );
 };

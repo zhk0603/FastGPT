@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactFlow, { NodeProps, ReactFlowProvider } from 'reactflow';
+import ReactFlow, { NodeProps, ReactFlowProvider, SelectionMode } from 'reactflow';
 import { Box, IconButton, useDisclosure } from '@chakra-ui/react';
 import { SmallCloseIcon } from '@chakra-ui/icons';
 import { EDGE_TYPE, FlowNodeTypeEnum } from '@fastgpt/global/core/workflow/node/constant';
@@ -52,14 +52,20 @@ const nodeTypes: Record<FlowNodeTypeEnum, any> = {
   [FlowNodeTypeEnum.ifElseNode]: dynamic(() => import('./nodes/NodeIfElse')),
   [FlowNodeTypeEnum.variableUpdate]: dynamic(() => import('./nodes/NodeVariableUpdate')),
   [FlowNodeTypeEnum.code]: dynamic(() => import('./nodes/NodeCode')),
-  [FlowNodeTypeEnum.userSelect]: dynamic(() => import('./nodes/NodeUserSelect'))
+  [FlowNodeTypeEnum.userSelect]: dynamic(() => import('./nodes/NodeUserSelect')),
+  [FlowNodeTypeEnum.loop]: dynamic(() => import('./nodes/Loop/NodeLoop')),
+  [FlowNodeTypeEnum.loopStart]: dynamic(() => import('./nodes/Loop/NodeLoopStart')),
+  [FlowNodeTypeEnum.loopEnd]: dynamic(() => import('./nodes/Loop/NodeLoopEnd'))
 };
 const edgeTypes = {
   [EDGE_TYPE]: ButtonEdge
 };
 
 const Workflow = () => {
-  const { nodes, edges, reactFlowWrapper } = useContextSelector(WorkflowContext, (v) => v);
+  const { nodes, edges, reactFlowWrapper, workflowControlMode } = useContextSelector(
+    WorkflowContext,
+    (v) => v
+  );
 
   const {
     handleNodesChange,
@@ -70,7 +76,8 @@ const Workflow = () => {
     onEdgeMouseEnter,
     onEdgeMouseLeave,
     helperLineHorizontal,
-    helperLineVertical
+    helperLineVertical,
+    onNodeDragStop
   } = useWorkflow();
 
   const {
@@ -124,6 +131,7 @@ const Workflow = () => {
           connectionLineStyle={connectionLineStyle}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
+          connectionRadius={50}
           onNodesChange={handleNodesChange}
           onEdgesChange={handleEdgeChange}
           onConnect={customOnConnect}
@@ -131,6 +139,18 @@ const Workflow = () => {
           onConnectEnd={onConnectEnd}
           onEdgeMouseEnter={onEdgeMouseEnter}
           onEdgeMouseLeave={onEdgeMouseLeave}
+          panOnScrollSpeed={2}
+          {...(workflowControlMode === 'select'
+            ? {
+                selectionMode: SelectionMode.Full,
+                selectNodesOnDrag: false,
+                selectionOnDrag: true,
+                selectionKeyCode: null,
+                panOnDrag: false,
+                panOnScroll: true
+              }
+            : {})}
+          onNodeDragStop={onNodeDragStop}
         >
           <FlowController />
           <HelperLines horizontal={helperLineHorizontal} vertical={helperLineVertical} />

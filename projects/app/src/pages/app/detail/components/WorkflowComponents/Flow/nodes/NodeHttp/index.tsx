@@ -289,7 +289,8 @@ export function RenderHttpProps({
         </Flex>
         <LightRowTabs<TabEnum>
           width={'100%'}
-          mb={selectedTab === TabEnum.body ? 1 : 2}
+          mb={2}
+          defaultColor={'myGray.250'}
           list={[
             { label: <RenderPropsItem text="Params" num={paramsLength} />, value: TabEnum.params },
             ...(!['GET', 'DELETE'].includes(requestMethods)
@@ -298,7 +299,8 @@ export function RenderHttpProps({
                     label: (
                       <Flex alignItems={'center'}>
                         Body
-                        {jsonBody?.value && <Box ml={1}>✅</Box>}
+                        {(jsonBody?.value || !!formBody?.value?.length) &&
+                          contentType?.value !== ContentTypes.none && <Box ml={1}>✅</Box>}
                       </Flex>
                     ),
                     value: TabEnum.body
@@ -313,7 +315,7 @@ export function RenderHttpProps({
           value={selectedTab}
           onChange={setSelectedTab}
         />
-        <Box bg={'white'} borderRadius={'md'} minW={'560px'}>
+        <Box minW={'560px'}>
           {params &&
             headers &&
             jsonBody &&
@@ -446,20 +448,16 @@ const RenderForm = ({
       setList((prevList) => {
         if (!newKey) {
           setUpdateTrigger((prev) => !prev);
-          toast({
-            status: 'warning',
-            title: t('common:core.module.http.Key cannot be empty')
-          });
-          return prevList;
-        }
-        const checkExist = prevList.find((item, i) => i !== index && item.key == newKey);
-        if (checkExist) {
+          // toast({
+          //   status: 'warning',
+          //   title: t('common:core.module.http.Key cannot be empty')
+          // });
+        } else if (prevList.find((item, i) => i !== index && item.key == newKey)) {
           setUpdateTrigger((prev) => !prev);
           toast({
             status: 'warning',
             title: t('common:core.module.http.Key already exists')
           });
-          return prevList;
         }
         return prevList.map((item, i) => (i === index ? { ...item, key: newKey } : item));
       });
@@ -468,14 +466,15 @@ const RenderForm = ({
     [t, toast]
   );
 
+  // Add new params/headers key
   const handleAddNewProps = useCallback(
-    (key: string, value: string = '') => {
+    (value: string) => {
       setList((prevList) => {
-        if (!key) {
+        if (!value) {
           return prevList;
         }
 
-        const checkExist = prevList.find((item) => item.key === key);
+        const checkExist = prevList.find((item) => item.key === value);
         if (checkExist) {
           setUpdateTrigger((prev) => !prev);
           toast({
@@ -484,7 +483,7 @@ const RenderForm = ({
           });
           return prevList;
         }
-        return [...prevList, { key, type: 'string', value }];
+        return [...prevList, { key: value, type: 'string', value: '' }];
       });
 
       setShouldUpdateNode(true);
@@ -494,7 +493,13 @@ const RenderForm = ({
 
   const Render = useMemo(() => {
     return (
-      <Box borderRadius={'md'} overflow={'hidden'} borderWidth={'1px'} borderBottom={'none'}>
+      <Box
+        borderRadius={'md'}
+        overflow={'hidden'}
+        borderWidth={'1px'}
+        borderBottom={'none'}
+        bg={'white'}
+      >
         <TableContainer overflowY={'visible'} overflowX={'unset'}>
           <Table>
             <Thead>
@@ -508,16 +513,22 @@ const RenderForm = ({
               </Tr>
             </Thead>
             <Tbody>
-              {list.map((item, index) => (
+              {[...list, { key: '', value: '', label: '' }].map((item, index) => (
                 <Tr key={`${input.key}${index}`}>
-                  <Td p={0} w={'50%'}>
+                  <Td p={0} w={'50%'} borderRight={'1px solid'} borderColor={'myGray.200'}>
                     <HttpInput
-                      placeholder={t('common:core.module.http.Props name')}
+                      placeholder={t('common:textarea_variable_picker_tip')}
                       value={item.key}
                       variableLabels={variables}
                       variables={variables}
                       onBlur={(val) => {
                         handleKeyChange(index, val);
+
+                        // Last item blur, add the next item.
+                        if (index === list.length && val) {
+                          handleAddNewProps(val);
+                          setUpdateTrigger((prev) => !prev);
+                        }
                       }}
                       updateTrigger={updateTrigger}
                     />
@@ -525,7 +536,7 @@ const RenderForm = ({
                   <Td p={0} w={'50%'}>
                     <Box display={'flex'} alignItems={'center'}>
                       <HttpInput
-                        placeholder={t('common:core.module.http.Props value')}
+                        placeholder={t('common:textarea_variable_picker_tip')}
                         value={item.value}
                         variables={variables}
                         variableLabels={variables}
@@ -538,40 +549,22 @@ const RenderForm = ({
                           setShouldUpdateNode(true);
                         }}
                       />
-                      <MyIcon
-                        name={'delete'}
-                        cursor={'pointer'}
-                        _hover={{ color: 'red.600' }}
-                        w={'14px'}
-                        onClick={() => {
-                          setList((prevlist) => prevlist.filter((val) => val.key !== item.key));
-                          setShouldUpdateNode(true);
-                        }}
-                      />
+                      {index !== list.length && (
+                        <MyIcon
+                          name={'delete'}
+                          cursor={'pointer'}
+                          _hover={{ color: 'red.600' }}
+                          w={'14px'}
+                          onClick={() => {
+                            setList((prevlist) => prevlist.filter((val) => val.key !== item.key));
+                            setShouldUpdateNode(true);
+                          }}
+                        />
+                      )}
                     </Box>
                   </Td>
                 </Tr>
               ))}
-              <Tr>
-                <Td p={0} w={'50%'}>
-                  <HttpInput
-                    placeholder={t('common:core.module.http.Add props')}
-                    value={''}
-                    variableLabels={variables}
-                    variables={variables}
-                    updateTrigger={updateTrigger}
-                    onBlur={(val) => {
-                      handleAddNewProps(val);
-                      setUpdateTrigger((prev) => !prev);
-                    }}
-                  />
-                </Td>
-                <Td p={0} w={'50%'}>
-                  <Box display={'flex'} alignItems={'center'}>
-                    <HttpInput />
-                  </Box>
-                </Td>
-              </Tr>
             </Tbody>
           </Table>
         </TableContainer>
@@ -662,19 +655,6 @@ const RenderBody = ({
             </Box>
           ))}
         </Flex>
-        {typeInput?.value === ContentTypes.none && (
-          <Box
-            px={4}
-            py={12}
-            bg={'white'}
-            color={'myGray.400'}
-            borderRadius={'6px'}
-            border={'1px solid'}
-            borderColor={'myGray.200'}
-          >
-            {t('workflow:http.body_none')}
-          </Box>
-        )}
         {(typeInput?.value === ContentTypes.formData ||
           typeInput?.value === ContentTypes.xWwwFormUrlencoded) && (
           <RenderForm nodeId={nodeId} input={formBody} variables={variables} />
@@ -705,6 +685,7 @@ const RenderBody = ({
         {(typeInput?.value === ContentTypes.xml || typeInput?.value === ContentTypes.raw) && (
           <PromptEditor
             value={jsonBody.value}
+            placeholder={t('common:textarea_variable_picker_tip')}
             onChange={(e) => {
               startSts(() => {
                 onChangeNode({

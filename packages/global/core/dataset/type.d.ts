@@ -192,6 +192,7 @@ export type DatasetDataItemType = {
   id: string;
   teamId: string;
   datasetId: string;
+  updateTime: Date;
   collectionId: string;
   sourceName: string;
   sourceId?: string;

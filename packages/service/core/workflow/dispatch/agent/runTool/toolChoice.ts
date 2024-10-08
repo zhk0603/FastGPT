@@ -24,8 +24,8 @@ import { countGptMessagesTokens } from '../../../../../common/string/tiktoken/in
 import { GPTMessages2Chats } from '@fastgpt/global/core/chat/adapt';
 import { AIChatItemType } from '@fastgpt/global/core/chat/type';
 import { updateToolInputValue } from './utils';
-import { computedMaxToken, computedTemperature } from '../../../../ai/utils';
-import { sliceStrStartEnd } from '@fastgpt/global/common/string/tools';
+import { computedMaxToken, llmCompletionsBodyFormat } from '../../../../ai/utils';
+import { getNanoid, sliceStrStartEnd } from '@fastgpt/global/common/string/tools';
 import { addLog } from '../../../../../common/system/log';
 
 type ToolRunResponseType = {
@@ -45,13 +45,12 @@ export const runToolWithToolChoice = async (
     messages: ChatCompletionMessageParam[];
     toolNodes: ToolNodeItemType[];
     toolModel: LLMModelItemType;
+    maxRunToolTimes: number;
   },
   response?: RunToolResponse
 ): Promise<RunToolResponse> => {
+  const { messages, toolNodes, toolModel, maxRunToolTimes, ...workflowProps } = props;
   const {
-    toolModel,
-    toolNodes,
-    messages,
     res,
     requestOrigin,
     runtimeNodes,
@@ -59,7 +58,12 @@ export const runToolWithToolChoice = async (
     stream,
     workflowStreamResponse,
     params: { temperature = 0, maxToken = 4000, aiChatVision }
-  } = props;
+  } = workflowProps;
+
+  if (maxRunToolTimes <= 0 && response) {
+    return response;
+  }
+
   const assistantResponses = response?.assistantResponses || [];
 
   const tools: ChatCompletionTool[] = toolNodes.map((item) => {
@@ -123,19 +127,18 @@ export const runToolWithToolChoice = async (
       filterMessages
     })
   ]);
-  const requestBody: any = {
-    ...toolModel?.defaultConfig,
-    model: toolModel.model,
-    temperature: computedTemperature({
-      model: toolModel,
-      temperature
-    }),
-    max_tokens,
-    stream,
-    messages: requestMessages,
-    tools,
-    tool_choice: 'auto'
-  };
+  const requestBody = llmCompletionsBodyFormat(
+    {
+      model: toolModel.model,
+      temperature,
+      max_tokens,
+      stream,
+      messages: requestMessages,
+      tools,
+      tool_choice: 'auto'
+    },
+    toolModel
+  );
 
   // console.log(JSON.stringify(requestBody, null, 2));
   /* Run llm */
@@ -149,9 +152,13 @@ export const runToolWithToolChoice = async (
         Accept: 'application/json, text/plain, */*'
       }
     });
+    const isStreamResponse =
+      typeof aiResponse === 'object' &&
+      aiResponse !== null &&
+      ('iterator' in aiResponse || 'controller' in aiResponse);
 
     const { answer, toolCalls } = await (async () => {
-      if (res && stream) {
+      if (res && isStreamResponse) {
         return streamResponse({
           res,
           workflowStreamResponse,
@@ -161,6 +168,7 @@ export const runToolWithToolChoice = async (
       } else {
         const result = aiResponse as ChatCompletion;
         const calls = result.choices?.[0]?.message?.tool_calls || [];
+        const answer = result.choices?.[0]?.message?.content || '';
 
         // 加上name和avatar
         const toolCalls = calls.map((tool) => {
@@ -172,8 +180,33 @@ export const runToolWithToolChoice = async (
           };
         });
 
+        // 不支持 stream 模式的模型的流失响应
+        toolCalls.forEach((tool) => {
+          workflowStreamResponse?.({
+            event: SseResponseEventEnum.toolCall,
+            data: {
+              tool: {
+                id: tool.id,
+                toolName: tool.toolName,
+                toolAvatar: tool.toolAvatar,
+                functionName: tool.function.name,
+                params: tool.function?.arguments ?? '',
+                response: ''
+              }
+            }
+          });
+        });
+        if (answer) {
+          workflowStreamResponse?.({
+            event: SseResponseEventEnum.fastAnswer,
+            data: textAdaptGptResponse({
+              text: answer
+            })
+          });
+        }
+
         return {
-          answer: result.choices?.[0]?.message?.content || '',
+          answer,
           toolCalls: toolCalls
         };
       }
@@ -196,7 +229,7 @@ export const runToolWithToolChoice = async (
           })();
 
           const toolRunResponse = await dispatchWorkFlow({
-            ...props,
+            ...workflowProps,
             isToolCall: true,
             runtimeNodes: runtimeNodes.map((item) =>
               item.nodeId === toolNode.nodeId
@@ -205,7 +238,10 @@ export const runToolWithToolChoice = async (
                     isEntry: true,
                     inputs: updateToolInputValue({ params: startParams, inputs: item.inputs })
                   }
-                : item
+                : {
+                    ...item,
+                    isEntry: false
+                  }
             )
           });
 
@@ -232,7 +268,7 @@ export const runToolWithToolChoice = async (
                 toolName: '',
                 toolAvatar: '',
                 params: '',
-                response: sliceStrStartEnd(stringToolResponse, 500, 500)
+                response: sliceStrStartEnd(stringToolResponse, 2000, 2000)
               }
             }
           });
@@ -252,11 +288,22 @@ export const runToolWithToolChoice = async (
         role: ChatCompletionRequestMessageRoleEnum.Assistant,
         tool_calls: toolCalls
       };
+      /* 
+        ...
+        user
+        assistant: tool data
+      */
       const concatToolMessages = [
         ...requestMessages,
         assistantToolMsgParams
       ] as ChatCompletionMessageParam[];
       const tokens = await countGptMessagesTokens(concatToolMessages, tools);
+      /* 
+        ...
+        user
+        assistant: tool data
+        tool: tool response
+      */
       const completeMessages = [
         ...concatToolMessages,
         ...toolsRunResponse.map((item) => item?.toolMsgParams)
@@ -307,19 +354,26 @@ export const runToolWithToolChoice = async (
           dispatchFlowResponse,
           totalTokens: response?.totalTokens ? response.totalTokens + tokens : tokens,
           completeMessages,
-          assistantResponses: toolNodeAssistants
+          assistantResponses: toolNodeAssistants,
+          runTimes:
+            (response?.runTimes || 0) +
+            flatToolsResponseData.reduce((sum, item) => sum + item.runTimes, 0)
         };
       }
 
       return runToolWithToolChoice(
         {
           ...props,
+          maxRunToolTimes: maxRunToolTimes - 1,
           messages: completeMessages
         },
         {
           dispatchFlowResponse,
           totalTokens: response?.totalTokens ? response.totalTokens + tokens : tokens,
-          assistantResponses: toolNodeAssistants
+          assistantResponses: toolNodeAssistants,
+          runTimes:
+            (response?.runTimes || 0) +
+            flatToolsResponseData.reduce((sum, item) => sum + item.runTimes, 0)
         }
       );
     } else {
@@ -339,10 +393,12 @@ export const runToolWithToolChoice = async (
         dispatchFlowResponse: response?.dispatchFlowResponse || [],
         totalTokens: response?.totalTokens ? response.totalTokens + tokens : tokens,
         completeMessages,
-        assistantResponses: [...assistantResponses, ...toolNodeAssistant.value]
+        assistantResponses: [...assistantResponses, ...toolNodeAssistant.value],
+        runTimes: (response?.runTimes || 0) + 1
       };
     }
   } catch (error) {
+    console.log(error);
     addLog.warn(`LLM response error`, {
       requestBody
     });
@@ -367,6 +423,7 @@ async function streamResponse({
   });
 
   let textAnswer = '';
+  let callingTool: { name: string; arguments: string } | null = null;
   let toolCalls: ChatCompletionMessageToolCall[] = [];
 
   for await (const part of stream) {
@@ -390,69 +447,72 @@ async function streamResponse({
       });
     } else if (responseChoice?.tool_calls?.[0]) {
       const toolCall: ChatCompletionMessageToolCall = responseChoice.tool_calls[0];
-
       // In a stream response, only one tool is returned at a time.  If have id, description is executing a tool
-      if (toolCall.id) {
-        const toolNode = toolNodes.find((item) => item.nodeId === toolCall.function?.name);
+      if (toolCall.id || callingTool) {
+        // Start call tool
+        if (toolCall.id) {
+          callingTool = {
+            name: toolCall.function?.name || '',
+            arguments: toolCall.function?.arguments || ''
+          };
+        } else if (callingTool) {
+          // Continue call
+          callingTool.name += toolCall.function.name || '';
+          callingTool.arguments += toolCall.function.arguments || '';
+        }
+
+        const toolFunction = callingTool!;
+
+        const toolNode = toolNodes.find((item) => item.nodeId === toolFunction.name);
 
         if (toolNode) {
-          if (toolCall.function?.arguments === undefined) {
-            toolCall.function.arguments = '';
-          }
+          // New tool, add to list.
+          const toolId = getNanoid();
+          toolCalls.push({
+            ...toolCall,
+            id: toolId,
+            type: 'function',
+            function: toolFunction,
+            toolName: toolNode.name,
+            toolAvatar: toolNode.avatar
+          });
 
-          // Get last tool call
-          const lastToolCall = toolCalls[toolCalls.length - 1];
-
-          // new tool
-          if (lastToolCall?.id !== toolCall.id) {
-            toolCalls.push({
-              ...toolCall,
-              toolName: toolNode.name,
-              toolAvatar: toolNode.avatar
-            });
-
-            workflowStreamResponse?.({
-              event: SseResponseEventEnum.toolCall,
-              data: {
-                tool: {
-                  id: toolCall.id,
-                  toolName: toolNode.name,
-                  toolAvatar: toolNode.avatar,
-                  functionName: toolCall.function.name,
-                  params: toolCall.function.arguments,
-                  response: ''
-                }
+          workflowStreamResponse?.({
+            event: SseResponseEventEnum.toolCall,
+            data: {
+              tool: {
+                id: toolId,
+                toolName: toolNode.name,
+                toolAvatar: toolNode.avatar,
+                functionName: toolFunction.name,
+                params: toolFunction?.arguments ?? '',
+                response: ''
               }
-            });
-
-            continue;
-          }
-          // last tool, update params
-        } else {
-          continue;
-        }
-      }
-
-      /* arg 插入最后一个工具的参数里 */
-      const arg: string = toolCall?.function?.arguments ?? '';
-      const currentTool = toolCalls[toolCalls.length - 1];
-
-      if (currentTool) {
-        currentTool.function.arguments += arg;
-
-        workflowStreamResponse?.({
-          write,
-          event: SseResponseEventEnum.toolParams,
-          data: {
-            tool: {
-              id: currentTool.id,
-              toolName: '',
-              toolAvatar: '',
-              params: arg,
-              response: ''
             }
-          }
-        });
+          });
+          callingTool = null;
+        }
+      } else {
+        /* arg 插入最后一个工具的参数里 */
+        const arg: string = toolCall?.function?.arguments ?? '';
+        const currentTool = toolCalls[toolCalls.length - 1];
+        if (currentTool && arg) {
+          currentTool.function.arguments += arg;
+
+          workflowStreamResponse?.({
+            write,
+            event: SseResponseEventEnum.toolParams,
+            data: {
+              tool: {
+                id: currentTool.id,
+                toolName: '',
+                toolAvatar: '',
+                params: arg,
+                response: ''
+              }
+            }
+          });
+        }
       }
     }
   }

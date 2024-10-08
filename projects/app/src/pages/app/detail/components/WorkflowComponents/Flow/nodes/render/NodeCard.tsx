@@ -30,10 +30,12 @@ type Props = FlowNodeItemType & {
   children?: React.ReactNode | React.ReactNode[] | string;
   minW?: string | number;
   maxW?: string | number;
+  minH?: string | number;
+  w?: string | number;
+  h?: string | number;
   selected?: boolean;
   menuForbid?: {
     debug?: boolean;
-    rename?: boolean;
     copy?: boolean;
     delete?: boolean;
   };
@@ -51,6 +53,9 @@ const NodeCard = (props: Props) => {
     intro,
     minW = '300px',
     maxW = '600px',
+    minH = 0,
+    w = 'full',
+    h = 'full',
     nodeId,
     selected,
     menuForbid,
@@ -146,7 +151,7 @@ const NodeCard = (props: Props) => {
         {/* debug */}
         <Box px={4} py={3}>
           {/* tool target handle */}
-          {showToolHandle && <ToolTargetHandle nodeId={nodeId} />}
+          <ToolTargetHandle show={showToolHandle} nodeId={nodeId} />
 
           {/* avatar and name */}
           <Flex alignItems={'center'}>
@@ -154,37 +159,35 @@ const NodeCard = (props: Props) => {
             <Box ml={3} fontSize={'md'} fontWeight={'medium'}>
               {t(name as any)}
             </Box>
-            {!menuForbid?.rename && (
-              <MyIcon
-                className="controller-rename"
-                display={'none'}
-                name={'edit'}
-                w={'14px'}
-                cursor={'pointer'}
-                ml={1}
-                color={'myGray.500'}
-                _hover={{ color: 'primary.600' }}
-                onClick={() => {
-                  onOpenCustomTitleModal({
-                    defaultVal: name,
-                    onSuccess: (e) => {
-                      if (!e) {
-                        return toast({
-                          title: t('app:modules.Title is required'),
-                          status: 'warning'
-                        });
-                      }
-                      onChangeNode({
-                        nodeId,
-                        type: 'attr',
-                        key: 'name',
-                        value: e
+            <MyIcon
+              className="controller-rename"
+              display={'none'}
+              name={'edit'}
+              w={'14px'}
+              cursor={'pointer'}
+              ml={1}
+              color={'myGray.500'}
+              _hover={{ color: 'primary.600' }}
+              onClick={() => {
+                onOpenCustomTitleModal({
+                  defaultVal: name,
+                  onSuccess: (e) => {
+                    if (!e) {
+                      return toast({
+                        title: t('app:modules.Title is required'),
+                        status: 'warning'
                       });
                     }
-                  });
-                }}
-              />
-            )}
+                    onChangeNode({
+                      nodeId,
+                      type: 'attr',
+                      key: 'name',
+                      value: e
+                    });
+                  }
+                });
+              }}
+            />
             <Box flex={1} />
             {hasNewVersion && (
               <MyTooltip label={t('app:app.modules.click to update')}>
@@ -225,7 +228,7 @@ const NodeCard = (props: Props) => {
               </MyTooltip>
             )}
           </Flex>
-          <MenuRender nodeId={nodeId} menuForbid={menuForbid} />
+          <MenuRender nodeId={nodeId} menuForbid={menuForbid} nodeList={nodeList} />
           <NodeIntro nodeId={nodeId} intro={intro} />
         </Box>
         <ConfirmSyncModal />
@@ -237,26 +240,39 @@ const NodeCard = (props: Props) => {
     avatar,
     t,
     name,
-    menuForbid,
     hasNewVersion,
     onOpenConfirmSync,
     onClickSyncVersion,
     nodeTemplate?.diagram,
+    menuForbid,
+    nodeList,
     intro,
     ConfirmSyncModal,
     onOpenCustomTitleModal,
     onChangeNode,
     toast
   ]);
+  const RenderHandle = useMemo(() => {
+    return (
+      <>
+        <ConnectionSourceHandle nodeId={nodeId} />
+        <ConnectionTargetHandle nodeId={nodeId} />
+      </>
+    );
+  }, [nodeId]);
 
   return (
-    <Box
+    <Flex
+      flexDirection={'column'}
       minW={minW}
       maxW={maxW}
+      minH={minH}
       bg={'white'}
       borderWidth={'1px'}
       borderRadius={'md'}
       boxShadow={'1'}
+      w={w}
+      h={h}
       _hover={{
         boxShadow: '4',
         '& .controller-menu': {
@@ -283,11 +299,10 @@ const NodeCard = (props: Props) => {
       <NodeDebugResponse nodeId={nodeId} debugResult={debugResult} />
       {Header}
       {children}
-      <ConnectionSourceHandle nodeId={nodeId} />
-      <ConnectionTargetHandle nodeId={nodeId} />
+      {RenderHandle}
 
       <EditTitleModal maxLength={20} />
-    </Box>
+    </Flex>
   );
 };
 
@@ -295,16 +310,17 @@ export default React.memo(NodeCard);
 
 const MenuRender = React.memo(function MenuRender({
   nodeId,
-  menuForbid
+  menuForbid,
+  nodeList
 }: {
   nodeId: string;
   menuForbid?: Props['menuForbid'];
+  nodeList: FlowNodeItemType[];
 }) {
   const { t } = useTranslation();
   const { openDebugNode, DebugInputModal } = useDebug();
 
-  const setNodes = useContextSelector(WorkflowContext, (v) => v.setNodes);
-  const setEdges = useContextSelector(WorkflowContext, (v) => v.setEdges);
+  const { setNodes, setEdges, onNodesChange } = useContextSelector(WorkflowContext, (v) => v);
   const { computedNewNodeName } = useWorkflowUtils();
 
   const onCopyNode = useCallback(
@@ -342,19 +358,37 @@ const MenuRender = React.memo(function MenuRender({
               outputs: template.outputs,
               version: template.version
             },
-            selected: true
+            selected: true,
+            parentNodeId: undefined,
+            t
           })
         );
       });
     },
-    [computedNewNodeName, setNodes]
+    [computedNewNodeName, setNodes, t]
   );
   const onDelNode = useCallback(
     (nodeId: string) => {
-      setNodes((state) => state.filter((item) => item.data.nodeId !== nodeId));
-      setEdges((state) => state.filter((edge) => edge.source !== nodeId && edge.target !== nodeId));
+      // Remove node and its child nodes
+      setNodes((state) =>
+        state.filter((item) => item.data.nodeId !== nodeId && item.data.parentNodeId !== nodeId)
+      );
+
+      // Remove edges connected to the node and its child nodes
+      const childNodeIds = nodeList
+        .filter((node) => node.parentNodeId === nodeId)
+        .map((node) => node.nodeId);
+      setEdges((state) =>
+        state.filter(
+          (edge) =>
+            edge.source !== nodeId &&
+            edge.target !== nodeId &&
+            !childNodeIds.includes(edge.target) &&
+            !childNodeIds.includes(edge.source)
+        )
+      );
     },
-    [setEdges, setNodes]
+    [nodeList, setEdges, setNodes]
   );
 
   const Render = useMemo(() => {
@@ -415,7 +449,7 @@ const MenuRender = React.memo(function MenuRender({
                 leftIcon={<MyIcon name={item.icon as any} w={'13px'} />}
                 onClick={item.onClick}
               >
-                {item.label}
+                {t(item.label as any)}
               </Button>
             </Box>
           ))}

@@ -100,12 +100,14 @@ export default function Editor({
 
   return (
     <Box
+      className="nowheel"
       position={'relative'}
       width={'full'}
       h={`${height}px`}
       cursor={'text'}
       color={'myGray.700'}
       bg={focus ? 'white' : bg}
+      borderRadius={'md'}
     >
       <LexicalComposer initialConfig={initialConfig} key={key}>
         <PlainTextPlugin

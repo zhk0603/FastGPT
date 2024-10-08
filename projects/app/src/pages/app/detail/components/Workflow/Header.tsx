@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   Box,
   Flex,
@@ -30,6 +30,8 @@ import { compareSnapshot } from '@/web/core/workflow/utils';
 import SaveAndPublishModal from '../WorkflowComponents/Flow/components/SaveAndPublish';
 import { formatTime2YMDHMS } from '@fastgpt/global/common/string/time';
 import { useToast } from '@fastgpt/web/hooks/useToast';
+import { useDebounceEffect } from 'ahooks';
+import { useSystemStore } from '@/web/common/system/useSystemStore';
 
 const PublishHistories = dynamic(() => import('../WorkflowPublishHistoriesSlider'));
 
@@ -66,26 +68,35 @@ const Header = () => {
     setPast
   } = useContextSelector(WorkflowContext, (v) => v);
 
-  const isPublished = useMemo(() => {
-    /* 
-      Find the last saved snapshot in the past and future snapshots
-    */
-    const savedSnapshot =
-      future.findLast((snapshot) => snapshot.isSaved) || past.find((snapshot) => snapshot.isSaved);
+  const { lastAppListRouteType } = useSystemStore();
 
-    return compareSnapshot(
-      {
-        nodes: savedSnapshot?.nodes,
-        edges: savedSnapshot?.edges,
-        chatConfig: savedSnapshot?.chatConfig
-      },
-      {
-        nodes: nodes,
-        edges: edges,
-        chatConfig: appDetail.chatConfig
-      }
-    );
-  }, [future, past, nodes, edges, appDetail.chatConfig]);
+  // Check if the workflow is published
+  const [isPublished, setIsPublished] = useState(false);
+  useDebounceEffect(
+    () => {
+      const savedSnapshot =
+        future.findLast((snapshot) => snapshot.isSaved) ||
+        past.find((snapshot) => snapshot.isSaved);
+
+      const val = compareSnapshot(
+        {
+          nodes: savedSnapshot?.nodes,
+          edges: savedSnapshot?.edges,
+          chatConfig: savedSnapshot?.chatConfig
+        },
+        {
+          nodes: nodes,
+          edges: edges,
+          chatConfig: appDetail.chatConfig
+        }
+      );
+      setIsPublished(val);
+    },
+    [future, past, nodes, edges, appDetail.chatConfig],
+    {
+      wait: 500
+    }
+  );
 
   const { runAsync: onClickSave, loading } = useRequest2(
     async ({
@@ -125,9 +136,15 @@ const Header = () => {
     try {
       localStorage.removeItem(`${appDetail._id}-past`);
       localStorage.removeItem(`${appDetail._id}-future`);
-      router.back();
+      router.push({
+        pathname: '/app/list',
+        query: {
+          parentId: appDetail.parentId,
+          type: lastAppListRouteType
+        }
+      });
     } catch (error) {}
-  }, [appDetail._id, router]);
+  }, [appDetail._id, appDetail.parentId, lastAppListRouteType, router]);
 
   const Render = useMemo(() => {
     return (
@@ -200,7 +217,7 @@ const Header = () => {
                 size={'sm'}
                 leftIcon={<MyIcon name={'core/workflow/debug'} w={['14px', '16px']} />}
                 variant={'whitePrimary'}
-                onClick={async () => {
+                onClick={() => {
                   const data = flowData2StoreDataAndCheck();
                   if (data) {
                     setWorkflowTestData(data);

@@ -1,5 +1,5 @@
 import { WorkflowIOValueTypeEnum } from '../constants';
-
+import { i18nT } from '../../../../web/i18n/utils';
 export enum FlowNodeInputTypeEnum { // render ui
   reference = 'reference', // reference to other node output
   input = 'input', // one line input
@@ -125,7 +125,10 @@ export enum FlowNodeTypeEnum {
   textEditor = 'textEditor',
   customFeedback = 'customFeedback',
   readFiles = 'readFiles',
-  userSelect = 'userSelect'
+  userSelect = 'userSelect',
+  loop = 'loop',
+  loopStart = 'loopStart',
+  loopEnd = 'loopEnd'
 }
 
 // node IO value type
@@ -162,28 +165,32 @@ export const FlowValueTypeMap = {
     label: 'array<object>',
     value: WorkflowIOValueTypeEnum.arrayObject
   },
+  [WorkflowIOValueTypeEnum.arrayAny]: {
+    label: 'array',
+    value: WorkflowIOValueTypeEnum.arrayAny
+  },
   [WorkflowIOValueTypeEnum.any]: {
     label: 'any',
     value: WorkflowIOValueTypeEnum.any
   },
   [WorkflowIOValueTypeEnum.chatHistory]: {
-    label: '历史记录',
+    label: i18nT('common:core.chat.History'),
     value: WorkflowIOValueTypeEnum.chatHistory
   },
   [WorkflowIOValueTypeEnum.datasetQuote]: {
-    label: '知识库引用',
+    label: i18nT('common:core.workflow.Dataset quote'),
     value: WorkflowIOValueTypeEnum.datasetQuote
   },
   [WorkflowIOValueTypeEnum.selectApp]: {
-    label: '选择应用',
+    label: i18nT('common:plugin.App'),
     value: WorkflowIOValueTypeEnum.selectApp
   },
   [WorkflowIOValueTypeEnum.selectDataset]: {
-    label: '选择知识库',
+    label: i18nT('common:core.chat.Select dataset'),
     value: WorkflowIOValueTypeEnum.selectDataset
   },
   [WorkflowIOValueTypeEnum.dynamic]: {
-    label: '动态输入',
+    label: i18nT('common:core.workflow.dynamic_input'),
     value: WorkflowIOValueTypeEnum.dynamic
   }
 };

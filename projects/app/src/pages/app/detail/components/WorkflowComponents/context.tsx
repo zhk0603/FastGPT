@@ -6,7 +6,7 @@ import {
   storeNode2FlowNode
 } from '@/web/core/workflow/utils';
 import { getErrText } from '@fastgpt/global/common/error/utils';
-import { NodeOutputKeyEnum, RuntimeEdgeStatusEnum } from '@fastgpt/global/core/workflow/constants';
+import { NodeOutputKeyEnum } from '@fastgpt/global/core/workflow/constants';
 import { FlowNodeTypeEnum } from '@fastgpt/global/core/workflow/node/constant';
 import { RuntimeNodeItemType } from '@fastgpt/global/core/workflow/runtime/type';
 import { FlowNodeItemType, StoreNodeItemType } from '@fastgpt/global/core/workflow/type/node';
@@ -48,7 +48,8 @@ import { useTranslation } from 'next-i18next';
 import { useRequest2 } from '@fastgpt/web/hooks/useRequest';
 import { formatTime2YMDHMS, formatTime2YMDHMW } from '@fastgpt/global/common/string/time';
 import type { InitProps } from '@/pages/app/detail/components/PublishHistoriesSlider';
-import { cloneDeep, isEqual } from 'lodash';
+import { cloneDeep } from 'lodash';
+import { SetState } from 'ahooks/lib/createUseStorageState';
 
 type OnChange<ChangesType> = (changes: ChangesType[]) => void;
 
@@ -64,6 +65,7 @@ type WorkflowContextType = {
   basicNodeTemplates: FlowNodeTemplateType[];
   filterAppIds?: string[];
   reactFlowWrapper: React.RefObject<HTMLDivElement> | null;
+  mouseInCanvas: boolean;
 
   // nodes
   nodes: Node<FlowNodeItemType, string | undefined>[];
@@ -116,7 +118,6 @@ type WorkflowContextType = {
   setConnectingEdge: React.Dispatch<React.SetStateAction<OnConnectStartParams | undefined>>;
 
   // common function
-  onFixView: () => void;
   splitToolInputs: (
     inputs: FlowNodeInputItemType[],
     nodeId: string
@@ -145,8 +146,6 @@ type WorkflowContextType = {
         edges: StoreEdgeItemType[];
       }
     | undefined;
-  onSaveWorkflow: () => Promise<null | undefined>;
-  isSaving: boolean;
 
   // debug
   workflowDebugData:
@@ -182,6 +181,10 @@ type WorkflowContextType = {
       | undefined
     >
   >;
+
+  //
+  workflowControlMode?: 'drag' | 'select';
+  setWorkflowControlMode: (value?: SetState<'drag' | 'select'> | undefined) => void;
 };
 
 type DebugDataType = {
@@ -192,19 +195,16 @@ type DebugDataType = {
 };
 
 export const WorkflowContext = createContext<WorkflowContextType>({
-  isSaving: false,
   setConnectingEdge: function (
     value: React.SetStateAction<OnConnectStartParams | undefined>
   ): void {
-    throw new Error('Function not implemented.');
-  },
-  onFixView: function (): void {
     throw new Error('Function not implemented.');
   },
   basicNodeTemplates: [],
   reactFlowWrapper: null,
   nodes: [],
   nodeList: [],
+  mouseInCanvas: false,
   setNodes: function (
     value: React.SetStateAction<Node<FlowNodeItemType, string | undefined>[]>
   ): void {
@@ -295,9 +295,6 @@ export const WorkflowContext = createContext<WorkflowContextType>({
     | undefined {
     throw new Error('Function not implemented.');
   },
-  onSaveWorkflow: function (): Promise<null | undefined> {
-    throw new Error('Function not implemented.');
-  },
   historiesDefaultData: undefined,
   setHistoriesDefaultData: function (value: React.SetStateAction<InitProps | undefined>): void {
     throw new Error('Function not implemented.');
@@ -323,7 +320,11 @@ export const WorkflowContext = createContext<WorkflowContextType>({
     throw new Error('Function not implemented.');
   },
   canRedo: false,
-  canUndo: false
+  canUndo: false,
+  workflowControlMode: 'drag',
+  setWorkflowControlMode: function (value?: SetState<'drag' | 'select'> | undefined): void {
+    throw new Error('Function not implemented.');
+  }
 });
 
 const WorkflowContextProvider = ({
@@ -337,8 +338,33 @@ const WorkflowContextProvider = ({
   const { toast } = useToast();
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
 
-  const { appDetail, setAppDetail, updateAppDetail } = useContextSelector(AppContext, (v) => v);
+  const { appDetail, setAppDetail } = useContextSelector(AppContext, (v) => v);
   const appId = appDetail._id;
+
+  const [workflowControlMode, setWorkflowControlMode] = useLocalStorageState<'drag' | 'select'>(
+    'workflow-control-mode',
+    {
+      defaultValue: 'select',
+      listenStorageChange: true
+    }
+  );
+
+  // Mouse in canvas
+  const [mouseInCanvas, setMouseInCanvas] = useState(false);
+  useEffect(() => {
+    const handleMouseInCanvas = (e: MouseEvent) => {
+      setMouseInCanvas(true);
+    };
+    const handleMouseOutCanvas = (e: MouseEvent) => {
+      setMouseInCanvas(false);
+    };
+    reactFlowWrapper?.current?.addEventListener('mouseenter', handleMouseInCanvas);
+    reactFlowWrapper?.current?.addEventListener('mouseleave', handleMouseOutCanvas);
+    return () => {
+      reactFlowWrapper?.current?.removeEventListener('mouseenter', handleMouseInCanvas);
+      reactFlowWrapper?.current?.removeEventListener('mouseleave', handleMouseOutCanvas);
+    };
+  }, [reactFlowWrapper?.current]);
 
   /* edge */
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -379,13 +405,30 @@ const WorkflowContextProvider = ({
     [nodeListString]
   );
 
+  // Elevate childNodes
+  useEffect(() => {
+    setNodes((nodes) =>
+      nodes.map((node) => (node.data.parentNodeId ? { ...node, zIndex: 1001 } : node))
+    );
+  }, [nodeList]);
+  // Elevate edges of childNodes
+  useEffect(() => {
+    setEdges((state) =>
+      state.map((item) =>
+        nodeList.some((node) => item.source === node.nodeId && node.parentNodeId)
+          ? { ...item, zIndex: 1001 }
+          : item
+      )
+    );
+  }, [edges.length]);
+
   const hasToolNode = useMemo(() => {
-    return !!nodes.find((node) => node.data.flowNodeType === FlowNodeTypeEnum.tools);
-  }, [nodes]);
+    return !!nodeList.find((node) => node.flowNodeType === FlowNodeTypeEnum.tools);
+  }, [nodeList]);
 
   const onUpdateNodeError = useMemoizedFn((nodeId: string, isError: Boolean) => {
-    setNodes((nodes) => {
-      return nodes.map((item) => {
+    setNodes((state) => {
+      return state.map((item) => {
         if (item.data?.nodeId === nodeId) {
           item.selected = true;
           //@ts-ignore
@@ -505,62 +548,23 @@ const WorkflowContextProvider = ({
     [nodeList]
   );
 
-  /* function */
-  const onFixView = useMemoizedFn(() => {
-    const btn = document.querySelector('.custom-workflow-fix_view') as HTMLButtonElement;
-
-    setTimeout(() => {
-      btn && btn.click();
-    }, 100);
-  });
-
   /* If the module is connected by a tool, the tool input and the normal input are separated */
-  const splitToolInputs = (inputs: FlowNodeInputItemType[], nodeId: string) => {
-    const isTool = !!edges.find(
-      (edge) => edge.targetHandle === NodeOutputKeyEnum.selectedTools && edge.target === nodeId
-    );
+  const splitToolInputs = useCallback(
+    (inputs: FlowNodeInputItemType[], nodeId: string) => {
+      const isTool = !!edges.find(
+        (edge) => edge.targetHandle === NodeOutputKeyEnum.selectedTools && edge.target === nodeId
+      );
 
-    return {
-      isTool,
-      toolInputs: inputs.filter((item) => isTool && item.toolDescription),
-      commonInputs: inputs.filter((item) => {
-        if (!isTool) return true;
-        return !item.toolDescription;
-      })
-    };
-  };
-
-  const initData = useMemoizedFn(
-    async (e: Parameters<WorkflowContextType['initData']>[0], isInit?: boolean) => {
-      /* 
-        Refresh web page, load init
-      */
-      if (isInit && past.length > 0) {
-        return resetSnapshot(past[0]);
-      }
-
-      setNodes(e.nodes?.map((item) => storeNode2FlowNode({ item })) || []);
-      setEdges(e.edges?.map((item) => storeEdgesRenderEdge({ edge: item })) || []);
-
-      const chatConfig = e.chatConfig;
-      if (chatConfig) {
-        setAppDetail((state) => ({
-          ...state,
-          chatConfig
-        }));
-      }
-
-      // If it is the initial data, save the initial snapshot
-      if (isInit) {
-        saveSnapshot({
-          pastNodes: e.nodes?.map((item) => storeNode2FlowNode({ item })) || [],
-          pastEdges: e.edges?.map((item) => storeEdgesRenderEdge({ edge: item })) || [],
-          customTitle: t(`app:app.version_initial`),
-          chatConfig: appDetail.chatConfig,
-          isSaved: true
-        });
-      }
-    }
+      return {
+        isTool,
+        toolInputs: inputs.filter((item) => isTool && item.toolDescription),
+        commonInputs: inputs.filter((item) => {
+          if (!isTool) return true;
+          return !item.toolDescription;
+        })
+      };
+    },
+    [edges]
   );
 
   /* ui flow to store data */
@@ -581,36 +585,7 @@ const WorkflowContextProvider = ({
   });
 
   const flowData2StoreData = useMemoizedFn(() => {
-    const storeNodes = uiWorkflow2StoreWorkflow({ nodes, edges });
-
-    return storeNodes;
-  });
-
-  /* save workflow */
-  const { runAsync: onSaveWorkflow, loading: isSaving } = useRequest2(async () => {
-    const { nodes } = await getWorkflowStore();
-
-    // version preview / debug mode, not save
-    if (appDetail.version !== 'v2' || historiesDefaultData || isSaving || !!workflowDebugData)
-      return;
-
-    const storeWorkflow = uiWorkflow2StoreWorkflow({ nodes, edges });
-
-    // check valid
-    if (storeWorkflow.nodes.length === 0 || storeWorkflow.edges.length === 0) {
-      return;
-    }
-
-    try {
-      await updateAppDetail({
-        ...storeWorkflow,
-        chatConfig: appDetail.chatConfig,
-        //@ts-ignore
-        version: 'v2'
-      });
-    } catch (error) {}
-
-    return null;
+    return uiWorkflow2StoreWorkflow({ nodes, edges });
   });
 
   /* debug */
@@ -759,7 +734,7 @@ const WorkflowContextProvider = ({
     },
     [appId, onChangeNode, setNodes, workflowDebugData]
   );
-  const onStopNodeDebug = useCallback(() => {
+  const onStopNodeDebug = useMemoizedFn(() => {
     setWorkflowDebugData(undefined);
     setNodes((state) =>
       state.map((node) => ({
@@ -771,8 +746,8 @@ const WorkflowContextProvider = ({
         }
       }))
     );
-  }, [setNodes]);
-  const onStartNodeDebug = useCallback(
+  });
+  const onStartNodeDebug = useMemoizedFn(
     async ({
       entryNodeId,
       runtimeNodes,
@@ -792,25 +767,8 @@ const WorkflowContextProvider = ({
       setWorkflowDebugData(data);
 
       onNextNodeDebug(data);
-    },
-    [onNextNodeDebug, onStopNodeDebug]
+    }
   );
-
-  /* Version histories */
-  const [historiesDefaultData, setHistoriesDefaultData] = useState<InitProps>();
-
-  /* event bus */
-  useEffect(() => {
-    eventBus.on(EventNameEnum.requestWorkflowStore, () => {
-      eventBus.emit(EventNameEnum.receiveWorkflowStore, {
-        nodes,
-        edges
-      });
-    });
-    return () => {
-      eventBus.off(EventNameEnum.requestWorkflowStore);
-    };
-  }, [edges, nodes]);
 
   /* chat test */
   const { isOpen: isOpenTest, onOpen: onOpenTest, onClose: onCloseTest } = useDisclosure();
@@ -826,24 +784,20 @@ const WorkflowContextProvider = ({
   const [past, setPast] = useLocalStorageState<SnapshotsType[]>(`${appId}-past`, {
     defaultValue: []
   }) as [SnapshotsType[], (value: SetStateAction<SnapshotsType[]>) => void];
-
   const [future, setFuture] = useLocalStorageState<SnapshotsType[]>(`${appId}-future`, {
     defaultValue: []
   }) as [SnapshotsType[], (value: SetStateAction<SnapshotsType[]>) => void];
 
-  const resetSnapshot = useCallback(
-    (state: SnapshotsType) => {
-      setNodes(state.nodes);
-      setEdges(state.edges);
-      setAppDetail((detail) => ({
-        ...detail,
-        chatConfig: state.chatConfig
-      }));
-    },
-    [setAppDetail, setEdges, setNodes]
-  );
+  const resetSnapshot = useMemoizedFn((state: SnapshotsType) => {
+    setNodes(state.nodes);
+    setEdges(state.edges);
+    setAppDetail((detail) => ({
+      ...detail,
+      chatConfig: state.chatConfig
+    }));
+  });
 
-  const { runAsync: saveSnapshot } = useRequest2(
+  const saveSnapshot = useMemoizedFn(
     async ({
       pastNodes,
       pastEdges,
@@ -890,12 +844,10 @@ const WorkflowContextProvider = ({
       setFuture([]);
 
       return true;
-    },
-    {
-      refreshDeps: [nodes, edges, appDetail.chatConfig, past]
     }
   );
 
+  // Auto save snapshot
   useDebounceEffect(
     () => {
       if (!nodes.length) return;
@@ -910,15 +862,14 @@ const WorkflowContextProvider = ({
     { wait: 500 }
   );
 
-  const undo = useCallback(() => {
+  const undo = useMemoizedFn(() => {
     if (past[1]) {
       setFuture((future) => [past[0], ...future]);
       setPast((past) => past.slice(1));
       resetSnapshot(past[1]);
     }
-  }, [past, setFuture, setPast, resetSnapshot]);
-
-  const redo = useCallback(() => {
+  });
+  const redo = useMemoizedFn(() => {
     const futureState = future[0];
 
     if (futureState) {
@@ -926,7 +877,40 @@ const WorkflowContextProvider = ({
       setFuture((future) => future.slice(1));
       resetSnapshot(futureState);
     }
-  }, [future, setPast, setFuture, resetSnapshot]);
+  });
+
+  const initData = useMemoizedFn(
+    async (e: Parameters<WorkflowContextType['initData']>[0], isInit?: boolean) => {
+      /* 
+        Refresh web page, load init
+      */
+      if (isInit && past.length > 0) {
+        return resetSnapshot(past[0]);
+      }
+
+      setNodes(e.nodes?.map((item) => storeNode2FlowNode({ item, t })) || []);
+      setEdges(e.edges?.map((item) => storeEdgesRenderEdge({ edge: item })) || []);
+
+      const chatConfig = e.chatConfig;
+      if (chatConfig) {
+        setAppDetail((state) => ({
+          ...state,
+          chatConfig
+        }));
+      }
+
+      // If it is the initial data, save the initial snapshot
+      if (isInit) {
+        saveSnapshot({
+          pastNodes: e.nodes?.map((item) => storeNode2FlowNode({ item, t })) || [],
+          pastEdges: e.edges?.map((item) => storeEdgesRenderEdge({ edge: item })) || [],
+          customTitle: t(`app:app.version_initial`),
+          chatConfig: appDetail.chatConfig,
+          isSaved: true
+        });
+      }
+    }
+  );
 
   // remove other app's snapshot
   useEffect(() => {
@@ -940,10 +924,30 @@ const WorkflowContextProvider = ({
     });
   }, [appId]);
 
+  /* Version histories */
+  const [historiesDefaultData, setHistoriesDefaultData] = useState<InitProps>();
+
+  /* event bus */
+  useEffect(() => {
+    eventBus.on(EventNameEnum.requestWorkflowStore, () => {
+      eventBus.emit(EventNameEnum.receiveWorkflowStore, {
+        nodes,
+        edges
+      });
+    });
+    return () => {
+      eventBus.off(EventNameEnum.requestWorkflowStore);
+    };
+  }, [edges, nodes]);
+
   const value = {
     appId,
     reactFlowWrapper,
     basicNodeTemplates,
+    workflowControlMode,
+    setWorkflowControlMode,
+    mouseInCanvas,
+
     // node
     nodes,
     setNodes,
@@ -979,13 +983,10 @@ const WorkflowContextProvider = ({
     canRedo: !!future.length,
 
     // function
-    onFixView,
     splitToolInputs,
     initData,
     flowData2StoreDataAndCheck,
     flowData2StoreData,
-    onSaveWorkflow,
-    isSaving,
 
     // debug
     workflowDebugData,

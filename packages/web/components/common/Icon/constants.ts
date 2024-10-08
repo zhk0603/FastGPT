@@ -2,10 +2,8 @@
 
 export const iconPaths = {
   book: () => import('./icons/book.svg'),
-  visible: () => import('./icons/visible.svg'),
   change: () => import('./icons/change.svg'),
   chatSend: () => import('./icons/chatSend.svg'),
-  configmap: () => import('./icons/configmap.svg'),
   closeSolid: () => import('./icons/closeSolid.svg'),
   collectionLight: () => import('./icons/collectionLight.svg'),
   collectionSolid: () => import('./icons/collectionSolid.svg'),
@@ -80,6 +78,7 @@ export const iconPaths = {
   'common/voiceLight': () => import('./icons/common/voiceLight.svg'),
   'common/warn': () => import('./icons/common/warn.svg'),
   'common/wechatFill': () => import('./icons/common/wechatFill.svg'),
+  configmap: () => import('./icons/configmap.svg'),
   copy: () => import('./icons/copy.svg'),
   'core/app/aiFill': () => import('./icons/core/app/aiFill.svg'),
   'core/app/aiLight': () => import('./icons/core/app/aiLight.svg'),
@@ -130,6 +129,7 @@ export const iconPaths = {
   'core/chat/feedback/goodLight': () => import('./icons/core/chat/feedback/goodLight.svg'),
   'core/chat/fileSelect': () => import('./icons/core/chat/fileSelect.svg'),
   'core/chat/finishSpeak': () => import('./icons/core/chat/finishSpeak.svg'),
+  'core/chat/imgSelect': () => import('./icons/core/chat/imgSelect.svg'),
   'core/chat/quoteFill': () => import('./icons/core/chat/quoteFill.svg'),
   'core/chat/quoteSign': () => import('./icons/core/chat/quoteSign.svg'),
   'core/chat/recordFill': () => import('./icons/core/chat/recordFill.svg'),
@@ -178,6 +178,7 @@ export const iconPaths = {
   'core/workflow/debugResult': () => import('./icons/core/workflow/debugResult.svg'),
   'core/workflow/edgeArrow': () => import('./icons/core/workflow/edgeArrow.svg'),
   'core/workflow/grout': () => import('./icons/core/workflow/grout.svg'),
+  'core/workflow/inputType/array': () => import('./icons/core/workflow/inputType/array.svg'),
   'core/workflow/inputType/customVariable': () =>
     import('./icons/core/workflow/inputType/customVariable.svg'),
   'core/workflow/inputType/dynamic': () => import('./icons/core/workflow/inputType/dynamic.svg'),
@@ -199,6 +200,7 @@ export const iconPaths = {
     import('./icons/core/workflow/inputType/selectLLM.svg'),
   'core/workflow/inputType/switch': () => import('./icons/core/workflow/inputType/switch.svg'),
   'core/workflow/inputType/textarea': () => import('./icons/core/workflow/inputType/textarea.svg'),
+  'core/workflow/mouse': () => import('./icons/core/workflow/mouse.svg'),
   'core/workflow/publish': () => import('./icons/core/workflow/publish.svg'),
   'core/workflow/redo': () => import('./icons/core/workflow/redo.svg'),
   'core/workflow/revertVersion': () => import('./icons/core/workflow/revertVersion.svg'),
@@ -226,6 +228,9 @@ export const iconPaths = {
   'core/workflow/template/ifelse': () => import('./icons/core/workflow/template/ifelse.svg'),
   'core/workflow/template/lafDispatch': () =>
     import('./icons/core/workflow/template/lafDispatch.svg'),
+  'core/workflow/template/loop': () => import('./icons/core/workflow/template/loop.svg'),
+  'core/workflow/template/loopEnd': () => import('./icons/core/workflow/template/loopEnd.svg'),
+  'core/workflow/template/loopStart': () => import('./icons/core/workflow/template/loopStart.svg'),
   'core/workflow/template/mathCall': () => import('./icons/core/workflow/template/mathCall.svg'),
   'core/workflow/template/pluginOutput': () =>
     import('./icons/core/workflow/template/pluginOutput.svg'),
@@ -249,6 +254,7 @@ export const iconPaths = {
     import('./icons/core/workflow/template/variableUpdate.svg'),
   'core/workflow/template/workflowStart': () =>
     import('./icons/core/workflow/template/workflowStart.svg'),
+  'core/workflow/touchTable': () => import('./icons/core/workflow/touchTable.svg'),
   'core/workflow/undo': () => import('./icons/core/workflow/undo.svg'),
   'core/workflow/upload': () => import('./icons/core/workflow/upload.svg'),
   'core/workflow/versionHistories': () => import('./icons/core/workflow/versionHistories.svg'),
@@ -333,5 +339,6 @@ export const iconPaths = {
   text: () => import('./icons/text.svg'),
   union: () => import('./icons/union.svg'),
   user: () => import('./icons/user.svg'),
+  visible: () => import('./icons/visible.svg'),
   wx: () => import('./icons/wx.svg')
 };

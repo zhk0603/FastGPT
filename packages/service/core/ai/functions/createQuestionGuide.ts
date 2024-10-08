@@ -2,8 +2,9 @@ import type { ChatCompletionMessageParam } from '@fastgpt/global/core/ai/type.d'
 import { getAIApi } from '../config';
 import { countGptMessagesTokens } from '../../../common/string/tiktoken/index';
 import { loadRequestMessages } from '../../chat/utils';
+import { llmCompletionsBodyFormat } from '../utils';
 
-export const Prompt_QuestionGuide = `你是一个AI智能助手，可以回答和解决我的问题。请结合前面的对话记录，帮我生成 3 个问题，引导我继续提问。问题的长度应小于20个字符，按 JSON 格式返回: ["问题1", "问题2", "问题3"]`;
+export const Prompt_QuestionGuide = `你是一个AI智能助手，可以回答和解决我的问题。请结合前面的对话记录，帮我生成 3 个问题，引导我继续提问，生成问题的语言要与原问题相同。问题的长度应小于20个字符，按 JSON 格式返回: ["问题1", "问题2", "问题3"]`;
 
 export async function createQuestionGuide({
   messages,
@@ -19,19 +20,25 @@ export async function createQuestionGuide({
       content: Prompt_QuestionGuide
     }
   ];
+
   const ai = getAIApi({
     timeout: 480000
   });
-  const data = await ai.chat.completions.create({
-    model: model,
-    temperature: 0.1,
-    max_tokens: 200,
-    messages: await loadRequestMessages({
-      messages: concatMessages,
-      useVision: false
-    }),
-    stream: false
-  });
+  const data = await ai.chat.completions.create(
+    llmCompletionsBodyFormat(
+      {
+        model,
+        temperature: 0.1,
+        max_tokens: 200,
+        messages: await loadRequestMessages({
+          messages: concatMessages,
+          useVision: false
+        }),
+        stream: false
+      },
+      model
+    )
+  );
 
   const answer = data.choices?.[0]?.message?.content || '';
 

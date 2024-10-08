@@ -204,13 +204,12 @@ const InputDataModal = ({
         a: '',
         indexes: []
       });
-      console.log('执行onSuccess');
       onSuccess(e);
     },
     errorToast: t('common:common.error.unKnow')
   });
-  // update
 
+  // update
   const { runAsync: onUpdateData, loading: isUpdating } = useRequest2(
     async (e: InputDataType) => {
       if (!dataId) return Promise.reject(t('common:common.error.unKnow'));

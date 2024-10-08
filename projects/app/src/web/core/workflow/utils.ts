@@ -40,16 +40,24 @@ import { workflowSystemVariables } from '../app/utils';
 export const nodeTemplate2FlowNode = ({
   template,
   position,
-  selected
+  selected,
+  parentNodeId,
+  zIndex,
+  t
 }: {
   template: FlowNodeTemplateType;
   position: XYPosition;
   selected?: boolean;
+  parentNodeId?: string;
+  zIndex?: number;
+  t: TFunction;
 }): Node<FlowNodeItemType> => {
   // replace item data
   const moduleItem: FlowNodeItemType = {
     ...template,
-    nodeId: getNanoid()
+    name: t(template.name as any),
+    nodeId: getNanoid(),
+    parentNodeId
   };
 
   return {
@@ -57,15 +65,22 @@ export const nodeTemplate2FlowNode = ({
     type: moduleItem.flowNodeType,
     data: moduleItem,
     position: position,
-    selected
+    selected,
+    zIndex
   };
 };
 export const storeNode2FlowNode = ({
   item: storeNode,
-  selected = false
+  selected = false,
+  zIndex,
+  parentNodeId,
+  t
 }: {
   item: StoreNodeItemType;
   selected?: boolean;
+  zIndex?: number;
+  parentNodeId?: string;
+  t: TFunction;
 }): Node<FlowNodeItemType> => {
   // init some static data
   const template =
@@ -82,11 +97,11 @@ export const storeNode2FlowNode = ({
 
   // replace item data
   const nodeItem: FlowNodeItemType = {
+    parentNodeId,
     ...template,
     ...storeNode,
     avatar: template.avatar ?? storeNode.avatar,
     version: storeNode.version ?? template.version ?? defaultNodeVersion,
-
     /* 
       Inputs and outputs, New fields are added, not reduced
     */
@@ -98,6 +113,9 @@ export const storeNode2FlowNode = ({
         return {
           ...storeInput,
           ...templateInput,
+
+          debugLabel: t(templateInput.debugLabel ?? (storeInput.debugLabel as any)),
+          toolDescription: t(templateInput.toolDescription ?? (storeInput.toolDescription as any)),
 
           selectedTypeIndex: storeInput.selectedTypeIndex ?? templateInput.selectedTypeIndex,
           value: storeInput.value ?? templateInput.value,
@@ -126,6 +144,8 @@ export const storeNode2FlowNode = ({
           ...storeOutput,
           ...templateOutput,
 
+          description: t(templateOutput.description ?? (storeOutput.description as any)),
+
           id: storeOutput.id ?? templateOutput.id,
           label: storeOutput.label ?? templateOutput.label,
           value: storeOutput.value ?? templateOutput.value
@@ -143,7 +163,8 @@ export const storeNode2FlowNode = ({
     type: storeNode.flowNodeType,
     data: nodeItem,
     selected,
-    position: storeNode.position || { x: 0, y: 0 }
+    position: storeNode.position || { x: 0, y: 0 },
+    zIndex
   };
 };
 export const storeEdgesRenderEdge = ({ edge }: { edge: StoreEdgeItemType }) => {

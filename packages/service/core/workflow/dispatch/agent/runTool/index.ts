@@ -14,7 +14,7 @@ import {
   GPTMessages2Chats,
   chatValue2RuntimePrompt,
   chats2GPTMessages,
-  getSystemPrompt,
+  getSystemPrompt_ChatItemType,
   runtimePrompt2ChatsValue
 } from '@fastgpt/global/core/chat/adapt';
 import { formatModelChars2Points } from '../../../../../support/wallet/usage/utils';
@@ -95,7 +95,8 @@ export const dispatchRunTools = async (props: DispatchToolModuleProps): Promise<
     });
 
   const messages: ChatItemType[] = [
-    ...getSystemPrompt(systemPrompt),
+    ...getSystemPrompt_ChatItemType(toolModel.defaultSystemChatPrompt),
+    ...getSystemPrompt_ChatItemType(systemPrompt),
     // Add file input prompt to histories
     ...chatHistories.map((item) => {
       if (item.obj === ChatRoleEnum.Human) {
@@ -125,7 +126,8 @@ export const dispatchRunTools = async (props: DispatchToolModuleProps): Promise<
     dispatchFlowResponse, // tool flow response
     totalTokens,
     completeMessages = [], // The actual message sent to AI(just save text)
-    assistantResponses = [] // FastGPT system store assistant.value response
+    assistantResponses = [], // FastGPT system store assistant.value response
+    runTimes
   } = await (async () => {
     const adaptMessages = chats2GPTMessages({ messages, reserveId: false });
 
@@ -134,6 +136,7 @@ export const dispatchRunTools = async (props: DispatchToolModuleProps): Promise<
         ...props,
         toolNodes,
         toolModel,
+        maxRunToolTimes: 30,
         messages: adaptMessages
       });
     }
@@ -194,6 +197,7 @@ export const dispatchRunTools = async (props: DispatchToolModuleProps): Promise<
   const previewAssistantResponses = filterToolResponseToPreview(assistantResponses);
 
   return {
+    [DispatchNodeResponseKeyEnum.runTimes]: runTimes,
     [NodeOutputKeyEnum.answerText]: previewAssistantResponses
       .filter((item) => item.text?.content)
       .map((item) => item.text?.content || '')
