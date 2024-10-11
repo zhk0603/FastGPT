@@ -55,7 +55,7 @@ https://github.com/labring/FastGPT/assets/15308462/7d3a38df-eb0e-4388-9250-2409b
    - [x] Code sandbox
    - [x] 循环调用
    - [x] 用户选择
-   - [ ] 表单输入
+   - [x] 表单输入
 
 `2` 知识库能力
    - [x] 多库复用，混用
@@ -96,7 +96,7 @@ https://github.com/labring/FastGPT/assets/15308462/7d3a38df-eb0e-4388-9250-2409b
 
 ## 👨‍💻 开发
 
-项目技术栈：NextJs + TS + ChakraUI + Mongo + Postgres (Vector 插件)
+项目技术栈：NextJs + TS + ChakraUI + MongoDB + PostgreSQL (PG Vector 插件)/Milvus
 
 - **⚡ 快速部署**
 

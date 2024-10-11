@@ -185,6 +185,22 @@ export const dispatchHttp468Request = async (props: HttpRequestProps): Promise<H
     }
   })();
 
+  // Just show
+  const formattedRequestBody: Record<string, any> = (() => {
+    if (requestBody instanceof FormData || requestBody instanceof URLSearchParams) {
+      return Object.fromEntries(requestBody);
+    } else if (typeof requestBody === 'string') {
+      try {
+        return JSON.parse(requestBody);
+      } catch {
+        return { content: requestBody };
+      }
+    } else if (typeof requestBody === 'object' && requestBody !== null) {
+      return requestBody;
+    }
+    return {};
+  })();
+
   try {
     const { formatResponse, rawResponse, httpHeader } = await (async () => {
       const systemPluginCb = await getSystemPluginCb();
@@ -227,7 +243,7 @@ export const dispatchHttp468Request = async (props: HttpRequestProps): Promise<H
       [DispatchNodeResponseKeyEnum.nodeResponse]: {
         totalPoints: 0,
         params: Object.keys(params).length > 0 ? params : undefined,
-        body: Object.keys(requestBody).length > 0 ? requestBody : undefined,
+        body: Object.keys(formattedRequestBody).length > 0 ? formattedRequestBody : undefined,
         headers: Object.keys(headers).length > 0 ? headers : undefined,
         httpResult: rawResponse
       },
@@ -244,7 +260,7 @@ export const dispatchHttp468Request = async (props: HttpRequestProps): Promise<H
       [NodeOutputKeyEnum.error]: formatHttpError(error),
       [DispatchNodeResponseKeyEnum.nodeResponse]: {
         params: Object.keys(params).length > 0 ? params : undefined,
-        body: Object.keys(requestBody).length > 0 ? requestBody : undefined,
+        body: Object.keys(formattedRequestBody).length > 0 ? formattedRequestBody : undefined,
         headers: Object.keys(headers).length > 0 ? headers : undefined,
         httpResult: { error: formatHttpError(error) }
       },
