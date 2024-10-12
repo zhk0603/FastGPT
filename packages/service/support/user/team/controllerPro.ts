@@ -14,6 +14,7 @@ import { PerResourceTypeEnum } from '@fastgpt/global/support/permission/constant
 import { TeamPermission } from '@fastgpt/global/support/permission/user/controller';
 import { mongoSessionRun } from '../../../common/mongo/sessionRun';
 import { MongoResourcePermission } from '../../permission/schema';
+import { TeamDefaultPermissionVal } from '@fastgpt/global/support/permission/user/constant';
 
 async function getTeamMember(match: Record<string, any>): Promise<TeamTmbItemType> {
   const tmb = (await MongoTeamMember.findOne(match).populate('teamId')) as TeamMemberWithTeamSchema;
@@ -41,7 +42,7 @@ async function getTeamMember(match: Record<string, any>): Promise<TeamTmbItemTyp
     defaultTeam: tmb.defaultTeam,
     lafAccount: tmb.teamId.lafAccount,
     permission: new TeamPermission({
-      per: tmbPer?.permission ?? tmb.teamId.defaultPermission,
+      per: tmbPer ?? TeamDefaultPermissionVal,
       isOwner: tmb.role === TeamMemberRoleEnum.owner
     })
   };
@@ -70,7 +71,7 @@ async function getMemberInfo(match: Record<string, any>): Promise<any> {
     role: tmb.role,
     status: tmb.status,
     permission: new TeamPermission({
-      per: tmbPer?.permission ?? tmb.teamId.defaultPermission,
+      per: tmbPer ?? TeamDefaultPermissionVal,
       isOwner: tmb.role === TeamMemberRoleEnum.owner
     })
   };
