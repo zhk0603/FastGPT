@@ -19,8 +19,6 @@ async function handler(req: NextApiRequest) {
     return Promise.reject(CommonErrEnum.missingParams);
   }
 
-  addLog.info('req', { text, chunkSize, overlapRatio, chunkSplitter });
-
   await authCert({ req, authToken: true, authApiKey: true });
 
   const { chunks } = splitText2Chunks({

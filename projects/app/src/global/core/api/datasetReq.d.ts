@@ -21,6 +21,7 @@ export type GetDatasetCollectionsProps = RequestPaging & {
   filterTags?: string[];
   simple?: boolean;
   selectFolder?: boolean;
+  forbid?: boolean;
 };
 
 /* ==== data ===== */

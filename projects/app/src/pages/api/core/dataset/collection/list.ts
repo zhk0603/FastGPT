@@ -23,7 +23,8 @@ async function handler(req: NextApiRequest): Promise<PagingData<DatasetCollectio
     searchText = '',
     selectFolder = false,
     filterTags = [],
-    simple = false
+    simple = false,
+    forbid = null
   } = req.body as GetDatasetCollectionsProps;
   searchText = searchText?.replace(/'/g, '');
   pageSize = Math.min(pageSize, 30);
@@ -47,7 +48,8 @@ async function handler(req: NextApiRequest): Promise<PagingData<DatasetCollectio
           name: new RegExp(searchText, 'i')
         }
       : {}),
-    ...(filterTags.length ? { tags: { $in: filterTags } } : {})
+    ...(filterTags.length ? { tags: { $in: filterTags } } : {}),
+    ...(forbid ? { forbid: forbid } : {})
   };
 
   const selectField = {
