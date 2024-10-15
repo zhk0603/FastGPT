@@ -1,79 +1,49 @@
 {
-  "name": "飞书 webhook 插件",
-  "intro": "通过 webhook 给飞书机器人发送一条消息",
   "author": "",
-  "avatar": "/appMarketTemplates/plugin-feishu/avatar.svg",
-  "type": "plugin",
-  "tags": ["recommendation", "office-services"],
+  "version": "4811",
+  "name": "Wiki搜索",
+  "avatar": "core/workflow/template/wiki",
+  "intro": "在Wiki中查询释义。",
+  "showStatus": true,
+  "weight": 10,
+
+  "isTool": true,
+  "templateType": "tools",
+
   "workflow": {
     "nodes": [
       {
         "nodeId": "pluginInput",
         "name": "插件开始",
-        "intro": "自定义配置外部输入，使用插件时，仅暴露自定义配置的输入",
+        "intro": "可以配置插件需要哪些输入，利用这些输入来运行插件",
         "avatar": "core/workflow/template/workflowStart",
         "flowNodeType": "pluginInput",
         "showStatus": false,
         "position": {
-          "x": 535.7465806305546,
-          "y": -201.26482361861054
+          "x": 484.02074451450517,
+          "y": -79.06127656499825
         },
         "version": "481",
         "inputs": [
           {
-            "inputType": "input",
-            "valueType": "string",
-            "key": "飞书机器人地址",
-            "label": "飞书机器人地址",
-            "description": "",
-            "isToolInput": false,
-            "defaultValue": "",
-            "editField": {
-              "key": true
-            },
-            "dynamicParamDefaultValue": {
-              "inputType": "reference",
-              "valueType": "string",
-              "required": true
-            },
-            "renderTypeList": ["input"],
-            "required": true,
-            "canEdit": true,
-            "value": ""
-          },
-          {
-            "key": "发送的消息",
-            "valueType": "string",
-            "label": "发送的消息",
             "renderTypeList": ["reference"],
-            "required": true,
-            "description": "",
+            "selectedTypeIndex": 0,
+            "valueType": "string",
             "canEdit": true,
-            "value": "",
-            "editField": {
-              "key": true
-            },
-            "dynamicParamDefaultValue": {
-              "inputType": "reference",
-              "valueType": "string",
-              "required": true
-            }
+            "key": "query",
+            "label": "query",
+            "description": "检索词",
+            "required": true,
+            "toolDescription": "检索词"
           }
         ],
         "outputs": [
           {
-            "id": "mv52BrPVE6bm",
-            "key": "飞书机器人地址",
+            "id": "query",
             "valueType": "string",
-            "label": "飞书机器人地址",
-            "type": "static"
-          },
-          {
-            "id": "p0m68Dv5KaIp",
-            "key": "发送的消息",
-            "valueType": "string",
-            "label": "发送的消息",
-            "type": "static"
+            "key": "query",
+            "label": "query",
+            "type": "hidden"
           }
         ]
       },
@@ -85,23 +55,33 @@
         "flowNodeType": "pluginOutput",
         "showStatus": false,
         "position": {
-          "x": 1776.027569211593,
-          "y": -58.264823618610535
+          "x": 1759.5180706702588,
+          "y": -60.56127656499825
         },
         "version": "481",
-        "inputs": [],
+        "inputs": [
+          {
+            "renderTypeList": ["reference"],
+            "valueType": "string",
+            "canEdit": true,
+            "key": "result",
+            "label": "result",
+            "description": " 检索结果",
+            "value": ["hjnVuJAOwyXV", "lEyy5QqyIBrK"]
+          }
+        ],
         "outputs": []
       },
       {
-        "nodeId": "rKBYGQuYefae",
+        "nodeId": "hjnVuJAOwyXV",
         "name": "HTTP 请求",
         "intro": "可以发出一个 HTTP 请求，实现更为复杂的操作（联网搜索、数据库查询等）",
         "avatar": "core/workflow/template/httpRequest",
         "flowNodeType": "httpRequest468",
         "showStatus": true,
         "position": {
-          "x": 1069.7228495148624,
-          "y": -392.26482361861054
+          "x": 1054.6774638324207,
+          "y": -403.06127656499825
         },
         "version": "481",
         "inputs": [
@@ -166,7 +146,7 @@
             "description": "common:core.module.input.description.Http Request Url",
             "placeholder": "https://api.ai.com/getInventory",
             "required": false,
-            "value": "{{url}}",
+            "value": "wiki",
             "debugLabel": "",
             "toolDescription": ""
           },
@@ -196,7 +176,7 @@
             "key": "system_httpJsonBody",
             "renderTypeList": ["hidden"],
             "valueType": "any",
-            "value": "{\r\n    \"msg_type\": \"text\",\r\n    \"content\": {\r\n        \"text\": \"{{text}}\"\r\n    }\r\n}",
+            "value": "{\n  \"query\": \"{{query}}\"\n}",
             "label": "",
             "required": false,
             "debugLabel": "",
@@ -223,17 +203,11 @@
             "toolDescription": ""
           },
           {
-            "key": "text",
-            "valueType": "string",
-            "label": "text",
             "renderTypeList": ["reference"],
-            "description": "",
+            "valueType": "string",
             "canEdit": true,
-            "editField": {
-              "key": true,
-              "valueType": true
-            },
-            "value": ["pluginInput", "p0m68Dv5KaIp"],
+            "key": "query",
+            "label": "query",
             "customInputConfig": {
               "selectValueTypeList": [
                 "string",
@@ -254,41 +228,9 @@
               ],
               "showDescription": false,
               "showDefaultValue": true
-            }
-          },
-          {
-            "key": "url",
-            "valueType": "string",
-            "label": "url",
-            "renderTypeList": ["reference"],
-            "description": "",
-            "canEdit": true,
-            "editField": {
-              "key": true,
-              "valueType": true
             },
-            "value": ["pluginInput", "mv52BrPVE6bm"],
-            "customInputConfig": {
-              "selectValueTypeList": [
-                "string",
-                "number",
-                "boolean",
-                "object",
-                "arrayString",
-                "arrayNumber",
-                "arrayBoolean",
-                "arrayObject",
-                "arrayAny",
-                "any",
-                "chatHistory",
-                "datasetQuote",
-                "dynamic",
-                "selectApp",
-                "selectDataset"
-              ],
-              "showDescription": false,
-              "showDefaultValue": true
-            }
+            "required": true,
+            "value": ["pluginInput", "query"]
           }
         ],
         "outputs": [
@@ -315,22 +257,45 @@
             "type": "dynamic",
             "valueType": "dynamic",
             "label": "",
-            "editField": {
-              "key": true,
-              "valueType": true
+            "customFieldConfig": {
+              "selectValueTypeList": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "arrayString",
+                "arrayNumber",
+                "arrayBoolean",
+                "arrayObject",
+                "any",
+                "chatHistory",
+                "datasetQuote",
+                "dynamic",
+                "selectApp",
+                "selectDataset"
+              ],
+              "showDescription": false,
+              "showDefaultValue": false
             }
+          },
+          {
+            "id": "lEyy5QqyIBrK",
+            "valueType": "string",
+            "type": "dynamic",
+            "key": "result",
+            "label": "result"
           }
         ]
       },
       {
-        "nodeId": "q3ccNXiZIHoS",
+        "nodeId": "f1mRh1D85H2D",
         "name": "系统配置",
         "intro": "",
         "avatar": "core/workflow/template/systemConfig",
         "flowNodeType": "pluginConfig",
         "position": {
-          "x": 99.73879703925843,
-          "y": -201.26482361861054
+          "x": -28.511358745511643,
+          "y": -103.56127656499825
         },
         "version": "4811",
         "inputs": [],
@@ -340,16 +305,36 @@
     "edges": [
       {
         "source": "pluginInput",
-        "target": "rKBYGQuYefae",
+        "target": "hjnVuJAOwyXV",
         "sourceHandle": "pluginInput-source-right",
-        "targetHandle": "rKBYGQuYefae-target-left"
+        "targetHandle": "hjnVuJAOwyXV-target-left"
       },
       {
-        "source": "rKBYGQuYefae",
+        "source": "hjnVuJAOwyXV",
         "target": "pluginOutput",
-        "sourceHandle": "rKBYGQuYefae-source-right",
+        "sourceHandle": "hjnVuJAOwyXV-source-right",
         "targetHandle": "pluginOutput-target-left"
       }
-    ]
+    ],
+    "chatConfig": {
+      "welcomeText": "",
+      "variables": [],
+      "questionGuide": false,
+      "ttsConfig": {
+        "type": "web"
+      },
+      "whisperConfig": {
+        "open": false,
+        "autoSend": false,
+        "autoTTSResponse": false
+      },
+      "chatInputGuide": {
+        "open": false,
+        "textList": [],
+        "customUrl": ""
+      },
+      "instruction": "",
+      "_id": "67075cd2702bd7168ef8cb2d"
+    }
   }
 }
