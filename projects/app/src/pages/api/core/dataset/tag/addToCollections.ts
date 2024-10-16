@@ -5,16 +5,18 @@ import { ManagePermissionVal } from '@fastgpt/global/support/permission/constant
 import { CommonErrEnum } from '@fastgpt/global/common/error/code/common';
 import { MongoDatasetCollection } from '@fastgpt/service/core/dataset/collection/schema';
 import { mongoSessionRun } from '@fastgpt/service/common/mongo/sessionRun';
+import { MongoDatasetCollectionTags } from '@fastgpt/service/core/dataset/tag/schema';
 
 type Request = {
   datasetId: string;
-  tag: string;
+  tag?: string; // tag id
+  tagLabel?: string; // tag label
   originCollectionIds: string[];
   collectionIds: string[];
 };
 
 async function handler(req: NextApiRequest) {
-  const { datasetId, tag, originCollectionIds, collectionIds } = req.body as Request;
+  let { datasetId, tag, tagLabel, originCollectionIds, collectionIds } = req.body as Request;
 
   if (!datasetId) {
     return Promise.reject(CommonErrEnum.missingParams);
@@ -27,6 +29,16 @@ async function handler(req: NextApiRequest) {
     datasetId,
     per: ManagePermissionVal
   });
+
+  // 如果没有指定tagid ，尝试根据 taglabel 解析
+  if (tag == null || tag == '') {
+    const tagDoc = await MongoDatasetCollectionTags.findOne({
+      tag: tagLabel
+    });
+    if (tagDoc) {
+      tag = tagDoc._id.toString();
+    }
+  }
 
   await mongoSessionRun(async (session) => {
     // Step 1: 从 originCollectionIds 中删除标签

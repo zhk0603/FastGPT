@@ -13,10 +13,11 @@ type TagListRequest = {
   offset: number;
   pageSize: number;
   searchText: string;
+  tag?: string;
 };
 
 async function handler(req: NextApiRequest) {
-  const { datasetId, offset = 0, pageSize = 10, searchText } = req.body as TagListRequest;
+  const { datasetId, offset = 0, pageSize = 10, searchText, tag } = req.body as TagListRequest;
 
   if (!datasetId) {
     return Promise.reject(CommonErrEnum.missingParams);
@@ -34,7 +35,8 @@ async function handler(req: NextApiRequest) {
   const match = {
     teamId: new Types.ObjectId(teamId),
     datasetId: new Types.ObjectId(datasetId),
-    ...(searchText ? { tag: new RegExp(searchText, 'i') } : {})
+    ...(searchText ? { tag: new RegExp(searchText, 'i') } : {}),
+    ...(tag ? { tag: tag } : {})
   };
 
   const selectField = {
