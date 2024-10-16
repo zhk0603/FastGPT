@@ -23,7 +23,6 @@ import { Types } from '../../../common/mongo';
 import json5 from 'json5';
 import { MongoDatasetCollectionTags } from '../tag/schema';
 import { readFromSecondary } from '../../../common/mongo/utils';
-import { addLog } from '../../../common/system/log';
 
 type SearchDatasetDataProps = {
   teamId: string;
@@ -48,7 +47,7 @@ type SearchDatasetDataProps = {
       }
     }
   */
-  collectionFilterMatch?: string;
+  collectionFilterMatch?: string | object;
 };
 
 export async function searchDatasetData(props: SearchDatasetDataProps) {
@@ -119,12 +118,14 @@ export async function searchDatasetData(props: SearchDatasetDataProps) {
     let createTimeCollectionIdList: string[] | undefined = undefined;
 
     try {
-      const jsonMatch = json5.parse(collectionFilterMatch);
+      const jsonMatch =
+        typeof collectionFilterMatch == 'string'
+          ? json5.parse(collectionFilterMatch)
+          : collectionFilterMatch;
 
       // Tag
       let andTags = jsonMatch?.tags?.$and as (string | null)[] | undefined;
       let orTags = jsonMatch?.tags?.$or as (string | null)[] | undefined;
-      addLog.info('addTags', andTags);
 
       // get andTagIds
       if (andTags && andTags.length > 0) {
@@ -148,8 +149,6 @@ export async function searchDatasetData(props: SearchDatasetDataProps) {
               ...readFromSecondary
             }
           ).lean();
-
-          addLog.info('addTags', andTagIdList);
 
           // If you enter a tag that does not exist, none will be found
           if (andTagIdList.length !== andTags.length) return [];

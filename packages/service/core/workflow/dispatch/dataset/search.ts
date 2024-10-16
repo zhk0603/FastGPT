@@ -16,7 +16,6 @@ import { datasetSearchQueryExtension } from '../../../dataset/search/utils';
 import { ChatNodeUsageType } from '@fastgpt/global/support/wallet/bill/type';
 import { checkTeamReRankPermission } from '../../../../support/permission/teamLimit';
 import { MongoDataset } from '../../../dataset/schema';
-import { addLog } from '../../../../common/system/log';
 
 type DatasetSearchProps = ModuleDispatchProps<{
   [NodeInputKeyEnum.datasetSelectList]: SelectedDatasetType;
@@ -55,8 +54,6 @@ export async function dispatchDatasetSearch(
       collectionFilterMatch
     }
   } = props as DatasetSearchProps;
-
-  addLog.info('search propsm ' + collectionFilterMatch);
 
   if (!Array.isArray(datasets)) {
     return Promise.reject('Quote type error');
