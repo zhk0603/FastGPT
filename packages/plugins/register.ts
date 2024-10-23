@@ -16,7 +16,8 @@ const staticPluginList = [
   `Doc2X/FilePDF2text`,
   `Doc2X/FileImg2text`,
   'feishu',
-  'sleep'
+  'sleep',
+  'google'
 ];
 // Run in worker thread (Have npm packages)
 const packagePluginList = [
@@ -28,7 +29,8 @@ const packagePluginList = [
   'duckduckgo/searchVideo',
   'drawing',
   'drawing/baseChart',
-  'wiki'
+  'wiki',
+  'databaseConnection'
 ];
 
 if (FirecrawlUrl) {

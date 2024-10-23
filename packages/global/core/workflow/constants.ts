@@ -286,7 +286,7 @@ export const variableMap: Record<
 > = {
   [VariableInputEnum.input]: {
     icon: 'core/workflow/inputType/input',
-    label: i18nT('common:core.workflow.inputType.input'),
+    label: i18nT('common:core.workflow.inputType.textInput'),
     value: VariableInputEnum.input,
     defaultValueType: WorkflowIOValueTypeEnum.string
   },

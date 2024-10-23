@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Controller, UseFormReturn } from 'react-hook-form';
 import { useTranslation } from 'next-i18next';
 import {
   Box,
   Button,
   Card,
-  Input,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
@@ -24,6 +23,7 @@ import { ChatBoxContext } from '../Provider';
 import QuestionTip from '@fastgpt/web/components/common/MyTooltip/QuestionTip';
 import { useDeepCompareEffect } from 'ahooks';
 import { VariableItemType } from '@fastgpt/global/core/app/type';
+import MyTextarea from '@/components/common/Textarea/MyTextarea';
 
 export const VariableInputItem = ({
   item,
@@ -59,8 +59,10 @@ export const VariableInputItem = ({
         {item.description && <QuestionTip ml={1} label={item.description} />}
       </Box>
       {item.type === VariableInputEnum.input && (
-        <Input
-          maxLength={item.maxLength || 4000}
+        <MyTextarea
+          autoHeight
+          minH={40}
+          maxH={160}
           bg={'myGray.50'}
           {...register(item.key, {
             required: item.required
@@ -77,6 +79,7 @@ export const VariableInputItem = ({
           maxLength={item.maxLength || 4000}
         />
       )}
+
       {item.type === VariableInputEnum.select && (
         <Controller
           key={item.key}

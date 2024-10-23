@@ -34,6 +34,7 @@ import { useFieldArray, UseFormReturn } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import MyIcon from '@fastgpt/web/components/common/Icon';
 import DndDrag, { Draggable } from '@fastgpt/web/components/common/DndDrag';
+import MyTextarea from '@/components/common/Textarea/MyTextarea';
 
 type ListValueType = { id: string; value: string; label: string }[];
 
@@ -132,7 +133,7 @@ const InputTypeConfig = ({
   }, [inputType]);
 
   const showMaxLenInput = useMemo(() => {
-    const list = [FlowNodeInputTypeEnum.input, FlowNodeInputTypeEnum.textarea];
+    const list = [FlowNodeInputTypeEnum.input];
     return list.includes(inputType as FlowNodeInputTypeEnum);
   }, [inputType]);
 
@@ -144,7 +145,6 @@ const InputTypeConfig = ({
   const showDefaultValue = useMemo(() => {
     const list = [
       FlowNodeInputTypeEnum.input,
-      FlowNodeInputTypeEnum.textarea,
       FlowNodeInputTypeEnum.JSONEditor,
       FlowNodeInputTypeEnum.numberInput,
       FlowNodeInputTypeEnum.switch,
@@ -154,11 +154,23 @@ const InputTypeConfig = ({
     return list.includes(inputType as FlowNodeInputTypeEnum);
   }, [inputType]);
 
+  const showIsToolInput = useMemo(() => {
+    const list = [
+      FlowNodeInputTypeEnum.reference,
+      FlowNodeInputTypeEnum.JSONEditor,
+      FlowNodeInputTypeEnum.input,
+      FlowNodeInputTypeEnum.numberInput,
+      FlowNodeInputTypeEnum.switch,
+      FlowNodeInputTypeEnum.select
+    ];
+    return type === 'plugin' && list.includes(inputType as FlowNodeInputTypeEnum);
+  }, [inputType, type]);
+
   return (
     <Stack flex={1} borderLeft={'1px solid #F0F1F6'} justifyContent={'space-between'}>
       <Flex flexDirection={'column'} p={8} pb={2} gap={4} flex={'1 0 0'} overflow={'auto'}>
         <Flex alignItems={'center'}>
-          <FormLabel flex={'0 0 100px'} fontWeight={'medium'}>
+          <FormLabel flex={'0 0 132px'} fontWeight={'medium'}>
             {typeLabels.name[type] || typeLabels.name.formInput}
           </FormLabel>
           <Input
@@ -170,7 +182,7 @@ const InputTypeConfig = ({
           />
         </Flex>
         <Flex alignItems={'flex-start'}>
-          <FormLabel flex={'0 0 100px'} fontWeight={'medium'}>
+          <FormLabel flex={'0 0 132px'} fontWeight={'medium'}>
             {typeLabels.description[type] || typeLabels.description.plugin}
           </FormLabel>
           <Textarea
@@ -184,7 +196,7 @@ const InputTypeConfig = ({
         {/* value type */}
         {type !== 'formInput' && (
           <Flex alignItems={'center'}>
-            <FormLabel flex={'0 0 100px'} fontWeight={'medium'}>
+            <FormLabel flex={'0 0 132px'} fontWeight={'medium'}>
               {t('common:core.module.Data Type')}
             </FormLabel>
             {showValueTypeSelect ? (
@@ -208,18 +220,17 @@ const InputTypeConfig = ({
         )}
         {showRequired && (
           <Flex alignItems={'center'} minH={'40px'}>
-            <FormLabel flex={'0 0 100px'} fontWeight={'medium'}>
+            <FormLabel flex={'0 0 132px'} fontWeight={'medium'}>
               {t('workflow:field_required')}
             </FormLabel>
             <Switch {...register('required')} />
           </Flex>
         )}
-
         {/* reference */}
-        {inputType === FlowNodeInputTypeEnum.reference && (
+        {showIsToolInput && (
           <>
             <Flex alignItems={'center'} minH={'40px'}>
-              <FormLabel flex={'1'} fontWeight={'medium'}>
+              <FormLabel flex={'0 0 132px'} fontWeight={'medium'}>
                 {t('workflow:field_used_as_tool_input')}
               </FormLabel>
               <Switch
@@ -234,7 +245,7 @@ const InputTypeConfig = ({
 
         {showMaxLenInput && (
           <Flex alignItems={'center'}>
-            <FormLabel flex={'0 0 100px'} fontWeight={'medium'}>
+            <FormLabel flex={'0 0 132px'} fontWeight={'medium'}>
               {t('common:core.module.Max Length')}
             </FormLabel>
             <MyNumberInput
@@ -254,7 +265,7 @@ const InputTypeConfig = ({
         {showMinMaxInput && (
           <>
             <Flex alignItems={'center'}>
-              <FormLabel flex={'0 0 100px'} fontWeight={'medium'}>
+              <FormLabel flex={'0 0 132px'} fontWeight={'medium'}>
                 {t('common:core.module.Max Value')}
               </FormLabel>
               <MyNumberInput
@@ -268,7 +279,7 @@ const InputTypeConfig = ({
               />
             </Flex>
             <Flex alignItems={'center'}>
-              <FormLabel flex={'0 0 100px'} fontWeight={'medium'}>
+              <FormLabel flex={'0 0 132px'} fontWeight={'medium'}>
                 {t('common:core.module.Min Value')}
               </FormLabel>
               <MyNumberInput
@@ -286,70 +297,74 @@ const InputTypeConfig = ({
 
         {showDefaultValue && (
           <Flex alignItems={'center'} minH={'40px'}>
-            <FormLabel
-              flex={inputType === FlowNodeInputTypeEnum.switch ? 1 : '0 0 100px'}
-              fontWeight={'medium'}
-            >
+            <FormLabel flex={'0 0 132px'} fontWeight={'medium'}>
               {t('common:core.module.Default Value')}
             </FormLabel>
-            {inputType === FlowNodeInputTypeEnum.numberInput && (
-              <NumberInput flex={1} step={1} min={min} max={max} position={'relative'}>
-                <NumberInputField
-                  {...register('defaultValue', {
-                    min: min,
-                    max: max
-                  })}
+            <Flex alignItems={'start'} flex={1} h={10}>
+              {inputType === FlowNodeInputTypeEnum.numberInput && (
+                <NumberInput flex={1} step={1} min={min} max={max} position={'relative'}>
+                  <NumberInputField
+                    {...register('defaultValue', {
+                      min: min,
+                      max: max
+                    })}
+                  />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              )}
+              {inputType === FlowNodeInputTypeEnum.input && (
+                <MyTextarea
+                  {...register('defaultValue')}
+                  bg={'myGray.50'}
+                  autoHeight
+                  minH={40}
+                  maxH={100}
                 />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            )}
-            {inputType === FlowNodeInputTypeEnum.input && (
-              <Input bg={'myGray.50'} maxLength={maxLength} {...register('defaultValue')} />
-            )}
-            {inputType === FlowNodeInputTypeEnum.textarea && (
-              <Textarea bg={'myGray.50'} maxLength={maxLength} {...register('defaultValue')} />
-            )}
-            {inputType === FlowNodeInputTypeEnum.JSONEditor && (
-              <JsonEditor
-                bg={'myGray.50'}
-                resize
-                w={'full'}
-                onChange={(e) => {
-                  setValue('defaultValue', e);
-                }}
-                defaultValue={defaultValue}
-              />
-            )}
-            {inputType === FlowNodeInputTypeEnum.switch && <Switch {...register('defaultValue')} />}
-            {inputType === FlowNodeInputTypeEnum.select && (
-              <MySelect<string>
-                list={[defaultListValue, ...listValue]
-                  .filter((item) => item.label !== '')
-                  .map((item) => ({
-                    label: item.label,
-                    value: item.value
-                  }))}
-                value={
-                  defaultValue && listValue.map((item) => item.value).includes(defaultValue)
-                    ? defaultValue
-                    : ''
-                }
-                onchange={(e) => {
-                  setValue('defaultValue', e);
-                }}
-                w={'200px'}
-              />
-            )}
+              )}
+              {inputType === FlowNodeInputTypeEnum.JSONEditor && (
+                <JsonEditor
+                  bg={'myGray.50'}
+                  resize
+                  w={'full'}
+                  onChange={(e) => {
+                    setValue('defaultValue', e);
+                  }}
+                  defaultValue={defaultValue}
+                />
+              )}
+              {inputType === FlowNodeInputTypeEnum.switch && (
+                <Switch {...register('defaultValue')} />
+              )}
+              {inputType === FlowNodeInputTypeEnum.select && (
+                <MySelect<string>
+                  list={[defaultListValue, ...listValue]
+                    .filter((item) => item.label !== '')
+                    .map((item) => ({
+                      label: item.label,
+                      value: item.value
+                    }))}
+                  value={
+                    defaultValue && listValue.map((item) => item.value).includes(defaultValue)
+                      ? defaultValue
+                      : ''
+                  }
+                  onchange={(e) => {
+                    setValue('defaultValue', e);
+                  }}
+                  w={'200px'}
+                />
+              )}
+            </Flex>
           </Flex>
         )}
 
         {inputType === FlowNodeInputTypeEnum.addInputParam && (
           <>
             <Flex alignItems={'center'}>
-              <FormLabel flex={'0 0 100px'} fontWeight={'medium'}>
+              <FormLabel flex={'0 0 132px'} fontWeight={'medium'}>
                 {t('common:core.module.Input Type')}
               </FormLabel>
               <Box fontSize={'14px'}>{t('workflow:only_the_reference_type_is_supported')}</Box>
@@ -432,7 +447,7 @@ const InputTypeConfig = ({
                             transform={snapshot.isDragging ? `scale(0.5)` : ''}
                             transformOrigin={'top left'}
                           >
-                            <FormLabel flex={'0 0 100px'} fontWeight={'medium'}>
+                            <FormLabel flex={'0 0 132px'} fontWeight={'medium'}>
                               {`${t('common:core.module.variable.variable options')} ${i + 1}`}
                             </FormLabel>
                             <FormControl>

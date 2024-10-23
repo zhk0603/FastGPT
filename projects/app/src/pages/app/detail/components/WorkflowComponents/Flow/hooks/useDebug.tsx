@@ -13,7 +13,6 @@ import {
   Box,
   Button,
   Flex,
-  Textarea,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
@@ -34,6 +33,7 @@ import { FlowNodeTypeEnum } from '@fastgpt/global/core/workflow/node/constant';
 import { AppContext } from '../../../context';
 import { VariableInputItem } from '@/components/core/chat/ChatContainer/ChatBox/components/VariableInput';
 import LightRowTabs from '@fastgpt/web/components/common/Tabs/LightRowTabs';
+import MyTextarea from '@/components/common/Textarea/MyTextarea';
 
 const MyRightDrawer = dynamic(
   () => import('@fastgpt/web/components/common/MyDrawer/MyRightDrawer')
@@ -57,7 +57,7 @@ export const useDebug = () => {
   const appDetail = useContextSelector(AppContext, (v) => v.appDetail);
 
   const filteredVar = useMemo(() => {
-    const variables = appDetail.chatConfig?.variables || [];
+    const variables = appDetail.chatConfig?.variables;
     return variables?.filter((item) => item.type !== VariableInputEnum.custom) || [];
   }, [appDetail.chatConfig?.variables]);
 
@@ -270,12 +270,15 @@ export const useDebug = () => {
               const RenderInput = (() => {
                 if (input.valueType === WorkflowIOValueTypeEnum.string) {
                   return (
-                    <Textarea
-                      {...register(`nodeVariables.${input.key}`, {
-                        required
-                      })}
-                      placeholder={t(input.placeholder || ('' as any))}
+                    <MyTextarea
+                      autoHeight
+                      minH={60}
+                      maxH={160}
                       bg={'myGray.50'}
+                      placeholder={t(input.placeholder || ('' as any))}
+                      {...register(`nodeVariables.${input.key}`, {
+                        required: input.required
+                      })}
                     />
                   );
                 }
