@@ -13,15 +13,15 @@ export async function updateAppCollaboratorPer({
   teamId,
   appId,
   permission,
-  tmbIds
+  members
 }: {
   teamId: string;
   appId: string;
   permission: number;
-  tmbIds: string[];
+  members: string[];
 }) {
   await mongoSessionRun(async (session) => {
-    for (const tmbId of tmbIds) {
+    for (const tmbId of members) {
       const appPer = await MongoResourcePermission.findOneAndUpdate(
         {
           teamId,
