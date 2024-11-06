@@ -236,7 +236,10 @@ export const dispatchHttp468Request = async (props: HttpRequestProps): Promise<H
     const results: Record<string, any> = {};
     node.outputs.forEach((item) => {
       const key = item.key.startsWith('$') ? item.key : `$.${item.key}`;
-      results[item.key] = JSONPath({ path: key, json: formatResponse })[0];
+      const val = JSONPath({ path: key, json: formatResponse })[0];
+      if (val != null) {
+        results[item.key] = val;
+      }
     });
 
     if (typeof formatResponse[NodeOutputKeyEnum.answerText] === 'string') {

@@ -4,6 +4,7 @@ import { splitText2Chunks } from '@fastgpt/global/common/string/textSplitter';
 import { addLog } from '@fastgpt/service/common/system/log';
 import { authCert } from '@fastgpt/service/support/permission/auth/common';
 import { NextApiRequest } from 'next';
+import { encode } from 'gpt-tokenizer/esm/encoding/o200k_base';
 
 type SplitProps = {
   text: string;
@@ -28,7 +29,13 @@ async function handler(req: NextApiRequest) {
     customReg: chunkSplitter ? [chunkSplitter] : []
   });
 
-  return chunks;
+  return chunks.map((x) => {
+    return {
+      text: x,
+      characters: x.length,
+      tokens: encode(x).length
+    };
+  });
 }
 
 export default NextAPI(handler);
