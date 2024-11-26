@@ -183,7 +183,7 @@ export async function dispatchWorkFlow(data: Props): Promise<DispatchFlowRespons
 
   /* Store special response field  */
   function pushStore(
-    { inputs = [] }: RuntimeNodeItemType,
+    { inputs = [], ...nodeData }: RuntimeNodeItemType,
     {
       answerText = '',
       responseData,
@@ -212,12 +212,17 @@ export async function dispatchWorkFlow(data: Props): Promise<DispatchFlowRespons
       chatNodeUsages = chatNodeUsages.concat(nodeDispatchUsages);
     }
 
-    if (toolResponses !== undefined) {
-      if (Array.isArray(toolResponses) && toolResponses.length === 0) return;
-      if (typeof toolResponses === 'object' && Object.keys(toolResponses).length === 0) {
-        return;
+    try {
+      if (toolResponses ?? false) {
+        if (Array.isArray(toolResponses) && toolResponses.length === 0) return;
+        if (typeof toolResponses === 'object' && Object.keys(toolResponses).length === 0) {
+          return;
+        }
+        toolRunResponse = toolResponses;
       }
-      toolRunResponse = toolResponses;
+    } catch (e) {
+      addLog.warn('push store error', { e, nodeData, toolResponses, answerText, responseData });
+      throw e;
     }
 
     // Histories store

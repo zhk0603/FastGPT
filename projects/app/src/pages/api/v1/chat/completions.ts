@@ -598,8 +598,8 @@ const authHeaderRequest = async ({
 export const config = {
   api: {
     bodyParser: {
-      sizeLimit: '20mb'
+      sizeLimit: '100mb'
     },
-    responseLimit: '20mb'
+    responseLimit: '100mb'
   }
 };
