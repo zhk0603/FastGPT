@@ -31,6 +31,40 @@ type Props = {
   metadata?: Record<string, any>;
 };
 
+function roughSizeOfObject(object: any) {
+  const objectList: any[] = [];
+  const stack = [object];
+  let bytes = 0;
+
+  while (stack.length) {
+    const value = stack.pop();
+
+    switch (typeof value) {
+      case 'boolean':
+        bytes += 4;
+        break;
+      case 'string':
+        bytes += value.length * 2;
+        break;
+      case 'number':
+        bytes += 8;
+        break;
+      case 'object':
+        if (!objectList.includes(value)) {
+          objectList.push(value);
+          for (const prop in value) {
+            if (value.hasOwnProperty(prop)) {
+              stack.push(value[prop]);
+            }
+          }
+        }
+        break;
+    }
+  }
+
+  return bytes;
+}
+
 export async function saveChat({
   chatId,
   appId,
@@ -67,16 +101,22 @@ export async function saveChat({
     });
 
     await mongoSessionRun(async (session) => {
-      await MongoChatItem.insertMany(
-        content.map((item) => ({
-          chatId,
-          teamId,
-          tmbId,
-          appId,
-          ...item
-        })),
-        { session }
-      );
+      try {
+        await MongoChatItem.insertMany(
+          content
+            .map((item) => ({
+              chatId,
+              teamId,
+              tmbId,
+              appId,
+              ...item
+            }))
+            .filter((x) => roughSizeOfObject(x) < 12582912), // 小于12MB，mongo，单个文档最大16MB
+          { session }
+        );
+      } catch (e) {
+        addLog.error(`update chat items error`, e);
+      }
 
       await MongoChat.updateOne(
         {
