@@ -106,9 +106,9 @@ export default function Editor({
               right={0}
               bottom={0}
               py={3}
-              px={4}
+              px={3.5}
               pointerEvents={'none'}
-              overflow={'overlay'}
+              overflow={'hidden'}
             >
               <Box
                 color={'myGray.400'}
@@ -146,12 +146,12 @@ export default function Editor({
         <Box
           zIndex={10}
           position={'absolute'}
-          bottom={0}
+          bottom={-1}
           right={2}
           cursor={'pointer'}
           onClick={onOpenModal}
         >
-          <MyIcon name={'common/fullScreenLight'} w={'14px'} color={'myGray.600'} />
+          <MyIcon name={'common/fullScreenLight'} w={'14px'} color={'myGray.500'} />
         </Box>
       )}
     </Box>

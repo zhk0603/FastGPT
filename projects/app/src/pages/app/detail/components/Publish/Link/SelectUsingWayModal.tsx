@@ -2,7 +2,7 @@ import { OutLinkSchema } from '@fastgpt/global/support/outLink/type';
 import React, { useCallback, useState } from 'react';
 import MyModal from '@fastgpt/web/components/common/MyModal';
 import { useTranslation } from 'next-i18next';
-import { Box, Flex, FlexProps, Grid, Image, ModalBody, Switch, useTheme } from '@chakra-ui/react';
+import { Box, Flex, FlexProps, Grid, ModalBody, Switch, useTheme } from '@chakra-ui/react';
 import MyRadio from '@/components/common/MyRadio';
 import { useForm } from 'react-hook-form';
 import MyIcon from '@fastgpt/web/components/common/Icon';
@@ -10,6 +10,8 @@ import { useCopyData } from '@/web/common/hooks/useCopyData';
 import { useSelectFile } from '@/web/common/file/hooks/useSelectFile';
 import { fileToBase64 } from '@/web/common/file/utils';
 import { useSystemStore } from '@/web/common/system/useSystemStore';
+import MyImage from '@fastgpt/web/components/common/Image/MyImage';
+import { subRoute } from '@fastgpt/web/common/system/utils';
 
 enum UsingWayEnum {
   link = 'link',
@@ -29,15 +31,15 @@ const SelectUsingWayModal = ({ share, onClose }: { share: OutLinkSchema; onClose
 
   const VariableTypeList = [
     {
-      title: <Image src={'/imgs/outlink/link.svg'} alt={''} />,
+      title: <MyImage src={'/imgs/outlink/link.svg'} alt={''} />,
       value: UsingWayEnum.link
     },
     {
-      title: <Image src={'/imgs/outlink/iframe.svg'} alt={''} />,
+      title: <MyImage src={'/imgs/outlink/iframe.svg'} alt={''} />,
       value: UsingWayEnum.iframe
     },
     {
-      title: <Image src={'/imgs/outlink/script.svg'} alt={''} />,
+      title: <MyImage src={'/imgs/outlink/script.svg'} alt={''} />,
       value: UsingWayEnum.script
     }
   ];
@@ -73,7 +75,7 @@ const SelectUsingWayModal = ({ share, onClose }: { share: OutLinkSchema; onClose
   });
 
   const baseUrl = feConfigs?.customSharePageDomain || location?.origin;
-  const linkUrl = `${baseUrl}/chat/share?shareId=${share?.shareId}${
+  const linkUrl = `${baseUrl}${subRoute ? `${subRoute}/` : '/'}chat/share?shareId=${share?.shareId}${
     getValues('showHistory') ? '' : '&showHistory=0'
   }`;
 
@@ -162,7 +164,7 @@ console.log("Chat box loaded")
               </Flex>
               <Flex {...gridItemStyle}>
                 <Box flex={1}>{t('common:core.app.outLink.Script Open Icon')}</Box>
-                <Image
+                <MyImage
                   src={getValues('scriptOpenIcon')}
                   alt={''}
                   w={'20px'}
@@ -173,7 +175,7 @@ console.log("Chat box loaded")
               </Flex>
               <Flex {...gridItemStyle}>
                 <Box flex={1}>{t('common:core.app.outLink.Script Close Icon')}</Box>
-                <Image
+                <MyImage
                   src={getValues('scriptCloseIcon')}
                   alt={''}
                   w={'20px'}

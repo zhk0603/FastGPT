@@ -1,7 +1,15 @@
 import TurndownService from 'turndown';
+import { ImageType } from '../readFile/type';
+import { matchMdImgTextAndUpload } from '@fastgpt/global/common/string/markdown';
+// @ts-ignore
 const turndownPluginGfm = require('joplin-turndown-plugin-gfm');
 
-export const html2md = (html: string): string => {
+export const html2md = (
+  html: string
+): {
+  rawText: string;
+  imageList: ImageType[];
+} => {
   const turndownService = new TurndownService({
     headingStyle: 'atx',
     bulletListMarker: '-',
@@ -15,12 +23,19 @@ export const html2md = (html: string): string => {
 
   try {
     turndownService.remove(['i', 'script', 'iframe', 'style']);
-
     turndownService.use(turndownPluginGfm.gfm);
 
-    return turndownService.turndown(html);
+    const { text, imageList } = matchMdImgTextAndUpload(html);
+
+    return {
+      rawText: turndownService.turndown(text),
+      imageList
+    };
   } catch (error) {
     console.log('html 2 markdown error', error);
-    return '';
+    return {
+      rawText: '',
+      imageList: []
+    };
   }
 };

@@ -3,7 +3,7 @@ import { WorkflowIOValueTypeEnum } from '@fastgpt/global/core/workflow/constants
 import { FlowNodeInputTypeEnum } from '@fastgpt/global/core/workflow/node/constant';
 import MyModal from '@fastgpt/web/components/common/MyModal';
 import React, { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import MyIcon from '@fastgpt/web/components/common/Icon';
 import { UserInputFormItemType } from '@fastgpt/global/core/workflow/template/system/interactive/type';
 import { useForm } from 'react-hook-form';
@@ -45,11 +45,6 @@ const InputFormEditModal = ({
   const { setValue, watch, reset } = form;
 
   const inputType = watch('type') || FlowNodeInputTypeEnum.input;
-
-  const maxLength = watch('maxLength');
-  const max = watch('max');
-  const min = watch('min');
-  const defaultInputValue = watch('defaultValue');
 
   const inputTypeList = [
     {
@@ -187,14 +182,9 @@ const InputFormEditModal = ({
           type={'formInput'}
           isEdit={isEdit}
           inputType={inputType}
-          maxLength={maxLength}
-          max={max}
-          min={min}
-          defaultValue={defaultInputValue}
           onClose={onClose}
           onSubmitSuccess={onSubmitSuccess}
           onSubmitError={onSubmitError}
-          valueType={defaultValueType}
         />
       </Flex>
     </MyModal>

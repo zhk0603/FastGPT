@@ -56,6 +56,7 @@ export type UserChatItemValueItemType = {
 export type UserChatItemType = {
   obj: ChatRoleEnum.Human;
   value: UserChatItemValueItemType[];
+  hideInUI?: boolean;
 };
 export type SystemChatItemValueItemType = {
   type: ChatItemValueTypeEnum.text;
@@ -126,6 +127,7 @@ export type ChatSiteItemType = (UserChatItemType | SystemChatItemType | AIChatIt
   moduleName?: string;
   ttsBuffer?: Uint8Array;
   responseData?: ChatHistoryItemResType[];
+  time?: Date;
 } & ChatBoxInputType &
   ResponseTagItemType;
 

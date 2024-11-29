@@ -2,7 +2,6 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { jsonRes } from '@fastgpt/service/common/response';
 import type { InitChatResponse, InitOutLinkChatProps } from '@/global/core/chat/api.d';
 import { getGuideModule, getAppChatConfig } from '@fastgpt/global/core/workflow/utils';
-import { getChatModelNameListByModules } from '@/service/core/app/workflow';
 import { MongoTeamMember } from '@fastgpt/service/support/user/team/teamMemberSchema';
 import { authOutLink } from '@/service/support/permission/auth/outLink';
 import { MongoApp } from '@fastgpt/service/core/app/schema';
@@ -17,12 +16,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   let { chatId, shareId, outLinkUid } = req.query as InitOutLinkChatProps;
 
   // auth link permission
-  const { shareChat, uid, appId } = await authOutLink({ shareId, outLinkUid });
+  const { outLinkConfig, uid, appId } = await authOutLink({ shareId, outLinkUid });
 
   // auth app permission
   const [tmb, chat, app] = await Promise.all([
-    MongoTeamMember.findById(shareChat.tmbId, '_id userId').populate('userId', 'avatar').lean(),
-
+    MongoTeamMember.findById(outLinkConfig.tmbId, '_id userId').populate('userId', 'avatar').lean(),
     MongoChat.findOne({ appId, chatId, shareId }).lean(),
     MongoApp.findById(appId).lean()
   ]);
@@ -37,7 +35,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   const { nodes, chatConfig } = await getAppLatestVersion(app._id, app);
-  // pick share response field
 
   jsonRes<InitChatResponse>(res, {
     data: {
@@ -55,7 +52,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           storeWelcomeText: chat?.welcomeText,
           isPublicFetch: false
         }),
-        chatModels: getChatModelNameListByModules(nodes),
         name: app.name,
         avatar: app.avatar,
         intro: app.intro,
@@ -69,9 +65,3 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 }
 
 export default NextAPI(handler);
-
-export const config = {
-  api: {
-    responseLimit: '10mb'
-  }
-};

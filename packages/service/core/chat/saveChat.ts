@@ -1,10 +1,6 @@
 import type { AIChatItemType, UserChatItemType } from '@fastgpt/global/core/chat/type.d';
 import { MongoApp } from '../app/schema';
-import {
-  ChatItemValueTypeEnum,
-  ChatRoleEnum,
-  ChatSourceEnum
-} from '@fastgpt/global/core/chat/constants';
+import { ChatItemValueTypeEnum, ChatRoleEnum } from '@fastgpt/global/core/chat/constants';
 import { MongoChatItem } from './chatItemSchema';
 import { MongoChat } from './chatSchema';
 import { addLog } from '../../common/system/log';
@@ -13,6 +9,7 @@ import { StoreNodeItemType } from '@fastgpt/global/core/workflow/type/node';
 import { getAppChatConfig, getGuideModule } from '@fastgpt/global/core/workflow/utils';
 import { AppChatConfigType } from '@fastgpt/global/core/app/type';
 import { mergeChatResponseData } from '@fastgpt/global/core/chat/utils';
+import { pushChatLog } from './pushChatLog';
 
 type Props = {
   chatId: string;
@@ -24,7 +21,7 @@ type Props = {
   variables?: Record<string, any>;
   isUpdateUseTime: boolean;
   newTitle: string;
-  source: `${ChatSourceEnum}`;
+  source: string;
   shareId?: string;
   outLinkUid?: string;
   content: [UserChatItemType & { dataId?: string }, AIChatItemType & { dataId?: string }];
@@ -101,22 +98,18 @@ export async function saveChat({
     });
 
     await mongoSessionRun(async (session) => {
-      try {
-        await MongoChatItem.insertMany(
-          content
-            .map((item) => ({
-              chatId,
-              teamId,
-              tmbId,
-              appId,
-              ...item
-            }))
-            .filter((x) => roughSizeOfObject(x) < 12582912), // 小于12MB，mongo，单个文档最大16MB
-          { session }
-        );
-      } catch (e) {
-        addLog.error(`update chat items error`, e);
-      }
+      const [{ _id: chatItemIdHuman }, { _id: chatItemIdAi }] = await MongoChatItem.insertMany(
+        content
+          .map((item) => ({
+            chatId,
+            teamId,
+            tmbId,
+            appId,
+            ...item
+          }))
+          .filter((x) => roughSizeOfObject(x) < 12582912), // 小于12MB，mongo，单个文档最大16MB
+        { session }
+      );
 
       await MongoChat.updateOne(
         {
@@ -145,6 +138,13 @@ export async function saveChat({
           upsert: true
         }
       );
+
+      pushChatLog({
+        chatId,
+        chatItemIdHuman: String(chatItemIdHuman),
+        chatItemIdAi: String(chatItemIdAi),
+        appId
+      });
     });
 
     if (isUpdateUseTime) {
@@ -160,21 +160,15 @@ export async function saveChat({
 export const updateInteractiveChat = async ({
   chatId,
   appId,
-  teamId,
-  tmbId,
   userInteractiveVal,
   aiResponse,
-  newVariables,
-  newTitle
+  newVariables
 }: {
   chatId: string;
   appId: string;
-  teamId: string;
-  tmbId: string;
   userInteractiveVal: string;
   aiResponse: AIChatItemType & { dataId?: string };
   newVariables?: Record<string, any>;
-  newTitle: string;
 }) => {
   if (!chatId) return;
 
@@ -259,7 +253,6 @@ export const updateInteractiveChat = async ({
       {
         $set: {
           variables: newVariables,
-          title: newTitle,
           updateTime: new Date()
         }
       },

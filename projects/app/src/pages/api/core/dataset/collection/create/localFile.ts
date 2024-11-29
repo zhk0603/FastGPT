@@ -67,6 +67,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<any>): CreateCo
     const { rawText } = await readRawTextByLocalFile({
       teamId,
       path: file.path,
+      encoding: file.encoding,
       metadata: {
         ...fileMetadata,
         relatedId: relatedImgId
@@ -76,11 +77,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse<any>): CreateCo
     // 2. upload file
     const fileId = await uploadFile({
       teamId,
-      tmbId,
+      uid: tmbId,
       bucketName,
       path: file.path,
       filename: file.originalname,
       contentType: file.mimetype,
+      encoding: file.encoding,
       metadata: fileMetadata
     });
 

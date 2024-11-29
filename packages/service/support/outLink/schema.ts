@@ -42,9 +42,17 @@ const OutLinkSchema = new Schema({
   lastTime: {
     type: Date
   },
+
   responseDetail: {
     type: Boolean,
     default: false
+  },
+  showNodeStatus: {
+    type: Boolean,
+    default: true
+  },
+  showRawSource: {
+    type: Boolean
   },
   limit: {
     maxUsagePoints: {
@@ -62,6 +70,8 @@ const OutLinkSchema = new Schema({
       type: String
     }
   },
+
+  // Third part app config
   app: {
     type: Object // could be FeishuAppType | WecomAppType | ...
   },

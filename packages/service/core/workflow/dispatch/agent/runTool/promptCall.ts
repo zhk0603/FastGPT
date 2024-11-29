@@ -1,4 +1,4 @@
-import { getAIApi } from '../../../../ai/config';
+import { createChatCompletion } from '../../../../ai/config';
 import { filterGPTMessageByMaxTokens, loadRequestMessages } from '../../../../chat/utils';
 import {
   ChatCompletion,
@@ -51,7 +51,7 @@ export const runToolWithPromptCall = async (
     requestOrigin,
     runtimeNodes,
     runtimeEdges,
-    node,
+    user,
     stream,
     workflowStreamResponse,
     params: { temperature = 0, maxToken = 4000, aiChatVision }
@@ -176,17 +176,29 @@ export const runToolWithPromptCall = async (
   );
 
   const lastMessage = messages[messages.length - 1];
-  if (typeof lastMessage.content !== 'string') {
+  if (typeof lastMessage.content === 'string') {
+    lastMessage.content = replaceVariable(lastMessage.content, {
+      toolsPrompt
+    });
+  } else if (Array.isArray(lastMessage.content)) {
+    // array, replace last element
+    const lastText = lastMessage.content[lastMessage.content.length - 1];
+    if (lastText.type === 'text') {
+      lastText.text = replaceVariable(lastText.text, {
+        toolsPrompt
+      });
+    } else {
+      return Promise.reject('Prompt call invalid input');
+    }
+  } else {
     return Promise.reject('Prompt call invalid input');
   }
-  lastMessage.content = replaceVariable(lastMessage.content, {
-    toolsPrompt
-  });
 
   const filterMessages = await filterGPTMessageByMaxTokens({
     messages,
     maxTokens: toolModel.maxContext - 500 // filter token. not response maxToken
   });
+
   const [requestMessages, max_tokens] = await Promise.all([
     loadRequestMessages({
       messages: filterMessages,
@@ -212,18 +224,19 @@ export const runToolWithPromptCall = async (
 
   // console.log(JSON.stringify(requestMessages, null, 2));
   /* Run llm */
-  const ai = getAIApi({
-    timeout: 480000
-  });
-  const aiResponse = await ai.chat.completions.create(requestBody, {
-    headers: {
-      Accept: 'application/json, text/plain, */*'
+  const {
+    response: aiResponse,
+    isStreamResponse,
+    getEmptyResponseTip
+  } = await createChatCompletion({
+    body: requestBody,
+    userKey: user.openaiAccount,
+    options: {
+      headers: {
+        Accept: 'application/json, text/plain, */*'
+      }
     }
   });
-  const isStreamResponse =
-    typeof aiResponse === 'object' &&
-    aiResponse !== null &&
-    ('iterator' in aiResponse || 'controller' in aiResponse);
 
   const answer = await (async () => {
     if (res && isStreamResponse) {
@@ -241,8 +254,11 @@ export const runToolWithPromptCall = async (
       return result.choices?.[0]?.message?.content || '';
     }
   })();
-
   const { answer: replaceAnswer, toolJson } = parseAnswer(answer);
+  if (!answer && !toolJson) {
+    return Promise.reject(getEmptyResponseTip());
+  }
+
   // No tools
   if (!toolJson) {
     if (replaceAnswer === ERROR_TEXT) {
@@ -398,11 +414,27 @@ export const runToolWithPromptCall = async (
     : undefined;
 
   // get the next user prompt
-  lastMessage.content += `${replaceAnswer}
+  if (typeof lastMessage.content === 'string') {
+    lastMessage.content += `${replaceAnswer}
 TOOL_RESPONSE: """
 ${workflowInteractiveResponseItem ? `{{${INTERACTIVE_STOP_SIGNAL}}}` : toolsRunResponse.toolResponsePrompt}
 """
 ANSWER: `;
+  } else if (Array.isArray(lastMessage.content)) {
+    // array, replace last element
+    const lastText = lastMessage.content[lastMessage.content.length - 1];
+    if (lastText.type === 'text') {
+      lastText.text += `${replaceAnswer}
+TOOL_RESPONSE: """
+${workflowInteractiveResponseItem ? `{{${INTERACTIVE_STOP_SIGNAL}}}` : toolsRunResponse.toolResponsePrompt}
+"""
+ANSWER: `;
+    } else {
+      return Promise.reject('Prompt call invalid input');
+    }
+  } else {
+    return Promise.reject('Prompt call invalid input');
+  }
 
   const runTimes = (response?.runTimes || 0) + toolsRunResponse.toolResponse.runTimes;
   const toolNodeTokens = response?.toolNodeTokens ? response.toolNodeTokens + tokens : tokens;
@@ -508,9 +540,6 @@ async function streamResponse({
     }
   }
 
-  if (!textAnswer) {
-    return Promise.reject('LLM api response empty');
-  }
   return { answer: textAnswer.trim() };
 }
 

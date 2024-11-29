@@ -35,9 +35,10 @@ curl --location --request POST 'http://localhost:3000/api/v1/chat/completions' \
 --header 'Authorization: Bearer fastgpt-xxxxxx' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "chatId": "abcd",
+    "chatId": "my_chatId",
     "stream": false,
     "detail": false,
+    "responseChatItemId": "my_responseChatItemId",
     "variables": {
         "uid": "asdfadsfasfd2323",
         "name": "张三"
@@ -45,7 +46,7 @@ curl --location --request POST 'http://localhost:3000/api/v1/chat/completions' \
     "messages": [
         {
             "role": "user",
-            "content": "导演是谁",
+            "content": "导演是谁"
         }
     ]
 }'
@@ -104,6 +105,7 @@ curl --location --request POST 'http://localhost:3000/api/v1/chat/completions' \
   - 为 `undefined` 时（不传入），不使用 FastGpt 提供的上下文功能，完全通过传入的 messages 构建上下文。 不会将你的记录存储到数据库中，你也无法在记录汇总中查阅到。
   - 为`非空字符串`时，意味着使用 chatId 进行对话，自动从 FastGpt 数据库取历史记录，并使用 messages 数组最后一个内容作为用户问题。请自行确保 chatId 唯一，长度小于250，通常可以是自己系统的对话框ID。
 - messages: 结构与 [GPT接口](https://platform.openai.com/docs/api-reference/chat/object) chat模式一致。
+- responseChatItemId: string | undefined 。如果传入，则会将该值作为本次对话的响应消息的 ID，FastGPT 会自动将该 ID 存入数据库。请确保，在当前`chatId`下，`responseChatItemId`是唯一的。
 - detail: 是否返回中间值（模块状态，响应的完整结果等），`stream模式`下会通过`event`进行区分，`非stream模式`结果保存在`responseData`中。
 - variables: 模块变量，一个对象，会替换模块中，输入框内容里的`{{key}}`
 {{% /alert %}}
@@ -306,6 +308,149 @@ event取值：
 - flowResponses: 节点完整响应
 - updateVariables: 更新变量
 - error: 报错
+
+{{< /markdownify >}}
+{{< /tab >}}
+{{< /tabs >}}
+
+
+### 交互节点响应
+
+如果工作流中包含交互节点，依然是调用该 API 接口，需要设置`detail=true`，并可以从`event=interactive`的数据中获取交互节点的配置信息。如果是`stream=false`，则可以从 choice 中获取`type=interactive`的元素，获取交互节点的选择信息。
+
+当你调用一个带交互节点的工作流时，如果工作流遇到了交互节点，那么会直接返回，你可以得到下面的信息：
+
+{{< tabs tabTotal="2" >}}
+{{< tab tabName="用户选择" >}}
+{{< markdownify >}}
+
+```json
+{
+    "interactive": {
+        "type": "userSelect",
+        "params": {
+            "description": "测试",
+            "userSelectOptions": [
+                {
+                    "value": "Confirm",
+                    "key": "option1"
+                },
+                {
+                    "value": "Cancel",
+                    "key": "option2"
+                }
+            ]
+        }
+    }
+}
+```
+
+{{< /markdownify >}}
+{{< /tab >}}
+
+{{< tab tabName="表单输入" >}}
+{{< markdownify >}}
+
+```json
+{
+    "interactive": {
+        "type": "userInput",
+        "params": {
+            "description": "测试",
+            "inputForm": [
+                {
+                    "type": "input",
+                    "key": "测试 1",
+                    "label": "测试 1",
+                    "description": "",
+                    "value": "",
+                    "defaultValue": "",
+                    "valueType": "string",
+                    "required": false,
+                    "list": [
+                        {
+                            "label": "",
+                            "value": ""
+                        }
+                    ]
+                },
+                {
+                    "type": "numberInput",
+                    "key": "测试 2",
+                    "label": "测试 2",
+                    "description": "",
+                    "value": "",
+                    "defaultValue": "",
+                    "valueType": "number",
+                    "required": false,
+                    "list": [
+                        {
+                            "label": "",
+                            "value": ""
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
+```
+
+{{< /markdownify >}}
+{{< /tab >}}
+{{< /tabs >}}
+
+### 交互节点继续运行
+
+紧接着上一节，当你接收到交互节点信息后，可以根据这些数据进行 UI 渲染，引导用户输入或选择相关信息。然后需要再次发起对话，来继续工作流。调用的接口与仍是该接口，你需要按以下格式来发起请求：
+
+{{< tabs tabTotal="2" >}}
+{{< tab tabName="用户选择" >}}
+{{< markdownify >}}
+
+对于用户选择，你只需要直接传递一个选择的结果给 messages 即可。
+
+```bash
+curl --location --request POST 'https://api.fastgpt.in/api/v1/chat/completions' \
+--header 'Authorization: Bearer fastgpt-xxx' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "stream": true,
+    "detail": true,
+    "chatId":"22222231",
+    "messages": [
+        {
+            "role": "user",
+            "content": "Confirm"
+        }
+    ]
+}'
+```
+
+{{< /markdownify >}}
+{{< /tab >}}
+
+{{< tab tabName="表单输入" >}}
+{{< markdownify >}}
+
+表单输入稍微麻烦一点，需要将输入的内容，以对象形式并序列化成字符串，作为`messages`的值。对象的 key 对应表单的 key，value 为用户输入的值。务必确保`chatId`是一致的。
+
+```bash
+curl --location --request POST 'https://api.fastgpt.in/api/v1/chat/completions' \
+--header 'Authorization: Bearer fastgpt-xxxx' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "stream": true,
+    "detail": true,
+    "chatId":"22231",
+    "messages": [
+        {
+            "role": "user",
+            "content": "{\"测试 1\":\"这是输入框的内容\",\"测试 2\":666}"
+        }
+    ]
+}'
+```
 
 {{< /markdownify >}}
 {{< /tab >}}
@@ -526,7 +671,8 @@ curl --location --request POST 'http://localhost:3000/api/core/chat/getHistories
 --data-raw '{
     "appId": "appId",
     "offset": 0,
-    "pageSize": 20
+    "pageSize": 20,
+    "source: "api"
 }'
 ```
 
@@ -540,6 +686,7 @@ curl --location --request POST 'http://localhost:3000/api/core/chat/getHistories
 - appId - 应用 Id
 - offset - 偏移量，即从第几条数据开始取
 - pageSize - 记录数量
+- source - 对话源
 {{% /alert %}}
 
 {{< /markdownify >}}

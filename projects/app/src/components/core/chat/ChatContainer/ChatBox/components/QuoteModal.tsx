@@ -6,16 +6,23 @@ import { useTranslation } from 'next-i18next';
 import type { SearchDataResponseItemType } from '@fastgpt/global/core/dataset/type';
 import QuoteItem from '@/components/core/dataset/QuoteItem';
 import RawSourceBox from '@/components/core/dataset/RawSourceBox';
+import { getWebReqUrl } from '@fastgpt/web/common/system/utils';
+import { useContextSelector } from 'use-context-selector';
+import { ChatBoxContext } from '../Provider';
 
 const QuoteModal = ({
   rawSearch = [],
   onClose,
-  showDetail,
+  canEditDataset,
+  showRawSource,
+  chatItemId,
   metadata
 }: {
   rawSearch: SearchDataResponseItemType[];
   onClose: () => void;
-  showDetail: boolean;
+  canEditDataset: boolean;
+  showRawSource: boolean;
+  chatItemId: string;
   metadata?: {
     collectionId: string;
     sourceId?: string;
@@ -34,6 +41,13 @@ const QuoteModal = ({
     [metadata, rawSearch]
   );
 
+  const RawSourceBoxProps = useContextSelector(ChatBoxContext, (v) => ({
+    appId: v.appId,
+    chatId: v.chatId,
+    chatItemId,
+    ...(v.outLinkAuthData || {})
+  }));
+
   return (
     <>
       <MyModal
@@ -42,13 +56,13 @@ const QuoteModal = ({
         h={['90vh', '80vh']}
         isCentered
         minW={['90vw', '600px']}
-        iconSrc={!!metadata ? undefined : '/imgs/modal/quote.svg'}
+        iconSrc={!!metadata ? undefined : getWebReqUrl('/imgs/modal/quote.svg')}
         title={
           <Box>
             {metadata ? (
-              <RawSourceBox {...metadata} canView={showDetail} />
+              <RawSourceBox {...metadata} {...RawSourceBoxProps} canView={showRawSource} />
             ) : (
-              <>{t('core.chat.Quote Amount', { amount: rawSearch.length })}</>
+              <>{t('common:core.chat.Quote Amount', { amount: rawSearch.length })}</>
             )}
             <Box fontSize={'xs'} color={'myGray.500'} fontWeight={'normal'}>
               {t('common:core.chat.quote.Quote Tip')}
@@ -57,7 +71,12 @@ const QuoteModal = ({
         }
       >
         <ModalBody>
-          <QuoteList rawSearch={filterResults} showDetail={showDetail} />
+          <QuoteList
+            rawSearch={filterResults}
+            canEditDataset={canEditDataset}
+            canViewSource={showRawSource}
+            chatItemId={chatItemId}
+          />
         </ModalBody>
       </MyModal>
     </>
@@ -67,13 +86,24 @@ const QuoteModal = ({
 export default QuoteModal;
 
 export const QuoteList = React.memo(function QuoteList({
+  chatItemId,
   rawSearch = [],
-  showDetail
+  canEditDataset,
+  canViewSource
 }: {
+  chatItemId?: string;
   rawSearch: SearchDataResponseItemType[];
-  showDetail: boolean;
+  canEditDataset: boolean;
+  canViewSource: boolean;
 }) {
   const theme = useTheme();
+
+  const RawSourceBoxProps = useContextSelector(ChatBoxContext, (v) => ({
+    chatItemId,
+    appId: v.appId,
+    chatId: v.chatId,
+    ...(v.outLinkAuthData || {})
+  }));
 
   return (
     <>
@@ -88,7 +118,12 @@ export const QuoteList = React.memo(function QuoteList({
           _hover={{ '& .hover-data': { display: 'flex' } }}
           bg={i % 2 === 0 ? 'white' : 'myWhite.500'}
         >
-          <QuoteItem quoteItem={item} canViewSource={showDetail} linkToDataset={showDetail} />
+          <QuoteItem
+            quoteItem={item}
+            canViewSource={canViewSource}
+            canEditDataset={canEditDataset}
+            {...RawSourceBoxProps}
+          />
         </Box>
       ))}
     </>

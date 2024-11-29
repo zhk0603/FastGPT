@@ -31,6 +31,7 @@ import ChatFunctionTip from './Tip';
 import FormLabel from '@fastgpt/web/components/common/MyBox/FormLabel';
 import QuestionTip from '@fastgpt/web/components/common/MyTooltip/QuestionTip';
 import InputTypeConfig from '@/pages/app/detail/components/WorkflowComponents/Flow/nodes/NodePluginIO/InputTypeConfig';
+import MyIconButton from '@fastgpt/web/components/common/Icon/button';
 
 export const defaultVariable: VariableItemType = {
   id: nanoid(),
@@ -65,10 +66,6 @@ const VariableEdit = ({
   const { setValue, reset, watch, getValues } = form;
   const value = getValues();
   const type = watch('type');
-  const valueType = watch('valueType');
-  const max = watch('max');
-  const min = watch('min');
-  const defaultValue = watch('defaultValue');
 
   const inputTypeList = useMemo(
     () =>
@@ -173,7 +170,9 @@ const VariableEdit = ({
       {/* Row box */}
       <Flex alignItems={'center'}>
         <MyIcon name={'core/app/simpleMode/variable'} w={'20px'} />
-        <FormLabel ml={2}>{t('common:core.module.Variable')}</FormLabel>
+        <FormLabel ml={2} color={'myGray.600'}>
+          {t('common:core.module.Variable')}
+        </FormLabel>
         <ChatFunctionTip type={'variable'} />
         <Box flex={1} />
         <Button
@@ -181,6 +180,7 @@ const VariableEdit = ({
           leftIcon={<SmallAddIcon />}
           iconSpacing={1}
           size={'sm'}
+          color={'myGray.600'}
           mr={'-5px'}
           onClick={() => {
             reset(addVariable());
@@ -191,46 +191,37 @@ const VariableEdit = ({
       </Flex>
       {/* Form render */}
       {formatVariables.length > 0 && (
-        <Box mt={2} borderRadius={'md'} overflow={'hidden'} borderWidth={'1px'} borderBottom="none">
-          <TableContainer>
-            <Table>
-              <Thead>
-                <Tr>
-                  <Th
-                    fontSize={'mini'}
-                    borderRadius={'none !important'}
-                    w={'18px !important'}
-                    p={0}
-                  />
-                  <Th fontSize={'mini'}>{t('workflow:Variable_name')}</Th>
-                  <Th fontSize={'mini'}>{t('app:global_variables_desc')}</Th>
-                  <Th fontSize={'mini'}>{t('common:common.Require Input')}</Th>
-                  <Th fontSize={'mini'} borderRadius={'none !important'}></Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {formatVariables.map((item) => (
-                  <Tr key={item.id}>
-                    <Td p={0} pl={3}>
-                      <MyIcon name={item.icon as any} w={'16px'} color={'myGray.500'} />
-                    </Td>
-                    <Td>{item.key}</Td>
-                    <Td
-                      maxW={'200px'}
-                      fontSize={'sm'}
-                      whiteSpace={'pre-wrap'}
-                      wordBreak={'break-all'}
-                      px={0}
-                    >
-                      {item.description || '-'}
-                    </Td>
-                    <Td>{item.required ? '✔' : '-'}</Td>
-                    <Td>
-                      <MyIcon
-                        mr={3}
-                        name={'common/settingLight'}
-                        w={'16px'}
-                        cursor={'pointer'}
+        <TableContainer mt={2} borderRadius={'md'} overflow={'hidden'} borderWidth={'1px'}>
+          <Table variant={'workflow'}>
+            <Thead>
+              <Tr>
+                <Th>{t('workflow:Variable_name')}</Th>
+                <Th>{t('common:common.Require Input')}</Th>
+                <Th>{t('common:common.Operation')}</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {formatVariables.map((item, index) => (
+                <Tr key={item.id}>
+                  <Td fontWeight={'medium'}>
+                    <Flex alignItems={'center'}>
+                      <MyIcon name={item.icon as any} w={'16px'} color={'myGray.400'} mr={2} />
+                      {item.key}
+                    </Flex>
+                  </Td>
+                  <Td>
+                    <Flex alignItems={'center'}>
+                      {item.required ? (
+                        <MyIcon name={'check'} w={'16px'} color={'myGray.900'} mr={2} />
+                      ) : (
+                        ''
+                      )}
+                    </Flex>
+                  </Td>
+                  <Td>
+                    <Flex>
+                      <MyIconButton
+                        icon={'common/settingLight'}
                         onClick={() => {
                           const formattedItem = {
                             ...item,
@@ -239,21 +230,20 @@ const VariableEdit = ({
                           reset(formattedItem);
                         }}
                       />
-                      <MyIcon
-                        name={'delete'}
-                        w={'16px'}
-                        cursor={'pointer'}
+                      <MyIconButton
+                        icon={'delete'}
+                        hoverColor={'red.500'}
                         onClick={() =>
                           onChange(variables.filter((variable) => variable.id !== item.id))
                         }
                       />
-                    </Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </TableContainer>
-        </Box>
+                    </Flex>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
       )}
 
       {/* Edit modal */}
@@ -337,11 +327,7 @@ const VariableEdit = ({
               type={'variable'}
               isEdit={!!value.key}
               inputType={type}
-              valueType={valueType}
-              defaultValue={defaultValue}
               defaultValueType={defaultValueType}
-              max={max}
-              min={min}
               onClose={() => reset({})}
               onSubmitSuccess={onSubmitSuccess}
               onSubmitError={onSubmitError}

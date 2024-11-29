@@ -87,7 +87,7 @@ const InputGuideConfig = ({
     <Flex alignItems={'center'}>
       <MyIcon name={'core/app/inputGuides'} mr={2} w={'20px'} />
       <Flex alignItems={'center'}>
-        <FormLabel>{chatT('input_guide')}</FormLabel>
+        <FormLabel color={'myGray.600'}>{chatT('input_guide')}</FormLabel>
         <ChatFunctionTip type={'inputGuide'} />
       </Flex>
       <Box flex={1} />
@@ -97,6 +97,7 @@ const InputGuideConfig = ({
           iconSpacing={1}
           size={'sm'}
           mr={'-5px'}
+          color={'myGray.600'}
           onClick={onOpen}
         >
           {formLabel}
@@ -138,20 +139,20 @@ const InputGuideConfig = ({
                     onOpenLexiconConfig();
                   }}
                 >
-                  {chatT('config_input_guide_lexicon')}
+                  {t('chat:config_input_guide_lexicon')}
                 </Button>
               </Flex>
               <>
                 <Flex mt={8} alignItems={'center'}>
                   <FormLabel>{chatT('custom_input_guide_url')}</FormLabel>
                   <Flex
-                    onClick={() => window.open(getDocPath('/docs/course/chat_input_guide'))}
+                    onClick={() => window.open(getDocPath('/docs/guide/course/chat_input_guide/'))}
                     color={'primary.700'}
                     alignItems={'center'}
                     cursor={'pointer'}
                   >
                     <MyIcon name={'book'} w={'17px'} ml={4} mr={1} color={'myGray.600'} />
-                    {commonT('common.Documents')}
+                    {t('common:common.Documents')}
                   </Flex>
                   <Box flex={'1 0 0'} />
                 </Flex>

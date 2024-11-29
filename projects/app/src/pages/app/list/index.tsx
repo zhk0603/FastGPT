@@ -1,21 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import {
-  Box,
-  Flex,
-  Button,
-  useDisclosure,
-  Input,
-  InputGroup,
-  InputLeftElement
-} from '@chakra-ui/react';
+import React, { useMemo, useState } from 'react';
+import { Box, Flex, Button, useDisclosure, Input, InputGroup } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { serviceSideProps } from '@/web/common/utils/i18n';
 import { useUserStore } from '@/web/support/user/useUserStore';
 import { useI18n } from '@/web/context/I18n';
 import { useTranslation } from 'next-i18next';
 import dynamic from 'next/dynamic';
-
-import List from './components/List';
 import MyMenu from '@fastgpt/web/components/common/MyMenu';
 import { FolderIcon } from '@fastgpt/global/common/file/image/constants';
 import { useRequest2 } from '@fastgpt/web/hooks/useRequest';
@@ -27,10 +17,7 @@ import FolderPath from '@/components/common/folder/Path';
 import { useRouter } from 'next/router';
 import FolderSlideCard from '@/components/common/folder/SlideCard';
 import { delAppById, resumeInheritPer } from '@/web/core/app/api';
-import {
-  AppDefaultPermissionVal,
-  AppPermissionList
-} from '@fastgpt/global/support/permission/app/constant';
+import { AppPermissionList } from '@fastgpt/global/support/permission/app/constant';
 import {
   deleteAppCollaborators,
   getCollaboratorList,
@@ -49,6 +36,7 @@ const EditFolderModal = dynamic(
   () => import('@fastgpt/web/components/common/MyModal/EditFolderModal')
 );
 const HttpEditModal = dynamic(() => import('./components/HttpPluginEditModal'));
+const List = dynamic(() => import('./components/List'));
 
 const MyApps = () => {
   const { t } = useTranslation();
@@ -99,15 +87,23 @@ const MyApps = () => {
 
   const RenderSearchInput = useMemo(
     () => (
-      <InputGroup maxW={['auto', '250px']}>
-        <InputLeftElement h={'full'} alignItems={'center'} display={'flex'}>
-          <MyIcon name={'common/searchLight'} w={'1rem'} />
-        </InputLeftElement>
+      <InputGroup maxW={['auto', '250px']} position={'relative'}>
+        <MyIcon
+          position={'absolute'}
+          zIndex={10}
+          name={'common/searchLight'}
+          w={'1rem'}
+          color={'myGray.600'}
+          left={2.5}
+          top={'50%'}
+          transform={'translateY(-50%)'}
+        />
         <Input
           value={searchKey}
           onChange={(e) => setSearchKey(e.target.value)}
           placeholder={appT('search_app')}
           maxLength={30}
+          pl={8}
           bg={'white'}
         />
       </InputGroup>
@@ -183,66 +179,67 @@ const MyApps = () => {
 
             {isPc && RenderSearchInput}
 
-            {userInfo?.team.permission.hasWritePer &&
-              folderDetail?.type !== AppTypeEnum.httpPlugin && (
-                <MyMenu
-                  iconSize="2rem"
-                  Button={
-                    <Button variant={'primary'} leftIcon={<AddIcon />}>
-                      <Box>{t('common:common.Create New')}</Box>
-                    </Button>
+            {(folderDetail
+              ? folderDetail.permission.hasWritePer && folderDetail?.type !== AppTypeEnum.httpPlugin
+              : userInfo?.team.permission.hasWritePer) && (
+              <MyMenu
+                size="md"
+                Button={
+                  <Button variant={'primary'} leftIcon={<AddIcon />}>
+                    <Box>{t('common:common.Create New')}</Box>
+                  </Button>
+                }
+                menuList={[
+                  {
+                    children: [
+                      {
+                        icon: 'core/app/simpleBot',
+                        label: t('app:type.Simple bot'),
+                        description: t('app:type.Create simple bot tip'),
+                        onClick: () => setCreateAppType(AppTypeEnum.simple)
+                      },
+                      {
+                        icon: 'core/app/type/workflowFill',
+                        label: t('app:type.Workflow bot'),
+                        description: t('app:type.Create workflow tip'),
+                        onClick: () => setCreateAppType(AppTypeEnum.workflow)
+                      },
+                      {
+                        icon: 'core/app/type/pluginFill',
+                        label: t('app:type.Plugin'),
+                        description: t('app:type.Create one plugin tip'),
+                        onClick: () => setCreateAppType(AppTypeEnum.plugin)
+                      },
+                      {
+                        icon: 'core/app/type/httpPluginFill',
+                        label: t('app:type.Http plugin'),
+                        description: t('app:type.Create http plugin tip'),
+                        onClick: onOpenCreateHttpPlugin
+                      }
+                    ]
+                  },
+                  {
+                    children: [
+                      {
+                        icon: '/imgs/app/templateFill.svg',
+                        label: t('app:template_market'),
+                        description: t('app:template_market_description'),
+                        onClick: () => setTemplateModalType('all')
+                      }
+                    ]
+                  },
+                  {
+                    children: [
+                      {
+                        icon: FolderIcon,
+                        label: t('common:Folder'),
+                        onClick: () => setEditFolder({})
+                      }
+                    ]
                   }
-                  menuList={[
-                    {
-                      children: [
-                        {
-                          icon: 'core/app/simpleBot',
-                          label: t('app:type.Simple bot'),
-                          description: t('app:type.Create simple bot tip'),
-                          onClick: () => setCreateAppType(AppTypeEnum.simple)
-                        },
-                        {
-                          icon: 'core/app/type/workflowFill',
-                          label: t('app:type.Workflow bot'),
-                          description: t('app:type.Create workflow tip'),
-                          onClick: () => setCreateAppType(AppTypeEnum.workflow)
-                        },
-                        {
-                          icon: 'core/app/type/pluginFill',
-                          label: t('app:type.Plugin'),
-                          description: t('app:type.Create one plugin tip'),
-                          onClick: () => setCreateAppType(AppTypeEnum.plugin)
-                        },
-                        {
-                          icon: 'core/app/type/httpPluginFill',
-                          label: t('app:type.Http plugin'),
-                          description: t('app:type.Create http plugin tip'),
-                          onClick: onOpenCreateHttpPlugin
-                        }
-                      ]
-                    },
-                    {
-                      children: [
-                        {
-                          icon: '/imgs/app/templateFill.svg',
-                          label: t('app:template_market'),
-                          description: t('app:template_market_description'),
-                          onClick: () => setTemplateModalType('all')
-                        }
-                      ]
-                    },
-                    {
-                      children: [
-                        {
-                          icon: FolderIcon,
-                          label: t('common:Folder'),
-                          onClick: () => setEditFolder({})
-                        }
-                      ]
-                    }
-                  ]}
-                />
-              )}
+                ]}
+              />
+            )}
           </Flex>
 
           {!isPc && <Box mt={2}>{RenderSearchInput}</Box>}
@@ -273,36 +270,47 @@ const MyApps = () => {
               onMove={() => setMoveAppId(folderDetail._id)}
               deleteTip={appT('confirm_delete_folder_tip')}
               onDelete={() => onDeleFolder(folderDetail._id)}
-              defaultPer={{
-                value: folderDetail.defaultPermission,
-                defaultValue: AppDefaultPermissionVal,
-                onChange: (e) => {
-                  return onUpdateApp(folderDetail._id, { defaultPermission: e });
-                }
-              }}
               managePer={{
+                mode: 'all',
                 permission: folderDetail.permission,
                 onGetCollaboratorList: () => getCollaboratorList(folderDetail._id),
                 permissionList: AppPermissionList,
                 onUpdateCollaborators: ({
-                  members = [], // TODO: remove the default value after group is ready
+                  members,
+                  groups,
                   permission
                 }: {
                   members?: string[];
+                  groups?: string[];
                   permission: number;
                 }) => {
                   return postUpdateAppCollaborators({
                     members,
+                    groups,
                     permission,
                     appId: folderDetail._id
                   });
                 },
                 refreshDeps: [folderDetail._id, folderDetail.inheritPermission],
-                onDelOneCollaborator: (tmbId: string) =>
-                  deleteAppCollaborators({
-                    appId: folderDetail._id,
-                    tmbId
-                  })
+                onDelOneCollaborator: async ({
+                  tmbId,
+                  groupId
+                }: {
+                  tmbId?: string;
+                  groupId?: string;
+                }) => {
+                  if (tmbId) {
+                    return deleteAppCollaborators({
+                      appId: folderDetail._id,
+                      tmbId
+                    });
+                  } else if (groupId) {
+                    return deleteAppCollaborators({
+                      appId: folderDetail._id,
+                      groupId
+                    });
+                  }
+                }
               }}
             />
           </Box>

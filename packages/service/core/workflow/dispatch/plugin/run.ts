@@ -112,12 +112,15 @@ export const dispatchRunPlugin = async (props: RunPluginProps): Promise<RunPlugi
     output.moduleLogo = plugin.avatar;
   }
 
-  const usagePoints = await computedPluginUsage(plugin, flowUsages);
-  const childStreamResponse = system_forbid_stream ? false : props.stream;
+  const usagePoints = await computedPluginUsage({
+    plugin,
+    childrenUsage: flowUsages,
+    error: !!output?.pluginOutput?.error
+  });
 
   return {
     // 嵌套运行时，如果 childApp stream=false，实际上不会有任何内容输出给用户，所以不需要存储
-    assistantResponses: childStreamResponse ? assistantResponses : [],
+    assistantResponses: system_forbid_stream ? [] : assistantResponses,
     // responseData, // debug
     [DispatchNodeResponseKeyEnum.runTimes]: runTimes,
     [DispatchNodeResponseKeyEnum.nodeResponse]: {

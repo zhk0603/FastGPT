@@ -1,5 +1,4 @@
-import { LLMModelItemType } from '@fastgpt/global/core/ai/model.d';
-import { getAIApi } from '../../../../ai/config';
+import { createChatCompletion } from '../../../../ai/config';
 import { filterGPTMessageByMaxTokens, loadRequestMessages } from '../../../../chat/utils';
 import {
   ChatCompletion,
@@ -22,12 +21,12 @@ import { DispatchFlowResponse, WorkflowResponseType } from '../../type';
 import { countGptMessagesTokens } from '../../../../../common/string/tiktoken/index';
 import { getNanoid, sliceStrStartEnd } from '@fastgpt/global/common/string/tools';
 import { AIChatItemType } from '@fastgpt/global/core/chat/type';
-import { chats2GPTMessages, GPTMessages2Chats } from '@fastgpt/global/core/chat/adapt';
+import { GPTMessages2Chats } from '@fastgpt/global/core/chat/adapt';
 import { formatToolResponse, initToolCallEdges, initToolNodes } from './utils';
 import { computedMaxToken, llmCompletionsBodyFormat } from '../../../../ai/utils';
 import { toolValueTypeList } from '@fastgpt/global/core/workflow/constants';
 import { WorkflowInteractiveResponseType } from '@fastgpt/global/core/workflow/template/system/interactive/type';
-import { ChatItemValueTypeEnum, ChatRoleEnum } from '@fastgpt/global/core/chat/constants';
+import { ChatItemValueTypeEnum } from '@fastgpt/global/core/chat/constants';
 
 type FunctionRunResponseType = {
   toolRunResponse: DispatchFlowResponse;
@@ -44,7 +43,7 @@ export const runToolWithFunctionCall = async (
     requestOrigin,
     runtimeNodes,
     runtimeEdges,
-    node,
+    user,
     stream,
     workflowStreamResponse,
     params: { temperature = 0, maxToken = 4000, aiChatVision }
@@ -216,17 +215,22 @@ export const runToolWithFunctionCall = async (
 
   // console.log(JSON.stringify(requestMessages, null, 2));
   /* Run llm */
-  const ai = getAIApi({
-    timeout: 480000
-  });
-  const aiResponse = await ai.chat.completions.create(requestBody, {
-    headers: {
-      Accept: 'application/json, text/plain, */*'
+  const {
+    response: aiResponse,
+    isStreamResponse,
+    getEmptyResponseTip
+  } = await createChatCompletion({
+    body: requestBody,
+    userKey: user.openaiAccount,
+    options: {
+      headers: {
+        Accept: 'application/json, text/plain, */*'
+      }
     }
   });
 
   const { answer, functionCalls } = await (async () => {
-    if (res && stream) {
+    if (res && isStreamResponse) {
       return streamResponse({
         res,
         toolNodes,
@@ -255,6 +259,9 @@ export const runToolWithFunctionCall = async (
       };
     }
   })();
+  if (!answer && functionCalls.length === 0) {
+    return Promise.reject(getEmptyResponseTip());
+  }
 
   // Run the selected tool.
   const toolsRunResponse = (
@@ -546,10 +553,6 @@ async function streamResponse({
         });
       }
     }
-  }
-
-  if (!textAnswer && functionCalls.length === 0) {
-    return Promise.reject('LLM api response empty');
   }
 
   return { answer: textAnswer, functionCalls };

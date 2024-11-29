@@ -12,11 +12,9 @@ export type AppUpdateParams = {
   edges?: AppSchema['edges'];
   chatConfig?: AppSchema['chatConfig'];
   teamTags?: AppSchema['teamTags'];
-  defaultPermission?: AppSchema['defaultPermission'];
 };
 
 export type PostPublishAppProps = {
-  type: AppTypeEnum;
   nodes: AppSchema['modules'];
   edges: AppSchema['edges'];
   chatConfig: AppSchema['chatConfig'];
