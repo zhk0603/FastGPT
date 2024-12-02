@@ -17,7 +17,7 @@ import { pushDataListToTrainingQueue } from '@fastgpt/service/core/dataset/train
 import { Prompt_AgentQA } from '@fastgpt/global/core/ai/prompt/agent';
 import IORedis from 'ioredis';
 import { v4 as uuidv4 } from 'uuid';
-import systemMonitor from './system-monitor';
+// import systemMonitor from './system-monitor';
 
 let datasetQueue: Queue;
 let redisConnection: IORedis;
@@ -31,8 +31,8 @@ process.on('SIGINT', () => {
 });
 
 const queueName = 'web-datasets';
-const gotJobInterval = Number(process.env.CONNECTION_MONITOR_INTERVAL) || 20;
-const connectionMonitorInterval = Number(process.env.CONNECTION_MONITOR_INTERVAL) || 10;
+const gotJobInterval = Number(process.env.CONNECTION_MONITOR_INTERVAL) || 200;
+const connectionMonitorInterval = Number(process.env.CONNECTION_MONITOR_INTERVAL) || 100;
 const jobLockExtendInterval = Number(process.env.JOB_LOCK_EXTEND_INTERVAL) || 15000;
 const jobLockExtensionTime = Number(process.env.JOB_LOCK_EXTENSION_TIME) || 60000;
 const cantAcceptConnectionInterval = Number(process.env.CANT_ACCEPT_CONNECTION_INTERVAL) || 2000;
@@ -193,7 +193,7 @@ const workerFun = async (
 
   worker.startStalledCheckTimer();
 
-  const monitor = await systemMonitor;
+  // const monitor = await systemMonitor;
 
   while (true) {
     if (isShuttingDown) {
@@ -201,12 +201,12 @@ const workerFun = async (
       break;
     }
     const token = uuidv4();
-    const canAcceptConnection = await monitor.acceptConnection();
-    if (!canAcceptConnection) {
-      addLog.info('Cant accept connection');
-      await sleep(cantAcceptConnectionInterval); // more sleep
-      continue;
-    }
+    // const canAcceptConnection = await monitor.acceptConnection();
+    // if (!canAcceptConnection) {
+    //   addLog.info('Cant accept connection');
+    //   await sleep(cantAcceptConnectionInterval); // more sleep
+    //   continue;
+    // }
 
     const job = await worker.getNextJob(token);
     if (job) {

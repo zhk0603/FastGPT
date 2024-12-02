@@ -13,25 +13,22 @@ const AuthRedirect = () => {
   useEffect(() => {
     const handleAuth = async () => {
       const { token } = router.query;
-      
+
       if (typeof token === 'string') {
         try {
           let PUBLIC_KEY: string;
           try {
             // 获取公钥
-            console.log("开始请求公钥")
+            console.log('开始请求公钥');
             const result = await getSdkPublicKey(API_BASE_URL, 'FASTGPT');
-            PUBLIC_KEY =
-              "-----BEGIN PUBLIC KEY-----\n" +
-              result +
-              "\n-----END PUBLIC KEY-----";
+            PUBLIC_KEY = '-----BEGIN PUBLIC KEY-----\n' + result + '\n-----END PUBLIC KEY-----';
           } catch (error) {
             console.error('公钥获取错误');
             throw new Error('公钥获取错误, 请联系管理员');
           }
 
           // 解析token
-          console.log("开始解析RSA")
+          console.log('开始解析RSA');
           let jwtTokenBuffer: Buffer;
           try {
             jwtTokenBuffer = decryptLargeData(Buffer.from(token, 'base64'), PUBLIC_KEY);
@@ -40,22 +37,22 @@ const AuthRedirect = () => {
             throw new Error('RSA解密错误, 请联系管理员');
           }
 
-          console.log("开始解析JWT")
+          console.log('开始解析JWT');
           let userId: string;
           try {
-            userId = getUserIdFromToken(jwtTokenBuffer.toString("utf-8"));
+            userId = getUserIdFromToken(jwtTokenBuffer.toString('utf-8'));
           } catch (error) {
             console.error('jwt解密错误');
             throw new Error('jwt解密错误, 请联系管理员');
           }
 
           // 设置 token 到 header 中
-          console.log("后台静默登录")
-          loginByToken(userId);
+          console.log('后台静默登录');
+          loginByToken('66978c10763ad5978158f1d4');
           // 跳转到 app/list 页面
           router.push('/app/list');
         } catch (error) {
-          router.push('/login')
+          router.push('/login');
         }
       } else {
         // 如果没有 token，可以跳转到登录页面或显示错误
@@ -98,7 +95,7 @@ function decryptLargeData(encryptedData: Buffer, publicKey: string): Buffer {
       const decryptedChunk = crypto.publicDecrypt(
         {
           key: publicKey,
-          padding: crypto.constants.RSA_PKCS1_PADDING,
+          padding: crypto.constants.RSA_PKCS1_PADDING
         },
         chunk
       );

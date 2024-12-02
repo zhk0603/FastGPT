@@ -22,14 +22,13 @@ export const useI18nLng = () => {
     en: LangEnum.en,
     'en-US': LangEnum.en
   };
-
   const onChangeLng = (lng: string) => {
     const lang = languageMap[lng] || 'en';
 
     setCookie(LANG_KEY, lang, {
       expires: 30
     });
-    i18n?.changeLanguage(lang);
+    i18n?.changeLanguage && i18n?.changeLanguage(lang);
   };
 
   const setUserDefaultLng = () => {
