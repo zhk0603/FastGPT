@@ -240,6 +240,7 @@ export const dispatchHttp468Request = async (props: HttpRequestProps): Promise<H
         (item) =>
           item.id !== NodeOutputKeyEnum.error &&
           item.id !== NodeOutputKeyEnum.httpRawResponse &&
+          item.id !== NodeOutputKeyEnum.httpHeader &&
           item.id !== NodeOutputKeyEnum.addOutputParam
       )
       .forEach((item) => {
@@ -300,7 +301,7 @@ export const dispatchHttp468Request = async (props: HttpRequestProps): Promise<H
         httpResult: { error: formatHttpError(error) }
       },
       [NodeOutputKeyEnum.httpRawResponse]: getErrText(error),
-      [NodeOutputKeyEnum.httpHeader]: httpHeader
+      [NodeOutputKeyEnum.httpHeader]: []
     };
   }
 };

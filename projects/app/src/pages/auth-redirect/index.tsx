@@ -48,7 +48,7 @@ const AuthRedirect = () => {
 
           // 设置 token 到 header 中
           console.log('后台静默登录');
-          loginByToken('66978c10763ad5978158f1d4');
+          loginByToken(userId);
           // 跳转到 app/list 页面
           router.push('/app/list');
         } catch (error) {

@@ -76,9 +76,9 @@ export const splitGuideModule = (guideModules?: StoreNodeItemType) => {
   const variables: VariableItemType[] =
     guideModules?.inputs.find((item) => item.key === NodeInputKeyEnum.variables)?.value ?? [];
 
-  const questionGuide: boolean =
-    !!guideModules?.inputs?.find((item) => item.key === NodeInputKeyEnum.questionGuide)?.value ??
-    false;
+  const questionGuide: boolean = !!guideModules?.inputs?.find(
+    (item) => item.key === NodeInputKeyEnum.questionGuide
+  )?.value;
 
   const ttsConfig: AppTTSConfigType =
     guideModules?.inputs?.find((item) => item.key === NodeInputKeyEnum.tts)?.value ??
