@@ -9,12 +9,13 @@ import { CommonErrEnum } from '@fastgpt/global/common/error/code/common';
 async function handler(req: NextApiRequest): Promise<any> {
   await connectToDatabase();
 
-  const { datasetId, tmbId } = req.query as {
+  const { datasetId, tmbId, groupId } = req.query as {
     datasetId: string;
-    tmbId: string;
+    tmbId?: string;
+    groupId?: string;
   };
 
-  if (datasetId == null || tmbId == null) {
+  if (datasetId == null) {
     return Promise.reject(CommonErrEnum.missingParams);
   }
 
@@ -29,7 +30,8 @@ async function handler(req: NextApiRequest): Promise<any> {
   await deleteDatasetCollaboratorPer({
     teamId,
     datasetId,
-    tmbId
+    tmbId,
+    groupId
   });
 }
 

@@ -1,7 +1,10 @@
 import { MongoResourcePermission } from '../../support/permission/schema';
 import { PerResourceTypeEnum } from '@fastgpt/global/support/permission/constant';
 import { mongoSessionRun } from '../../common/mongo/sessionRun';
-import { ResourcePerWithTmbWithUser } from '@fastgpt/global/support/permission/type';
+import {
+  ResourcePerWithGroup,
+  ResourcePerWithTmbWithUser
+} from '@fastgpt/global/support/permission/type';
 import { DatasetPermission } from '@fastgpt/global/support/permission/dataset/controller';
 import { MongoApp } from './schema';
 
@@ -13,12 +16,14 @@ export async function updateAppCollaboratorPer({
   teamId,
   appId,
   permission,
-  members
+  members,
+  groups
 }: {
   teamId: string;
   appId: string;
   permission: number;
   members: string[];
+  groups: string[];
 }) {
   await mongoSessionRun(async (session) => {
     for (const tmbId of members) {
@@ -51,6 +56,37 @@ export async function updateAppCollaboratorPer({
         );
       }
     }
+
+    for (const group of groups) {
+      const appPer = await MongoResourcePermission.findOneAndUpdate(
+        {
+          teamId,
+          groupId: group,
+          resourceType: PerResourceTypeEnum.app,
+          resourceId: appId
+        },
+        {
+          permission
+        },
+        { session }
+      );
+
+      if (appPer == null) {
+        // 不存在，创建
+        await MongoResourcePermission.create(
+          [
+            {
+              teamId,
+              groupId: group,
+              resourceId: appId,
+              resourceType: PerResourceTypeEnum.app,
+              permission
+            }
+          ],
+          { session }
+        );
+      }
+    }
   });
 }
 
@@ -58,27 +94,63 @@ export async function updateAppCollaboratorPer({
  * 获取APP协作者列表
  */
 export async function getAppCollaboratorList({ appId, teamId }: { appId: string; teamId: string }) {
-  var datasetPers = (await MongoResourcePermission.find({
-    teamId,
-    resourceId: appId,
-    resourceType: PerResourceTypeEnum.app
-  }).populate('tmbId')) as ResourcePerWithTmbWithUser[];
-
   const app = await MongoApp.findById(appId);
 
-  return datasetPers.map((x) => {
-    const Per = new DatasetPermission({
-      per: x.permission ?? app?.defaultPermission,
-      isOwner: String(app?.tmbId) === x.tmbId._id
-    });
+  const getTmbCollaborators = async () => {
+    var datasetPers = (await MongoResourcePermission.find({
+      teamId,
+      resourceId: appId,
+      resourceType: PerResourceTypeEnum.app,
+      tmbId: {
+        $exists: true
+      }
+    }).populate('tmbId')) as ResourcePerWithTmbWithUser[];
 
-    return {
-      tmbId: x.tmbId._id,
-      avatar: x.tmbId.userId.avatar,
-      name: x.tmbId.name,
-      permission: Per
-    };
-  });
+    return datasetPers.map((x) => {
+      const Per = new DatasetPermission({
+        per: x.permission ?? app?.defaultPermission,
+        isOwner: String(app?.tmbId) === x.tmbId._id
+      });
+
+      return {
+        teamId: x.teamId,
+        tmbId: x.tmbId._id,
+        avatar: x.tmbId.userId.avatar,
+        name: x.tmbId.name,
+        permission: Per
+      };
+    });
+  };
+
+  const getGroupCollaborators = async () => {
+    var datasetPers = (await MongoResourcePermission.find({
+      teamId,
+      resourceId: appId,
+      resourceType: PerResourceTypeEnum.app,
+      groupId: {
+        $exists: true
+      }
+    }).populate('groupId')) as ResourcePerWithGroup[];
+
+    return datasetPers.map((x) => {
+      const Per = new DatasetPermission({
+        per: x.permission ?? app?.defaultPermission,
+        isOwner: false
+      });
+
+      return {
+        teamId: x.teamId,
+        groupId: x.groupId._id,
+        avatar: x.groupId.avatar,
+        name: x.groupId.name,
+        permission: Per
+      };
+    });
+  };
+
+  const tmbCollaboratorList = await getTmbCollaborators();
+  const groupCollaboratorList = await getGroupCollaborators();
+  return [...tmbCollaboratorList, ...groupCollaboratorList];
 }
 
 /**
@@ -88,15 +160,18 @@ export async function getAppCollaboratorList({ appId, teamId }: { appId: string;
 export async function deleteAppCollaboratorPer({
   teamId,
   appId,
-  tmbId
+  tmbId,
+  groupId
 }: {
   teamId: string;
   appId: string;
-  tmbId: string;
+  tmbId?: string;
+  groupId?: string;
 }) {
   await MongoResourcePermission.deleteOne({
     teamId,
     tmbId,
+    groupId,
     resourceId: appId,
     resourceType: PerResourceTypeEnum.app
   });

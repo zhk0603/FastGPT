@@ -9,12 +9,13 @@ import { authApp } from '@fastgpt/service/support/permission/app/auth';
 async function handler(req: NextApiRequest): Promise<any> {
   await connectToDatabase();
 
-  const { appId, tmbId } = req.query as {
+  const { appId, tmbId, groupId } = req.query as {
     appId: string;
-    tmbId: string;
+    tmbId?: string;
+    groupId?: string;
   };
 
-  if (appId == null || tmbId == null) {
+  if (appId == null) {
     return Promise.reject(CommonErrEnum.missingParams);
   }
 
@@ -28,7 +29,8 @@ async function handler(req: NextApiRequest): Promise<any> {
   await deleteAppCollaboratorPer({
     teamId,
     appId,
-    tmbId
+    tmbId,
+    groupId
   });
 }
 

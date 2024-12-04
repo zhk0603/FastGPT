@@ -12,14 +12,16 @@ async function handler(req: NextApiRequest): Promise<any> {
   const {
     datasetId,
     permission,
-    tmbIds = []
+    members = [],
+    groups = []
   } = req.body as {
     datasetId: string;
     permission: number;
-    tmbIds: string[];
+    members: string[];
+    groups: string[];
   };
 
-  if (datasetId == null || permission == null || tmbIds.length == 0) {
+  if (datasetId == null || permission == null) {
     return Promise.reject(CommonErrEnum.missingParams);
   }
 
@@ -35,7 +37,8 @@ async function handler(req: NextApiRequest): Promise<any> {
     teamId,
     datasetId,
     permission,
-    tmbIds
+    members,
+    groups
   });
 }
 

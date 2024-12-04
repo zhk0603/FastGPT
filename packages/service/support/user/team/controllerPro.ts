@@ -15,6 +15,7 @@ import { TeamPermission } from '@fastgpt/global/support/permission/user/controll
 import { mongoSessionRun } from '../../../common/mongo/sessionRun';
 import { MongoResourcePermission } from '../../permission/schema';
 import { TeamDefaultPermissionVal } from '@fastgpt/global/support/permission/user/constant';
+import { ResourcePermissionType } from '@fastgpt/global/support/permission/type';
 
 async function getTeamMember(match: Record<string, any>): Promise<TeamTmbItemType> {
   const tmb = (await MongoTeamMember.findOne(match).populate('teamId')) as TeamMemberWithTeamSchema;
@@ -64,7 +65,7 @@ async function getMemberInfo(match: Record<string, any>): Promise<any> {
 
   return {
     userId: String(tmb.userId._id),
-    teamId: String(tmb.teamId),
+    teamId: String(tmb.teamId._id),
     memberName: tmb.name,
     avatar: tmb.userId.avatar,
     tmbId: String(tmb._id),
@@ -186,4 +187,62 @@ export async function updateTmbsPer({
       }
     }
   });
+}
+
+export async function updateResourcePermission({
+  teamId,
+  memberId,
+  groupId,
+  permission
+}: {
+  teamId: string;
+  memberId?: string;
+  groupId?: string;
+  permission: number;
+}) {
+  if (memberId) {
+    // 推测逻辑：默认权限时删除个人权限，可能以 group 权限为准。
+    if (permission == TeamDefaultPermissionVal) {
+      await MongoResourcePermission.findOneAndDelete({
+        teamId,
+        tmbId: memberId,
+        resourceType: PerResourceTypeEnum.team
+      });
+    } else {
+      // 更新或插入个人权限
+      await updateOrInsertPermission(
+        {
+          teamId,
+          tmbId: memberId,
+          resourceType: PerResourceTypeEnum.team
+        },
+        {
+          $set: { permission }
+        },
+        {}
+      );
+    }
+  } else if (groupId) {
+    // 更新或插入分组权限
+    await updateOrInsertPermission(
+      {
+        teamId,
+        groupId,
+        resourceType: PerResourceTypeEnum.team
+      },
+      {
+        $set: { permission }
+      },
+      {}
+    );
+  }
+}
+
+async function updateOrInsertPermission(query: any, update: any, options: any) {
+  const result = await MongoResourcePermission.findOneAndUpdate(query, update, {
+    ...options,
+    upsert: true,
+    new: true
+  });
+  return result;
 }

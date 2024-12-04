@@ -12,14 +12,16 @@ async function handler(req: NextApiRequest): Promise<any> {
   const {
     appId,
     permission,
-    members = []
+    members = [],
+    groups = []
   } = req.body as {
     appId: string;
     permission: number;
     members: string[];
+    groups: string[];
   };
 
-  if (appId == null || permission == null || members.length == 0) {
+  if (appId == null || permission == null) {
     return Promise.reject(CommonErrEnum.missingParams);
   }
 
@@ -35,7 +37,8 @@ async function handler(req: NextApiRequest): Promise<any> {
     teamId,
     appId,
     permission,
-    members
+    members,
+    groups
   });
 }
 
